@@ -1,0 +1,19 @@
+# Backend (Maven / Eclipse / IntelliJ)
+backend/target/
+.classpath
+.project
+.settings/
+.factorypath
+.idea/
+*.iml
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+.env
+.env.*
+!.env.example
+
+# Sistema
+.DS_Store
+Thumbs.db

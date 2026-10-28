@@ -1,0 +1,13 @@
+{
+  "java.jdt.ls.java.home": "C:\\Program Files\\Java\\jdk-26.0.2.1",
+  "java.configuration.runtimes": [
+    { "name": "JavaSE-21", "path": "C:\\Program Files\\Java\\jdk-26.0.2.1", "default": true }
+  ],
+  "java.import.maven.enabled": true,
+  "maven.executable.preferMavenWrapper": true,
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/target": true
+  }
+}

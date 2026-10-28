@@ -1,0 +1,27 @@
+# Blueprint do Render (render.com): New > Blueprint > aponte para este repositório.
+services:
+  - type: web
+    name: presentya-api
+    runtime: docker
+    rootDir: backend
+    plan: free
+    healthCheckPath: /api/status
+    envVars:
+      - key: DB_URL          # ex.: jdbc:postgresql://ep-xxx.sa-east-1.aws.neon.tech/BDPresentya?sslmode=require
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL    # ex.: https://presentya.vercel.app
+        sync: false
+      - key: API_URL         # ex.: https://presentya-api.onrender.com
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: MP_ACCESS_TOKEN # Mercado Pago > Suas integrações > Credenciais de produção
+        sync: false

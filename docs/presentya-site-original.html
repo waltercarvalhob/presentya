@@ -1,0 +1,1073 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="PresentYá • Estilo • Criatividade. Presentes e personalizados em São Luís – MA.">
+<title>PresentYá</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;700&display=swap">
+<style>
+/* Layout: one-page vitrine — menu fixo com scrollspy, palco animado de produtos no hero, faixas em movimento, seções empilhadas com revelação ao rolar */
+:root{
+  /* Cores da logomarca: amarelo PresentYá, preto e branco */
+  --brand:#F1C200; --brand-deep:#D9AE00;
+  --bg:#FFFFFF; --paper:#FFF8DC; --card:#FFFFFF; --ink:#141414; --muted:#5B564A; --line:#EFE6C6;
+  --rose:#FFD84D; --rose-soft:#FFF6D1; --gold:#7A5F00; --gold-bright:#F1C200; --gold-soft:#FFF0B3;
+  --sage:#2B2B2B; --sage-soft:#F5F2E8; --sky:#FFFBEA; --wa:#1F9D55; --on-accent:#141414; --love:#D7263D;
+  --shadow:rgba(20,20,20,.10);
+  --logo-y:#F1C200; --logo-w:#FFFFFF; --logo-k:#111111;
+  --f-display:"Poppins","Figtree","Segoe UI",system-ui,sans-serif;
+  --f-body:"Figtree","Segoe UI",system-ui,sans-serif;
+  --f-hand:"Caveat","Segoe Print",cursive;
+  --r:18px; --ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:light;
+}
+html{background:var(--bg)}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+img,svg{max-width:100%}
+html{scroll-behavior:smooth;scroll-padding-top:120px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--brand)}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:-.02em;line-height:1.12;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.4rem,5.6vw,4.3rem)}
+h2{font-size:clamp(1.9rem,3.8vw,2.8rem)}
+h3{font-size:1.25rem}
+p{margin:0}
+a{color:inherit}
+.eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);font-weight:700}
+.eyebrow::before{content:"";width:22px;height:4px;border-radius:2px;background:var(--brand)}
+.hand{font-family:var(--f-hand);font-size:1.5rem;color:var(--muted);line-height:1.1}
+.lead{font-size:1.1rem;color:var(--muted);max-width:58ch}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:6px}
+
+/* buttons */
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:.5em;font:600 .97rem var(--f-body);border-radius:999px;padding:.9em 1.6em;border:1.5px solid transparent;cursor:pointer;text-decoration:none;transition:transform .25s var(--ease),box-shadow .25s,background .25s}
+.btn:hover{transform:translateY(-2px)}
+.btn-gold{background:var(--brand);color:var(--ink);box-shadow:0 8px 22px color-mix(in srgb,var(--brand) 45%,transparent)}
+.btn-dark{background:var(--ink);color:var(--brand)}
+.btn-dark:hover{background:#000}
+.btn-gold::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s var(--ease)}
+.btn-gold:hover::after{transform:translateX(120%)}
+.btn-line{border-color:var(--ink);color:var(--ink);background:transparent}
+.btn-line:hover{background:var(--brand)}
+.btn-wa{background:var(--wa);color:#fff}
+.btn-sm{padding:.6em 1.1em;font-size:.88rem}
+
+/* offer bar */
+.offerbar{background:var(--ink);color:var(--bg);font-size:.86rem}
+.offerbar .wrap{display:flex;gap:.5rem 1rem;align-items:center;justify-content:center;flex-wrap:wrap;padding-block:.5rem;text-align:center}
+.offerbar b{color:var(--brand);font-weight:600}
+.offerbar .count{font-variant-numeric:tabular-nums;opacity:.85}
+.pill{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.25em .7em;border-radius:999px;background:var(--brand);color:var(--ink);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+
+/* nav */
+header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:25;background:var(--brand);transition:box-shadow .3s}
+header.site.scrolled{box-shadow:0 10px 30px rgba(20,20,20,.18)}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:.55rem}
+.brand-svg{display:block;height:58px;width:auto;max-width:100%}
+header.scrolled .brand-svg{height:50px}
+.brand-svg{transition:height .3s var(--ease)}
+.foot-logo{display:inline-block;background:var(--brand);border-radius:16px;padding:.8rem 1rem}
+.foot-logo .brand-svg{height:64px}
+.logo{display:flex;align-items:baseline;text-decoration:none;flex-shrink:0}
+.navlinks{display:flex;gap:.15rem;list-style:none;margin:0;padding:.3rem;background:rgba(255,255,255,.45);border-radius:999px;position:relative}
+.navlinks a{position:relative;z-index:1;display:block;text-decoration:none;font-size:.88rem;font-weight:600;color:var(--ink);padding:.45rem .9rem;border-radius:999px;white-space:nowrap;transition:color .25s}
+.navlinks a.on{color:var(--brand)}
+.navpill{position:absolute;top:.3rem;height:calc(100% - .6rem);background:var(--ink);border-radius:999px;transition:left .45s var(--ease),width .45s var(--ease);z-index:0}
+.hdr-actions{display:flex;gap:.5rem;align-items:center}
+.icon-btn{position:relative;display:inline-flex;align-items:center;gap:.4rem;background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:.55rem .85rem;font:600 .86rem var(--f-body);cursor:pointer}
+.icon-btn svg{width:18px;height:18px}
+.badge{min-width:20px;height:20px;border-radius:10px;background:var(--ink);color:var(--brand);font-size:.72rem;display:inline-grid;place-items:center;padding:0 5px;font-variant-numeric:tabular-nums}
+.badge.bump{animation:bump .5s var(--ease)}
+@keyframes bump{40%{transform:scale(1.5)}}
+.menu-btn{display:none}
+.mobnav{display:none}
+
+/* reveal (visible at rest; enters with motion) */
+.rv{transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.js .rv.pre{opacity:.25;transform:translateY(28px)}
+.js .rv.pre.l{transform:translateX(-36px)}
+.js .rv.pre.r{transform:translateX(36px)}
+.js .rv.pre.z{transform:scale(.92)}
+
+section.sec{padding-block:clamp(3.5rem,8vw,6.5rem);position:relative}
+section.tint{background:var(--paper)}
+section.rose{background:var(--paper)}
+.head{display:grid;gap:.8rem;margin-bottom:2.4rem;max-width:720px}
+.head.center{margin-inline:auto;text-align:center;justify-items:center}
+.head.split{max-width:none;display:flex;justify-content:space-between;align-items:end;gap:1.5rem;flex-wrap:wrap}
+.head.split>div{display:grid;gap:.8rem;max-width:640px}
+
+/* HERO */
+.hero{position:relative;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;pointer-events:none;animation:drift 18s ease-in-out infinite alternate}
+.blob.b1{width:420px;height:420px;background:var(--brand);right:-80px;top:-60px}
+.blob.b2{width:340px;height:340px;background:var(--gold-soft);left:-120px;bottom:-80px;animation-duration:22s}
+.blob.b3{width:260px;height:260px;background:var(--gold-soft);right:30%;bottom:-100px;animation-duration:26s}
+@keyframes drift{to{transform:translate(40px,30px) scale(1.12)}}
+.hero-grid{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,4rem);align-items:center;padding-block:clamp(2.5rem,6vw,5rem)}
+.hero-copy{display:grid;gap:1.4rem;min-width:0}
+.hero h1 .word{display:inline-block;animation:rise .9s var(--ease) both}
+.hero h1 em{font-style:normal;background:linear-gradient(transparent 58%,var(--brand) 58%);padding-inline:.1em}
+@keyframes rise{from{opacity:0;transform:translateY(.5em)}}
+.hero-ctas{display:flex;gap:.8rem;flex-wrap:wrap}
+.stats{display:flex;gap:2rem;flex-wrap:wrap;padding-top:.6rem;border-top:1px solid var(--line)}
+.stat b{display:block;font-family:var(--f-display);font-weight:700;font-size:2rem;font-variant-numeric:tabular-nums;color:var(--ink)}
+.stat span{font-size:.84rem;color:var(--muted)}
+
+.stage{position:relative;aspect-ratio:1/1;max-width:100%;width:100%}
+.ring{position:absolute;inset:6%;border-radius:50%;border:1.5px dashed color-mix(in srgb,var(--ink) 35%,transparent);animation:spin 40s linear infinite}
+.ring.r2{inset:18%;border-style:solid;border-color:var(--brand);animation-duration:60s;animation-direction:reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.disc{position:absolute;inset:16%;border-radius:50%;background:radial-gradient(circle at 50% 35%,#FFFFFF,var(--gold-soft) 80%);box-shadow:0 30px 60px var(--shadow)}
+.showcase{position:absolute;inset:16%;display:grid;place-items:center}
+.show-item{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transform:translateY(30px) scale(.85) rotate(-6deg);transition:opacity .8s var(--ease),transform .9s var(--ease)}
+.show-item.on{opacity:1;transform:none}
+.show-item.out{opacity:0;transform:translateY(-30px) scale(.9) rotate(6deg)}
+.show-item svg{width:78%;animation:float 4.5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px) rotate(1.5deg)}}
+.show-label{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.55rem 1.1rem;display:flex;gap:.8rem;align-items:center;box-shadow:0 12px 28px var(--shadow);white-space:nowrap;font-size:.92rem;z-index:2}
+.show-label b{font-weight:600}
+.show-label span{color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.orbit{position:absolute;width:19%;aspect-ratio:1;border-radius:50%;background:var(--card);box-shadow:0 12px 26px var(--shadow);display:grid;place-items:center;border:1px solid var(--line);animation:bob 5s ease-in-out infinite}
+.orbit svg{width:78%}
+.orbit.o1{left:0;top:18%}
+.orbit.o2{right:2%;top:6%;animation-delay:-1.6s}
+.orbit.o3{right:0;bottom:22%;animation-delay:-3.1s}
+@keyframes bob{50%{transform:translateY(-14px)}}
+.tag{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:6px 14px 14px 6px;padding:.4rem .9rem .4rem 1.5rem;box-shadow:0 8px 22px var(--shadow);z-index:2}
+.tag::before{content:"";position:absolute;left:.55rem;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;border:1.5px solid var(--gold)}
+.tag .hand{font-size:1.25rem}
+.tag.t1{left:4%;bottom:26%;transform:rotate(-6deg);animation:sway 6s ease-in-out infinite}
+@keyframes sway{50%{transform:rotate(3deg)}}
+.dots{position:absolute;left:50%;bottom:-6%;transform:translateX(-50%);display:flex;gap:.45rem}
+.dots button{width:9px;height:9px;border-radius:5px;border:none;background:var(--line);cursor:pointer;padding:0;transition:width .4s var(--ease),background .3s}
+.dots button.on{width:26px;background:var(--ink)}
+
+/* marquee */
+.marquee{overflow:hidden;border-block:1px solid var(--ink);background:var(--ink);color:#FFFFFF;padding-block:1rem;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.track{display:flex;gap:2.5rem;width:max-content;animation:scroll 38s linear infinite}
+.marquee:hover .track{animation-play-state:paused}
+@keyframes scroll{to{transform:translateX(-50%)}}
+.mq{display:flex;align-items:center;gap:.8rem;white-space:nowrap;font-family:var(--f-display);font-weight:600;font-size:1.1rem}
+.mq .ic{width:52px;height:52px;border-radius:50%;display:grid;place-items:center}
+.mq .ic svg{width:80%}
+.mq i{font-style:normal;color:var(--brand-deep);font-size:1rem}
+
+/* benefits */
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.feat{position:relative;padding:1.8rem;background:var(--card);border-radius:var(--r);border:1px solid var(--line);display:grid;gap:.7rem;align-content:start;overflow:hidden;transition:transform .4s var(--ease),box-shadow .4s}
+.feat:hover{transform:translateY(-6px);box-shadow:0 20px 40px var(--shadow)}
+.feat .ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:var(--brand);color:var(--ink);transition:transform .5s var(--ease)}
+.feat:hover .ic{transform:rotate(-8deg) scale(1.1)}
+.feat .ic svg{width:26px;height:26px}
+.feat p{color:var(--muted);font-size:.95rem}
+
+/* product cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.4rem}
+.prod{background:var(--card);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--line);transform-style:preserve-3d;transition:transform .5s var(--ease),box-shadow .5s,opacity .45s,scale .45s;will-change:transform}
+.prod:hover{box-shadow:0 24px 48px var(--shadow)}
+.prod.hide{opacity:0;scale:.9}
+.prod .art{position:relative;aspect-ratio:5/4;display:grid;place-items:center;overflow:hidden}
+.prod .art::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,30%),rgba(255,255,255,.45),transparent 55%);opacity:0;transition:opacity .4s;pointer-events:none}
+.prod:hover .art::after{opacity:1}
+.prod .art svg{width:70%;transition:transform .7s var(--ease);animation:float 5s ease-in-out infinite;animation-delay:var(--d,0s)}
+.prod:hover .art svg{transform:scale(1.1) rotate(-3deg)}
+.prod .flags{position:absolute;left:.75rem;top:.75rem;display:flex;gap:.35rem;flex-wrap:wrap;z-index:1}
+.flag{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.3em .65em;border-radius:999px;background:var(--card);color:var(--ink)}
+.flag.new{background:var(--ink);color:var(--brand)}
+.flag.hot{background:var(--gold-soft);color:var(--gold)}
+.flag.off{background:var(--brand);color:var(--ink);animation:pulse 2s ease-in-out infinite}
+.heart{position:absolute;right:.7rem;top:.7rem;z-index:1;width:40px;height:40px;border-radius:50%;border:none;background:var(--card);display:grid;place-items:center;cursor:pointer;color:var(--muted);box-shadow:0 4px 12px var(--shadow);transition:transform .3s var(--ease)}
+.heart:hover{transform:scale(1.12)}
+.heart svg{width:20px;height:20px}
+.heart[aria-pressed="true"]{color:var(--love)}
+.heart[aria-pressed="true"] svg path{fill:currentColor}
+.heart.pop{animation:hpop .5s var(--ease)}
+@keyframes hpop{30%{transform:scale(1.45)}60%{transform:scale(.9)}}
+.quick{position:absolute;left:.75rem;right:.75rem;bottom:.75rem;z-index:1;transform:translateY(130%);transition:transform .45s var(--ease)}
+.prod:hover .quick,.prod:focus-within .quick{transform:none}
+.quick .btn{width:100%;padding:.7em}
+.prod .body{padding:1.1rem 1.2rem 1.25rem;display:flex;flex-direction:column;gap:.45rem;flex:1}
+.prod .meta{font-size:.76rem;color:var(--gold);font-weight:600;letter-spacing:.04em}
+.prod h3{font-size:1.18rem}
+.prod .desc{color:var(--muted);font-size:.92rem;flex:1}
+.price-row{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:.3rem;flex-wrap:wrap}
+.price{font-family:var(--f-display);font-weight:700;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.price s{font-family:var(--f-body);font-size:.84rem;color:var(--muted);margin-right:.35rem}
+
+/* carousel */
+.car-ctl{display:flex;gap:.5rem}
+.round{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:background .25s,transform .25s}
+.round:hover{background:var(--brand);color:var(--ink);transform:scale(1.06)}
+.round svg{width:20px;height:20px}
+.carousel{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 3*1.4rem)/4);gap:1.4rem;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-block:.5rem 1.5rem;scroll-behavior:smooth}
+.carousel::-webkit-scrollbar{display:none}
+.carousel>*{scroll-snap-align:start}
+.progress{height:3px;background:var(--line);border-radius:3px;overflow:hidden}
+.progress i{display:block;height:100%;width:25%;background:var(--brand);border-radius:3px;transition:transform .4s var(--ease)}
+
+/* occasions */
+.occ{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem}
+.occ button{position:relative;overflow:hidden;cursor:pointer;font:inherit;color:inherit;display:grid;gap:.6rem;justify-items:center;text-align:center;padding:1.8rem 1rem;border-radius:var(--r);background:var(--card);border:1px solid var(--line);transition:transform .45s var(--ease),border-color .3s,box-shadow .45s}
+.occ button::before{content:"";position:absolute;inset:auto 0 0;height:0;background:var(--brand);transition:height .5s var(--ease);z-index:0}
+.occ button:hover{transform:translateY(-6px);border-color:var(--ink);box-shadow:0 18px 36px var(--shadow)}
+.occ button:hover::before{height:100%}
+.occ button>*{position:relative;z-index:1}
+.occ .dot{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;transition:transform .5s var(--ease)}
+.occ button:hover .dot{transform:rotate(-12deg) scale(1.12)}
+.occ .dot svg{width:30px;height:30px}
+.occ b{font-family:var(--f-display);font-weight:600;font-size:1.15rem}
+.occ small{color:var(--muted);font-size:.82rem}
+
+/* catalog */
+.chipbar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+.chipbar .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold);min-width:84px}
+.chip{font:500 .86rem var(--f-body);padding:.45rem .9rem;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;transition:background .25s,color .25s,transform .25s}
+.chip:hover{transform:translateY(-2px)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.shop-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin:1.6rem 0 1.2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.shop-top select{font:500 .9rem var(--f-body);padding:.5rem .8rem;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.count-txt{color:var(--muted);font-size:.92rem;font-variant-numeric:tabular-nums}
+.switch{display:inline-flex;align-items:center;gap:.5rem;font-size:.9rem;cursor:pointer}
+.switch input{width:18px;height:18px;accent-color:var(--gold)}
+.empty{padding:3rem 1rem;text-align:center;color:var(--muted);display:grid;gap:1rem;justify-items:center;grid-column:1/-1}
+
+.perso{position:relative;overflow:hidden;display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;align-items:center;background:var(--brand);border-radius:calc(var(--r)*1.4);padding:clamp(1.6rem,4vw,3rem);margin-bottom:3rem}
+.perso ul{margin:0;padding-left:1.1rem;display:grid;gap:.35rem}
+.perso-stage{position:relative;aspect-ratio:4/3;max-width:100%}
+.perso-stage .pc{position:absolute;width:52%;aspect-ratio:1;border-radius:20px;background:var(--card);border:3px solid var(--ink);display:grid;place-items:center;box-shadow:0 18px 36px var(--shadow)}
+.perso-stage .pc svg{width:80%}
+.perso-stage .pc:nth-child(1){left:0;top:10%;transform:rotate(-8deg);animation:bob 6s ease-in-out infinite}
+.perso-stage .pc:nth-child(2){right:0;top:0;transform:rotate(6deg);animation:bob 6s ease-in-out -2s infinite}
+.perso-stage .pc:nth-child(3){left:26%;bottom:0;animation:bob 6s ease-in-out -4s infinite}
+.perso .eyebrow::before{background:var(--ink)}
+.typed{font-family:var(--f-hand);font-size:1.6rem;color:var(--ink);min-height:1.3em}
+.typed::after{content:"|";color:var(--ink);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ideas */
+.tabs{display:inline-flex;gap:.3rem;flex-wrap:wrap;margin-bottom:1.8rem;background:var(--card);padding:.35rem;border-radius:999px;border:1px solid var(--line)}
+.tabs button{font:600 .92rem var(--f-body);padding:.6rem 1.15rem;border-radius:999px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:background .3s,color .3s}
+.tabs button[aria-selected="true"]{background:var(--brand);color:var(--ink)}
+.curation{display:grid;grid-template-columns:1fr 1.7fr;gap:2rem;align-items:start}
+.curation .intro{display:grid;gap:1rem;background:var(--card);padding:1.7rem;border-radius:var(--r);border:1px solid var(--line)}
+.mini-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem}
+.mini{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;text-align:left;font:inherit;color:inherit;padding:0;animation:cardIn .6s var(--ease) both;transition:transform .35s var(--ease),box-shadow .35s}
+.mini:hover{transform:translateY(-5px);box-shadow:0 16px 30px var(--shadow)}
+@keyframes cardIn{from{opacity:0;transform:translateY(18px) scale(.96)}}
+.mini .art{aspect-ratio:4/3;display:grid;place-items:center}
+.mini .art svg{width:62%}
+.mini .t{padding:.7rem .9rem}
+.mini b{font-weight:600;font-size:.95rem;display:block}
+.mini span{font-variant-numeric:tabular-nums;color:var(--gold);font-weight:600;font-size:.9rem}
+.tips{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:3.5rem}
+.tipcard{padding:1.5rem;border-radius:var(--r);background:var(--card);border:1px solid var(--line);display:grid;gap:.5rem;align-content:start}
+.tipcard p{color:var(--muted);font-size:.94rem}
+.budget{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:1.2rem}
+.budget .b{background:var(--card);border-radius:var(--r);padding:1.5rem;border:1px solid var(--line);display:grid;gap:.8rem;align-content:start;transition:transform .4s var(--ease)}
+.budget .b:hover{transform:translateY(-5px)}
+.budget .range{font-family:var(--f-display);font-weight:700;font-size:1.5rem;color:var(--ink)}
+.budget ul{margin:0;padding-left:1.1rem;color:var(--muted);font-size:.93rem}
+.meaning{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.2rem}
+.meaning div{padding:1rem 1.2rem;border-left:3px solid var(--brand);background:var(--card);border-radius:0 12px 12px 0}
+.meaning b{font-family:var(--f-display);font-weight:600;font-size:1.1rem;display:block}
+.meaning p{color:var(--muted);font-size:.92rem}
+.subhead{margin-top:3.5rem;display:grid;gap:.5rem}
+
+/* about */
+.story{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,4rem);align-items:center}
+.story-copy{display:grid;gap:1.1rem;min-width:0}
+.story-copy p{color:var(--muted)}
+.letter{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:2.2rem 2rem 1.6rem;transform:rotate(-2deg);box-shadow:0 22px 44px var(--shadow);position:relative;transition:transform .6s var(--ease)}
+.letter:hover{transform:rotate(0) translateY(-6px)}
+.letter::after{content:"";position:absolute;right:1.4rem;top:-14px;width:56px;height:28px;background:var(--brand);opacity:.85;transform:rotate(6deg)}
+.letter .hand{font-size:1.75rem;color:var(--ink)}
+.diffs{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-top:3rem}
+.diff{display:grid;gap:.6rem;align-content:start;padding:1.4rem;background:var(--card);border-radius:var(--r);border:1px solid var(--line);transition:transform .4s var(--ease)}
+.diff:hover{transform:translateY(-5px)}
+.diff .ic{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--brand);color:var(--ink)}
+.diff .ic svg{width:24px;height:24px}
+.diff p{color:var(--muted);font-size:.92rem}
+
+/* club */
+#clube .eyebrow::before{background:var(--ink)}
+.club{display:grid;grid-template-columns:1.1fr .9fr;gap:2.5rem;align-items:center}
+.stampcard{background:var(--card);border-radius:22px;padding:1.8rem;border:1px solid var(--line);box-shadow:0 22px 44px var(--shadow);display:grid;gap:1.2rem}
+.stampcard .top{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap}
+.stamps{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem}
+.stamp{aspect-ratio:1/1;border-radius:50%;border:1.5px dashed var(--ink);display:grid;place-items:center;font-variant-numeric:tabular-nums;color:var(--gold);font-weight:600;font-size:.9rem;transition:background .4s,transform .4s var(--ease)}
+.stamp.done{background:var(--gold-soft);border-style:solid;animation:stampIn .5s var(--ease)}
+@keyframes stampIn{from{transform:scale(1.5) rotate(-20deg);opacity:.4}}
+.stamp.gift{background:var(--brand);border:none;color:var(--ink)}
+.stamp.gift.win{animation:wiggle .8s ease-in-out 2}
+@keyframes wiggle{25%{transform:rotate(-12deg) scale(1.1)}75%{transform:rotate(12deg) scale(1.1)}}
+.stamp.gift svg{width:55%}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.tier{padding:.8rem;border-radius:12px;background:var(--paper);text-align:center}
+.tier b{display:block;font-family:var(--f-display);font-weight:700;font-size:1.5rem;color:var(--gold)}
+.tier small{color:var(--muted);font-size:.8rem}
+.perks{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1.4rem}
+.perk{display:flex;gap:.8rem;align-items:flex-start}
+.perk .ic{flex:0 0 40px;height:40px;border-radius:50%;background:var(--card);color:var(--gold);display:grid;place-items:center;border:1px solid var(--line)}
+.perk .ic svg{width:18px;height:18px}
+.perk p{font-size:.93rem;color:var(--muted)}
+.perk b{display:block;color:var(--ink);font-weight:600}
+
+/* forms */
+.form{display:grid;gap:.9rem;background:var(--card);border-radius:var(--r);padding:1.6rem;border:1px solid var(--line)}
+.form .row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.form label{display:grid;gap:.35rem;font-size:.86rem;font-weight:600}
+.form input,.form select{font:400 1rem var(--f-body);padding:.75rem .9rem;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;transition:border-color .25s,box-shadow .25s}
+.form input:focus,.form select:focus{border-color:var(--ink);box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 55%,transparent);outline:none}
+.form small{color:var(--muted);font-size:.82rem}
+.form .ok{background:var(--sage-soft);border-radius:10px;padding:.8rem 1rem;font-size:.92rem;animation:cardIn .5s var(--ease)}
+
+/* testimonials */
+.tmarquee{overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.tmarquee .track{gap:1.2rem;animation-duration:50s}
+.quote{width:340px;max-width:80vw;background:var(--card);border-radius:var(--r);padding:1.5rem;display:grid;gap:.8rem;border:1px solid var(--line);margin:0;white-space:normal}
+.quote .stars{color:var(--brand-deep);letter-spacing:.15em}
+.quote footer{font-size:.86rem;color:var(--muted)}
+.note-ex{font-size:.8rem;color:var(--muted);border:1px dashed var(--line);padding:.35rem .8rem;border-radius:8px;display:inline-block;background:var(--card)}
+.seals{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center;margin-top:2.5rem}
+.seal{display:flex;align-items:center;gap:.6rem;padding:.7rem 1.1rem;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:.92rem;font-weight:500}
+.seal svg{width:20px;height:20px;color:var(--ink)}
+
+/* news */
+.news{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center}
+.drops{display:grid;gap:.9rem}
+.drop{display:flex;gap:1rem;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:.9rem 1rem;transition:transform .35s var(--ease)}
+.drop:hover{transform:translateX(6px)}
+.drop .ic{flex:0 0 56px;height:56px;border-radius:12px;display:grid;place-items:center}
+.drop .ic svg{width:80%}
+.drop .when{font-variant-numeric:tabular-nums;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+
+/* contact */
+.contact{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.cbox{background:var(--card);border-radius:var(--r);padding:1.5rem;border:1px solid var(--line);display:grid;gap:.6rem;align-content:start;transition:transform .4s var(--ease),box-shadow .4s}
+.cbox:hover{transform:translateY(-5px);box-shadow:0 18px 36px var(--shadow)}
+.cbox .big{font-family:var(--f-display);font-weight:600;font-size:1.15rem;user-select:all;word-break:break-word}
+.cbox p{color:var(--muted);font-size:.92rem}
+.cbox .k{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.copy{font:600 .82rem var(--f-body);border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:.35rem .8rem;cursor:pointer;justify-self:start}
+
+/* help */
+.howto{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;position:relative}
+.howto .s{padding:1.4rem;background:var(--card);border-radius:var(--r);border:1px solid var(--line);display:grid;gap:.45rem;align-content:start}
+.howto .n{width:42px;height:42px;border-radius:50%;background:var(--brand);color:var(--ink);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:1.1rem}
+.howto p{color:var(--muted);font-size:.92rem}
+.help2{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-top:3.5rem;align-items:start}
+.policy{display:grid;gap:.6rem}
+.policy h4{margin:.8rem 0 0;font-size:1rem}
+.policy li{color:var(--muted);font-size:.94rem}
+.policy ul{margin:0;padding-left:1.2rem;display:grid;gap:.35rem}
+details{border-bottom:1px solid var(--line);padding-block:1rem}
+summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:1rem}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--gold);font-size:1.4rem;line-height:1;transition:transform .35s var(--ease)}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--muted);margin-top:.6rem;font-size:.95rem}
+details[open] p{animation:cardIn .45s var(--ease)}
+
+/* comeback + footer */
+.comeback{background:var(--brand);text-align:center}
+.comeback .wrap{padding-block:2.6rem;display:grid;gap:.9rem;justify-items:center}
+.comeback .hand{font-size:1.8rem;color:var(--ink)}
+.comeback .btn-line{border-color:var(--ink)}
+.comeback .btn-line:hover{background:var(--ink);color:var(--brand)}
+footer.site{background:var(--paper);border-top:1px solid var(--line);font-size:.92rem;color:var(--muted)}
+.foot{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:2rem;padding-block:3rem 2rem}
+.foot h4{font-family:var(--f-display);font-weight:600;font-size:1.1rem;color:var(--ink);margin:0 0 .7rem}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:.4rem}
+.foot a{text-decoration:none}
+.foot a:hover{color:var(--ink)}
+.legal{border-top:1px solid var(--line);padding-block:1.2rem;font-size:.82rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+
+/* floating */
+.wa-float{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:center;gap:.55rem;background:var(--wa);color:#fff;text-decoration:none;border-radius:999px;padding:.85rem 1.1rem;font-weight:600;box-shadow:0 10px 26px rgba(31,157,85,.35)}
+.wa-float::before{content:"";position:absolute;inset:0;border-radius:inherit;border:2px solid var(--wa);animation:ring 2.2s ease-out infinite}
+@keyframes ring{to{transform:scale(1.35);opacity:0}}
+.wa-float svg{width:24px;height:24px}
+.totop{position:fixed;right:calc(22px + env(safe-area-inset-right,0px));bottom:calc(86px + env(safe-area-inset-bottom,0px));z-index:39;opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity .3s,transform .3s}
+.totop.show{opacity:1;pointer-events:auto;transform:none}
+.flyer{position:fixed;z-index:70;width:56px;height:56px;border-radius:50%;background:var(--card);box-shadow:0 10px 24px var(--shadow);display:grid;place-items:center;pointer-events:none;transition:transform .8s cubic-bezier(.5,-.3,.6,1),opacity .8s}
+.flyer svg{width:80%}
+
+.drawer{position:fixed;inset:0;z-index:50;display:flex;justify-content:flex-end;background:rgba(28,22,24,.45);animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0}}
+.panel{width:min(420px,100%);height:100%;background:var(--bg);padding:calc(1.4rem + env(safe-area-inset-top,0px)) calc(1.3rem + env(safe-area-inset-right,0px)) calc(1.4rem + env(safe-area-inset-bottom,0px)) 1.3rem;display:flex;flex-direction:column;gap:1rem;overflow-y:auto;animation:slideIn .45s var(--ease)}
+@keyframes slideIn{from{transform:translateX(100%)}}
+.panel-head{display:flex;justify-content:space-between;align-items:center}
+.close{border:none;background:var(--paper);color:var(--ink);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:1.3rem}
+.wl-item{display:grid;grid-template-columns:64px 1fr auto;gap:.8rem;align-items:center;padding:.6rem;border:1px solid var(--line);border-radius:12px;background:var(--card);animation:cardIn .4s var(--ease) both}
+.wl-item .art{width:64px;height:64px;border-radius:10px;display:grid;place-items:center}
+.wl-item .art svg{width:80%}
+.wl-item b{font-size:.95rem;font-weight:600;display:block}
+.wl-item span{color:var(--gold);font-variant-numeric:tabular-nums;font-weight:600;font-size:.9rem}
+.wl-item button{border:none;background:none;color:var(--muted);cursor:pointer;font-size:.82rem;text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.7rem 1.2rem;border-radius:999px;font-size:.92rem;z-index:60;max-width:calc(100% - 32px);text-align:center;animation:cardIn .35s var(--ease)}
+
+/* responsive */
+@media (max-width:1080px){
+  .navlinks{display:none}
+  .menu-btn{display:inline-flex}
+  .mobnav{display:block;overflow:hidden;max-height:0;transition:max-height .5s var(--ease)}
+  .mobnav.open{max-height:420px}
+  .mobnav ul{list-style:none;margin:0;padding:0 0 1rem;display:grid;gap:.2rem}
+  .mobnav a{display:block;text-decoration:none;padding:.7rem .9rem;border-radius:12px;font-weight:500}
+  .mobnav a.on{background:var(--ink);color:var(--brand)}
+  .carousel{grid-auto-columns:calc((100% - 2*1.4rem)/3)}
+  .occ{grid-template-columns:repeat(3,1fr)}
+  .diffs,.howto{grid-template-columns:repeat(2,1fr)}
+  .foot{grid-template-columns:1fr 1fr}
+}
+@media (max-width:780px){
+  .hero-grid,.story,.club,.news,.perso,.curation,.help2{grid-template-columns:1fr}
+  .stage{max-width:440px;margin:0 auto 1.5rem}
+  .trio,.tips,.budget,.contact,.meaning{grid-template-columns:1fr}
+  .carousel{grid-auto-columns:78%}
+  .occ{grid-template-columns:repeat(2,1fr)}
+  .perks{grid-template-columns:1fr}
+  .form .row{grid-template-columns:1fr}
+  .wa-float .lbl{display:none}
+  .wa-float{padding:.95rem}
+  .hdr-actions .t{display:none}
+  .quick{transform:none;position:static;padding:0 1.2rem 1.2rem;display:none}
+  .chipbar .lbl{min-width:100%}
+}
+@media (max-width:440px){
+  .diffs,.howto,.foot{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr}
+  .hdr-actions .btn{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .js .rv.pre{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+
+<div class="offerbar" role="region" aria-label="Ofertas">
+  <div class="wrap"><span class="pill">Oferta limitada</span><span id="offerText">Oferta da semana</span><span class="count" id="offerCount"></span></div>
+</div>
+
+<header class="site" id="hdr">
+  <div class="wrap hdr">
+    <a class="logo" href="#inicio" aria-label="PresentYá, início"><svg class="brand-svg" viewBox="54.1 29.9 230.7 73.4" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PresentYá — Estilo • Criatividade"><path fill-rule="evenodd" fill="var(--logo-w,#FEFEFE)" d="M 242.05 96.35 L 250.78 97.96 C 255.84 98.90 260.91 99.83 265.98 100.77 C 268.25 101.19 269.69 101.31 271.76 99.44 C 273.40 97.96 273.61 95.97 274.17 92.94 C 276.14 82.28 275.37 86.45 277.34 75.79 C 278.38 75.89 279.35 75.37 279.92 74.65 C 280.94 73.37 281.43 68.99 281.80 67.08 C 282.79 61.86 278.35 61.96 275.03 61.35 C 272.40 60.86 269.76 60.37 267.13 59.89 L 267.20 59.53 C 269.20 59.85 274.75 58.25 276.90 56.79 C 280.59 54.29 280.44 50.53 279.03 47.02 C 278.17 44.88 277.26 43.08 275.94 41.29 C 273.17 37.51 267.67 38.05 263.63 42 L 261.45 44.44 C 259.84 46.40 256.74 51.80 256.12 54.12 C 255.41 53.80 253.98 53.35 253.19 53.58 C 253.04 49.12 252.37 43.29 250.42 39.48 C 249.36 37.42 248.17 35.62 246.09 34.49 C 241.29 31.87 237.26 35.51 234.03 39.01 C 232.55 40.62 230.85 42.88 231.47 45.88 C 231.72 47.14 232.18 48.00 232.87 48.93 C 233.53 49.83 234.39 50.53 235.21 51.30 C 236.14 52.16 238.42 53.55 239.66 54.17 C 240.52 54.61 240.76 54.53 241.19 55.10 L 229.33 52.91 C 227.80 52.61 227.08 52.63 226.10 53.28 C 224.08 54.64 224.18 56.78 223.57 60.06 C 223.28 61.62 222.92 62.76 223.21 63.93 C 223.44 64.91 224.15 65.86 225.29 66.17 C 223.33 76.77 224.11 72.55 222.15 83.15 C 221.53 86.52 221.01 87.75 221.95 90.18 C 222.29 91.07 222.94 91.81 223.65 92.39 C 224.51 93.09 225.33 93.27 226.80 93.54 Z M 238.68 40.80 C 238.96 39.29 239.50 37.59 241.34 37.93 C 243.46 38.32 245.01 39.42 246.02 40.64 C 247.13 41.98 248.01 43.34 248.76 44.91 C 249.76 46.99 252.03 53.14 251.63 55.34 C 250.44 54.81 241.76 47.5 240.50 45.58 C 239.80 44.52 238.37 42.44 238.68 40.80 Z M 256.78 56.29 C 256.89 55.27 256.58 55.90 257.19 55.09 C 257.21 55.06 257.25 55.02 257.28 54.98 L 257.98 53.96 C 258.54 53.18 259.03 52.48 259.57 51.76 C 267.82 40.73 275.08 42.84 274.44 46.29 C 273.96 48.86 273.07 49.54 270.93 51.11 C 269.96 51.82 267.63 52.85 266.45 53.28 C 264.85 53.86 263.39 54.36 261.75 54.87 C 260.67 55.21 257.62 56.25 256.78 56.29 "/><path fill-rule="nonzero" fill="var(--logo-k,#111)" d="M 56.76 97.69 L 62.05 97.69 C 62.5 97.69 62.81 97.42 62.81 96.98 L 62.81 85.45 L 62.94 85.45 C 64.19 87.58 66.55 88.66 69.26 88.66 C 75.04 88.66 79.32 83.89 79.32 77.35 C 79.32 70.77 75.04 66.01 69.17 66.01 C 66.41 66.01 64.05 67.12 62.85 69.21 L 62.67 69.21 L 62.67 67.34 C 62.67 66.90 62.41 66.58 61.96 66.58 L 56.76 66.58 C 56.31 66.58 56.05 66.90 56.05 67.34 L 56.05 96.98 C 56.05 97.42 56.31 97.69 56.76 97.69 Z M 62.58 77.35 C 62.58 74.33 64.45 72.19 67.48 72.19 C 70.55 72.19 72.42 74.33 72.42 77.35 C 72.42 80.33 70.55 82.51 67.48 82.51 C 64.45 82.51 62.58 80.33 62.58 77.35 Z M 84.16 88.08 L 89.46 88.08 C 89.91 88.08 90.21 87.81 90.21 87.36 L 90.21 79.53 C 90.21 74.86 92.26 72.73 96.00 72.73 C 96.49 72.73 96.98 72.73 97.47 72.82 C 97.96 72.86 98.23 72.64 98.23 72.15 L 98.23 67.12 C 98.23 66.72 98.05 66.36 97.64 66.27 C 97.25 66.23 96.84 66.19 96.44 66.19 C 93.73 66.19 91.28 67.52 90.13 70.23 L 90.04 70.23 L 90.04 67.34 C 90.04 66.90 89.77 66.58 89.28 66.58 L 84.16 66.58 C 83.72 66.58 83.45 66.90 83.45 67.34 L 83.45 87.36 C 83.45 87.81 83.72 88.08 84.16 88.08 "/><path fill-rule="nonzero" fill="var(--logo-k,#111)" d="M 112.02 88.66 C 117.71 88.66 121.5 85.67 122.65 81.67 C 122.78 81.31 122.47 81.05 121.98 81.05 L 117.00 81.05 C 116.64 81.05 116.38 81.27 116.20 81.62 C 115.58 82.74 114.15 83.41 112.10 83.41 C 109.21 83.41 107.48 82.07 106.99 79.17 L 122.16 79.17 C 122.83 79.17 123.23 78.91 123.23 78.07 L 123.23 77.35 C 123.23 70.59 118.51 66.01 111.84 66.01 C 104.99 66.01 100.27 70.86 100.27 77.40 C 100.27 83.94 104.90 88.66 112.02 88.66 Z M 107.08 75.04 C 107.70 72.46 109.39 71.21 111.93 71.21 C 114.33 71.21 115.89 72.28 116.42 75.04 Z M 136.26 88.66 C 142.54 88.66 146.14 85.94 146.14 81.44 C 146.14 77.62 143.65 75.48 139.20 75 L 136.26 74.64 C 133.69 74.33 132.93 73.79 132.93 72.86 C 132.93 71.75 133.95 70.94 136.09 70.94 C 137.87 70.94 138.94 71.57 139.29 72.68 C 139.42 73.17 139.65 73.35 140.09 73.35 L 145.21 73.35 C 145.70 73.35 145.96 73.08 145.87 72.59 C 145.25 68.32 142.09 66.01 136.13 66.01 C 129.55 66.01 126.25 68.90 126.25 73.04 C 126.25 76.46 128.57 78.91 133.28 79.44 L 136.22 79.76 C 138.67 80.07 139.47 80.56 139.47 81.76 C 139.47 83.05 138.36 83.76 136.22 83.76 C 134.49 83.76 133.33 83.18 132.93 82.11 C 132.75 81.71 132.57 81.49 132.13 81.49 L 126.92 81.49 C 126.43 81.49 126.12 81.80 126.25 82.25 C 126.88 86.21 130.21 88.66 136.26 88.66 Z M 160.87 88.66 C 166.57 88.66 170.35 85.67 171.50 81.67 C 171.64 81.31 171.33 81.05 170.83 81.05 L 165.85 81.05 C 165.5 81.05 165.23 81.27 165.05 81.62 C 164.43 82.74 163.01 83.41 160.96 83.41 C 158.07 83.41 156.33 82.07 155.84 79.17 L 171.01 79.17 C 171.68 79.17 172.08 78.91 172.08 78.07 L 172.08 77.35 C 172.08 70.59 167.37 66.01 160.69 66.01 C 153.84 66.01 149.12 70.86 149.12 77.40 C 149.12 83.94 153.75 88.66 160.87 88.66 Z M 155.93 75.04 C 156.55 72.46 158.25 71.21 160.78 71.21 C 163.18 71.21 164.74 72.28 165.28 75.04 Z M 176.93 88.08 L 182.23 88.08 C 182.67 88.08 182.98 87.81 182.98 87.36 L 182.98 76.77 C 182.98 73.79 184.54 72.24 187.12 72.24 C 189.57 72.24 190.90 73.70 190.90 76.73 L 190.90 87.36 C 190.90 87.81 191.17 88.08 191.62 88.08 L 196.95 88.08 C 197.40 88.08 197.67 87.81 197.67 87.36 L 197.67 75 C 197.67 69.34 194.60 66.01 189.52 66.01 C 186.50 66.01 184.10 67.21 182.94 69.43 L 182.85 69.43 L 182.85 67.34 C 182.85 66.90 182.54 66.58 182.09 66.58 L 176.93 66.58 C 176.49 66.58 176.22 66.90 176.22 67.34 L 176.22 87.36 C 176.22 87.81 176.49 88.08 176.93 88.08 Z M 213.73 88.66 C 215.46 88.66 216.93 88.43 218.26 87.85 C 218.58 87.72 218.76 87.45 218.76 87.05 L 218.76 82.56 C 218.76 82.02 218.40 81.85 217.91 82.02 C 217.07 82.38 216.22 82.51 215.24 82.51 C 212.62 82.51 211.55 81.53 211.55 78.87 L 211.55 72.46 L 217.87 72.46 C 218.31 72.46 218.58 72.15 218.58 71.70 L 218.58 67.34 C 218.58 66.90 218.31 66.58 217.87 66.58 L 211.55 66.58 L 211.55 61.42 C 211.55 60.98 211.28 60.67 210.83 60.67 L 205.54 60.67 C 205.05 60.67 204.78 60.98 204.78 61.42 L 204.78 66.58 L 201.32 66.58 C 200.87 66.58 200.56 66.90 200.56 67.34 L 200.56 71.70 C 200.56 72.15 200.87 72.46 201.32 72.46 L 204.78 72.46 L 204.78 79.80 C 204.78 85.89 207.76 88.66 213.73 88.66 "/><path fill-rule="nonzero" fill="var(--logo-y,#F1C200)" d="M 234.73 88.25 L 239.57 89.14 C 239.94 89.21 240.20 89.03 240.27 88.66 L 241.96 79.49 L 253.76 65.95 C 254.10 65.56 253.97 65.23 253.5 65.14 L 248.10 64.15 C 247.80 64.09 247.53 64.16 247.32 64.46 L 240.06 73.14 L 239.99 73.12 L 236.35 62.43 C 236.22 62.07 235.99 61.91 235.69 61.86 L 230.30 60.86 C 229.82 60.77 229.58 61.03 229.76 61.52 L 235.94 78.38 L 234.25 87.55 C 234.18 87.92 234.36 88.18 234.73 88.25 "/><path fill-rule="nonzero" fill="var(--logo-y,#F1C200)" d="M 255.60 92.60 C 257.87 93.01 259.98 92.5 261.33 90.92 L 261.41 90.94 L 261.12 92.51 C 261.05 92.88 261.23 93.14 261.60 93.21 L 265.85 94 C 266.22 94.07 266.48 93.89 266.55 93.52 L 269.60 77.00 C 269.67 76.63 269.5 76.33 269.13 76.27 L 264.87 75.48 C 264.50 75.41 264.23 75.63 264.17 76 L 263.88 77.54 L 263.77 77.52 C 263.10 75.61 261.36 74.34 259.05 73.91 C 254.17 73.01 249.96 76.30 248.95 81.73 C 247.96 87.12 250.72 91.69 255.60 92.60 Z M 254.64 82.78 C 255.10 80.28 257.01 78.81 259.46 79.26 C 261.96 79.73 263.21 81.78 262.75 84.28 C 262.30 86.73 260.39 88.24 257.89 87.78 C 255.43 87.33 254.19 85.24 254.64 82.78 "/><path fill-rule="nonzero" fill="var(--logo-k,#111)" d="M 123.44 100.78 L 124.29 94.32 L 127.92 94.32 L 127.80 95.23 L 125.18 95.23 L 124.97 96.86 L 127.58 96.86 L 127.46 97.76 L 124.84 97.76 L 124.57 99.85 L 127.19 99.85 L 127.07 100.78 Z M 127.97 99.67 L 128.68 99.08 C 128.85 99.43 129.05 99.69 129.25 99.85 C 129.45 100.00 129.69 100.08 129.96 100.08 C 130.31 100.08 130.58 99.98 130.80 99.78 C 131.00 99.58 131.11 99.32 131.11 99.00 C 131.11 98.77 131.06 98.58 130.95 98.42 C 130.83 98.27 130.64 98.10 130.35 97.94 C 130.30 97.91 130.21 97.86 130.09 97.79 C 129.61 97.53 129.29 97.30 129.12 97.11 C 129.00 96.98 128.91 96.83 128.85 96.65 C 128.78 96.48 128.76 96.29 128.76 96.09 C 128.76 95.52 128.94 95.06 129.31 94.70 C 129.67 94.35 130.15 94.17 130.73 94.17 C 131.13 94.17 131.48 94.25 131.77 94.41 C 132.07 94.57 132.32 94.82 132.51 95.13 L 131.90 95.70 C 131.75 95.47 131.59 95.30 131.42 95.18 C 131.24 95.06 131.04 95.01 130.82 95.01 C 130.51 95.01 130.25 95.10 130.05 95.29 C 129.86 95.47 129.76 95.71 129.76 96.00 C 129.76 96.35 130.05 96.69 130.61 96.98 C 130.75 97.07 130.86 97.12 130.93 97.17 C 131.37 97.42 131.67 97.68 131.85 97.95 C 132.03 98.22 132.12 98.56 132.12 98.96 C 132.12 99.56 131.92 100.05 131.54 100.41 C 131.14 100.77 130.61 100.95 129.93 100.95 C 129.47 100.95 129.08 100.84 128.76 100.64 C 128.43 100.42 128.17 100.10 127.97 99.67 Z M 134.08 100.78 L 134.81 95.25 L 133.07 95.25 L 133.19 94.32 L 137.60 94.32 L 137.47 95.25 L 135.83 95.25 L 135.10 100.78 Z M 137.66 100.78 L 138.51 94.32 L 139.54 94.32 L 138.68 100.78 Z M 140.16 100.78 L 141.01 94.32 L 142.02 94.32 L 141.31 99.78 L 143.72 99.78 L 143.58 100.78 Z M 140.16 100.78 "/><path fill-rule="nonzero" fill="var(--logo-k,#111)" d="M 149.85 97.34 C 149.85 96.66 149.64 96.11 149.23 95.69 C 148.82 95.28 148.27 95.07 147.59 95.07 C 147.26 95.07 146.93 95.13 146.63 95.26 C 146.32 95.39 146.06 95.57 145.84 95.80 C 145.57 96.07 145.39 96.37 145.25 96.71 C 145.12 97.05 145.04 97.40 145.04 97.77 C 145.04 98.44 145.25 98.99 145.66 99.41 C 146.06 99.83 146.60 100.04 147.25 100.04 C 147.99 100.04 148.60 99.78 149.10 99.26 C 149.59 98.75 149.85 98.10 149.85 97.34 Z M 147.64 94.17 C 148.62 94.17 149.41 94.46 149.98 95.03 C 150.57 95.59 150.86 96.36 150.86 97.32 C 150.86 97.83 150.77 98.32 150.58 98.77 C 150.39 99.23 150.12 99.62 149.76 99.96 C 149.43 100.27 149.03 100.52 148.59 100.69 C 148.15 100.86 147.68 100.94 147.17 100.94 C 146.23 100.94 145.48 100.65 144.91 100.07 C 144.33 99.5 144.04 98.75 144.04 97.81 C 144.04 97.28 144.13 96.80 144.32 96.33 C 144.50 95.87 144.77 95.49 145.12 95.15 C 145.45 94.83 145.83 94.59 146.27 94.42 C 146.71 94.25 147.16 94.17 147.64 94.17 Z M 167.85 94.75 L 167.69 95.85 C 167.43 95.58 167.16 95.39 166.87 95.26 C 166.57 95.13 166.26 95.07 165.92 95.07 C 165.56 95.07 165.24 95.13 164.93 95.25 C 164.63 95.38 164.38 95.55 164.16 95.78 C 163.91 96.05 163.72 96.35 163.58 96.71 C 163.45 97.05 163.39 97.41 163.39 97.79 C 163.39 98.45 163.59 98.99 164.00 99.41 C 164.41 99.83 164.93 100.04 165.58 100.04 C 165.91 100.04 166.21 99.98 166.51 99.87 C 166.81 99.76 167.10 99.58 167.38 99.37 L 167.15 100.61 C 166.86 100.73 166.58 100.81 166.31 100.87 C 166.04 100.92 165.78 100.95 165.53 100.95 C 164.59 100.95 163.83 100.66 163.25 100.08 C 162.67 99.51 162.39 98.76 162.39 97.82 C 162.39 97.30 162.48 96.81 162.66 96.34 C 162.84 95.88 163.10 95.48 163.44 95.14 C 163.76 94.83 164.12 94.58 164.53 94.42 C 164.93 94.26 165.37 94.17 165.82 94.17 C 166.25 94.17 166.62 94.22 166.95 94.32 C 167.29 94.41 167.58 94.55 167.85 94.75 Z M 169.32 100.78 L 168.32 100.78 L 169.17 94.32 L 170.33 94.32 C 170.85 94.32 171.22 94.35 171.44 94.41 C 171.67 94.46 171.87 94.57 172.05 94.71 C 172.25 94.86 172.39 95.05 172.50 95.28 C 172.60 95.51 172.66 95.76 172.66 96.05 C 172.66 96.58 172.51 97.01 172.22 97.35 C 171.93 97.68 171.51 97.90 170.98 97.98 L 172.77 100.78 L 171.63 100.78 L 169.92 98.01 L 169.69 98.01 Z M 169.79 97.19 L 169.99 97.19 C 170.63 97.19 171.07 97.11 171.29 96.96 C 171.51 96.80 171.63 96.52 171.63 96.14 C 171.63 95.80 171.53 95.58 171.34 95.44 C 171.16 95.30 170.78 95.24 170.21 95.24 L 170.05 95.24 Z M 173.37 100.78 L 174.21 94.32 L 175.25 94.32 L 174.39 100.78 Z M 175.07 100.78 L 178.80 94.07 L 181.16 100.78 L 180.11 100.78 L 179.59 99.25 L 177.01 99.25 L 176.17 100.78 Z M 177.42 98.39 L 179.31 98.39 L 178.81 96.80 C 178.78 96.72 178.77 96.62 178.74 96.49 C 178.71 96.36 178.68 96.20 178.64 95.99 C 178.58 96.14 178.51 96.29 178.45 96.42 C 178.39 96.57 178.33 96.69 178.26 96.81 Z M 177.42 98.39 "/><path fill-rule="nonzero" fill="var(--logo-k,#111)" d="M 182.02 100.78 L 182.75 95.25 L 181.01 95.25 L 181.14 94.32 L 185.55 94.32 L 185.42 95.25 L 183.78 95.25 L 183.04 100.78 Z M 185.61 100.78 L 186.46 94.32 L 187.49 94.32 L 186.63 100.78 Z M 187.92 94.32 L 188.93 94.32 L 189.96 98.18 C 190.01 98.37 190.05 98.53 190.08 98.66 C 190.11 98.77 190.12 98.88 190.14 98.98 C 190.21 98.81 190.28 98.66 190.34 98.53 C 190.41 98.39 190.46 98.27 190.52 98.16 L 192.59 94.32 L 193.67 94.32 L 189.85 101.03 Z M 193.43 100.78 L 194.28 94.32 L 195.31 94.32 L 194.45 100.78 Z M 197.06 99.86 L 197.43 99.86 C 198.16 99.86 198.68 99.82 198.98 99.76 C 199.28 99.69 199.55 99.58 199.76 99.41 C 200.06 99.20 200.29 98.92 200.46 98.56 C 200.62 98.19 200.70 97.80 200.70 97.37 C 200.70 97.00 200.64 96.67 200.50 96.37 C 200.37 96.07 200.18 95.84 199.93 95.65 C 199.75 95.50 199.53 95.39 199.28 95.33 C 199.05 95.27 198.65 95.24 198.10 95.24 L 197.67 95.24 Z M 195.93 100.78 L 196.78 94.32 L 198.16 94.32 C 198.87 94.32 199.39 94.37 199.73 94.46 C 200.09 94.55 200.39 94.69 200.67 94.91 C 201.02 95.17 201.29 95.51 201.47 95.93 C 201.66 96.34 201.75 96.81 201.75 97.33 C 201.75 97.78 201.68 98.22 201.53 98.64 C 201.39 99.05 201.18 99.41 200.91 99.72 C 200.72 99.94 200.50 100.13 200.26 100.27 C 200.02 100.42 199.76 100.54 199.48 100.62 C 199.29 100.68 199.09 100.71 198.88 100.74 C 198.66 100.77 198.40 100.78 198.08 100.78 Z M 195.93 100.78 "/><path fill-rule="nonzero" fill="var(--logo-k,#111)" d="M 201.52 100.78 L 205.26 94.07 L 207.62 100.78 L 206.57 100.78 L 206.05 99.25 L 203.48 99.25 L 202.62 100.78 Z M 203.88 98.39 L 205.77 98.39 L 205.27 96.80 C 205.25 96.72 205.23 96.62 205.20 96.49 C 205.17 96.36 205.14 96.20 205.10 95.99 C 205.04 96.14 204.97 96.29 204.91 96.42 C 204.85 96.57 204.78 96.69 204.72 96.81 Z M 209.08 99.86 L 209.45 99.86 C 210.19 99.86 210.70 99.82 211.00 99.76 C 211.30 99.69 211.57 99.58 211.78 99.41 C 212.08 99.20 212.31 98.92 212.48 98.56 C 212.64 98.19 212.72 97.80 212.72 97.37 C 212.72 97.00 212.66 96.67 212.52 96.37 C 212.39 96.07 212.20 95.84 211.96 95.65 C 211.76 95.50 211.55 95.39 211.30 95.33 C 211.07 95.27 210.67 95.24 210.12 95.24 L 209.69 95.24 Z M 207.95 100.78 L 208.80 94.32 L 210.17 94.32 C 210.89 94.32 211.41 94.37 211.76 94.46 C 212.11 94.55 212.42 94.69 212.69 94.91 C 213.04 95.17 213.31 95.51 213.49 95.93 C 213.68 96.34 213.77 96.81 213.77 97.33 C 213.77 97.78 213.70 98.22 213.55 98.64 C 213.41 99.05 213.20 99.41 212.93 99.72 C 212.74 99.94 212.52 100.13 212.28 100.27 C 212.05 100.42 211.78 100.54 211.50 100.62 C 211.32 100.68 211.12 100.71 210.90 100.74 C 210.68 100.77 210.42 100.78 210.10 100.78 Z M 214.51 100.78 L 215.36 94.32 L 218.98 94.32 L 218.87 95.23 L 216.25 95.23 L 216.04 96.86 L 218.65 96.86 L 218.53 97.76 L 215.91 97.76 L 215.64 99.85 L 218.26 99.85 L 218.13 100.78 Z M 214.51 100.78 "/><path fill-rule="evenodd" fill="var(--logo-y,#F1C200)" d="M 259.02 68.86 C 259.11 69.01 259.13 68.98 259.35 69.02 L 261.39 69.62 C 261.95 69.89 262.23 70.23 262.41 70.82 C 262.49 71.11 262.54 71.31 262.59 71.66 L 262.74 73.03 C 262.75 73.22 262.71 73.37 262.91 73.39 C 263.12 73.40 263.13 72.94 263.21 72.64 C 263.29 72.34 263.34 72.08 263.42 71.78 C 263.51 71.45 263.77 70.54 264.08 70.30 C 264.49 69.98 264.69 69.89 265.16 69.77 L 265.69 69.66 C 266.00 69.62 267.05 69.48 267.30 69.49 C 267.32 69.13 267.25 69.29 266.60 69.11 C 266.40 69.05 266.32 69.08 266.13 69.01 L 265.29 68.75 C 265.12 68.69 265.05 68.67 264.89 68.60 C 264.65 68.48 264.45 68.28 264.28 68.09 C 263.80 67.55 263.73 66.31 263.66 65.62 C 263.59 65 263.64 64.86 263.42 64.78 C 263.28 64.87 263.29 64.91 263.27 65.13 C 263.25 65.39 263.23 65.37 263.17 65.58 C 263.08 65.92 263.03 66.16 262.95 66.48 C 262.66 67.65 262.19 68.23 261.02 68.47 L 260.95 68.49 C 260.82 68.52 260.99 68.49 260.85 68.51 L 260.07 68.63 C 259.41 68.77 259.12 68.56 259.02 68.86 "/><path fill-rule="evenodd" fill="var(--logo-k,#111)" d="M 156.76 95.73 C 157.77 95.73 158.59 96.54 158.59 97.55 C 158.59 98.56 157.77 99.37 156.76 99.37 C 155.76 99.37 154.94 98.56 154.94 97.55 C 154.94 96.54 155.76 95.73 156.76 95.73 "/></svg></a>
+    <ul class="navlinks" id="navlinks">
+      <li><a href="#inicio">Início</a></li>
+      <li><a href="#produtos">Produtos</a></li>
+      <li><a href="#ideias">Ideias</a></li>
+      <li><a href="#sobre">Sobre</a></li>
+      <li><a href="#clube">Clube</a></li>
+      <li><a href="#novidades">Novidades</a></li>
+      <li><a href="#contato">Contato</a></li>
+      <li><a href="#ajuda">Ajuda</a></li>
+    </ul>
+    <div class="hdr-actions">
+      <button class="icon-btn" id="openWish" aria-label="Abrir lista de desejos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+        <span class="t">Desejos</span><span class="badge" id="wishCount">0</span>
+      </button>
+      <a class="btn btn-dark btn-sm" href="#produtos">Comprar</a>
+      <button class="icon-btn menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobnav" aria-label="Abrir menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+  <nav class="mobnav wrap" id="mobnav" aria-label="Menu">
+    <ul>
+      <li><a href="#inicio">Início</a></li><li><a href="#produtos">Nossos Produtos</a></li><li><a href="#ideias">Ideias de Presente</a></li><li><a href="#sobre">Por que comprar conosco</a></li><li><a href="#clube">Clube Fidelidade</a></li><li><a href="#novidades">Novidades e Ofertas</a></li><li><a href="#contato">Contato</a></li><li><a href="#ajuda">Ajuda</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">Presentes em São Luís – MA</span>
+      <h1 id="heroTitle">Todo presente guarda um <em>“lembrei de você”</em>.</h1>
+      <p class="lead">Escolhemos, personalizamos e embrulhamos com carinho para que abrir o pacote seja tão especial quanto quem vai receber.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-gold" href="#produtos">Escolher um presente</a>
+        <a class="btn btn-line" href="#ideias">Preciso de ideias</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><b data-count="12">12</b><span>presentes no catálogo</span></div>
+        <div class="stat"><b data-count="5">5</b><span>ocasiões especiais</span></div>
+        <div class="stat"><b>Grátis</b><span>cartão em todo pedido</span></div>
+      </div>
+    </div>
+    <div class="stage" aria-label="Vitrine de produtos">
+      <div class="ring"></div><div class="ring r2"></div><div class="disc"></div>
+      <div class="showcase" id="showcase"></div>
+      <div class="orbit o1" id="o1"></div><div class="orbit o2" id="o2"></div><div class="orbit o3" id="o3"></div>
+      <div class="tag t1"><span class="hand">com amor ♡</span></div>
+      <div class="show-label" id="showLabel"><b>Caixa Surpresa Amor</b><span>R$ 149,90</span></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true"><div class="track" id="mq"></div></div>
+
+<!-- BENEFÍCIOS -->
+<section class="sec">
+  <div class="wrap">
+    <div class="trio">
+      <div class="feat rv"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></div><h3>Presentes que tocam o coração</h3><p>Cada peça é escolhida pensando na emoção de quem recebe.</p></div>
+      <div class="feat rv"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4z"/><path d="M14 6l3 3"/></svg></div><h3>Personalização única</h3><p>Nome, foto, data ou uma frase só de vocês. Ninguém terá um igual.</p></div>
+      <div class="feat rv"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></div><h3>Entrega rápida em São Luís-MA</h3><p>Levamos até a porta com hora combinada. Enviamos para todo o Brasil.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- MAIS VENDIDOS (carrossel) -->
+<section class="sec tint">
+  <div class="wrap">
+    <div class="head split rv">
+      <div><span class="eyebrow">Mais amados</span><h2>Mais vendidos e novidades</h2></div>
+      <div class="car-ctl"><button class="round" id="prev" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button><button class="round" id="next" aria-label="Próximo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button></div>
+    </div>
+    <div class="carousel" id="carousel"></div>
+    <div class="progress"><i id="prog"></i></div>
+  </div>
+</section>
+
+<!-- OCASIÕES -->
+<section class="sec">
+  <div class="wrap">
+    <div class="head center rv"><span class="eyebrow">Ideias por ocasião</span><h2>Qual é o motivo da surpresa?</h2></div>
+    <div class="occ" id="occ"></div>
+  </div>
+</section>
+
+<!-- PRODUTOS -->
+<section class="sec tint" id="produtos">
+  <div class="wrap">
+    <div class="perso rv z" id="personalizados">
+      <div style="display:grid;gap:1rem">
+        <span class="eyebrow">Destaque especial</span>
+        <h2>Presentes Personalizados</h2>
+        <p>O que transforma um objeto em lembrança é o detalhe que só vocês entendem. Escreva:</p>
+        <p class="typed" id="typed" aria-live="off"></p>
+        <ul><li>Nomes, iniciais e datas</li><li>Fotos em canecas, quadros e caixas</li><li>Frases escritas à mão</li></ul>
+        <div><button class="btn btn-dark" id="showPerso">Ver personalizados</button></div>
+      </div>
+      <div class="perso-stage" id="persoStage" aria-hidden="true"></div>
+    </div>
+
+    <div class="head rv"><span class="eyebrow">Nossos produtos</span><h2>Encontre o presente certo</h2><p class="lead">Filtre por ocasião, para quem e valor. Toque no coração para salvar.</p></div>
+    <div class="chipbar"><span class="lbl">Ocasião</span><span class="chips" data-filter="occ"></span></div>
+    <div class="chipbar"><span class="lbl">Para quem</span><span class="chips" data-filter="para"></span></div>
+    <div class="chipbar"><span class="lbl">Valor</span><span class="chips" data-filter="price"></span></div>
+    <div class="shop-top">
+      <span class="count-txt" id="countTxt"></span>
+      <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+        <label class="switch" for="fPerso"><input type="checkbox" id="fPerso"> Só personalizados</label>
+        <select id="sortSel" aria-label="Ordenar"><option value="pop">Mais vendidos</option><option value="new">Novidades</option><option value="low">Menor preço</option><option value="high">Maior preço</option></select>
+        <button class="chip" id="clearF">Limpar</button>
+      </div>
+    </div>
+    <div class="grid" id="catalog"></div>
+  </div>
+</section>
+
+<!-- IDEIAS -->
+<section class="sec" id="ideias">
+  <div class="wrap">
+    <div class="head rv"><span class="eyebrow">Ideias de presente</span><h2>Curadoria para quem você ama</h2></div>
+    <div class="tabs" role="tablist" id="curTabs"></div>
+    <div class="curation">
+      <div class="intro" id="curIntro"></div>
+      <div class="mini-grid" id="curGrid"></div>
+    </div>
+
+    <div class="tips">
+      <div class="tipcard rv"><span class="hand">Dica 1</span><h3>Do que a pessoa fala sempre?</h3><p>Café, plantas, viagens, um time. O assunto preferido é a melhor pista.</p></div>
+      <div class="tipcard rv"><span class="hand">Dica 2</span><h3>Ela vai usar ou guardar?</h3><p>Uso diário pede algo prático. Lembrança pede algo personalizado.</p></div>
+      <div class="tipcard rv"><span class="hand">Dica 3</span><h3>Qual memória vocês dividem?</h3><p>Uma data, uma foto, uma frase. Isso vale mais que o preço.</p></div>
+    </div>
+
+    <div class="subhead rv"><span class="eyebrow">O que cada presente diz</span></div>
+    <div class="meaning">
+      <div class="rv"><b>Caneca personalizada</b><p>“Penso em você logo no primeiro café.”</p></div>
+      <div class="rv"><b>Quadro de fotos</b><p>“Nossa história merece ficar à vista.”</p></div>
+      <div class="rv"><b>Kit spa</b><p>“Você merece uma pausa.”</p></div>
+      <div class="rv"><b>Cesta de café da manhã</b><p>“Quero começar o seu dia com um sorriso.”</p></div>
+      <div class="rv"><b>Luminária com nome</b><p>“Você ilumina a minha casa.”</p></div>
+      <div class="rv"><b>Caixa surpresa</b><p>“Cada detalhe foi pensado em você.”</p></div>
+    </div>
+
+    <div class="subhead rv"><span class="eyebrow">Por orçamento</span></div>
+    <div class="budget">
+      <div class="b rv"><span class="range">Até R$ 50</span><ul><li>Chaveiro personalizado</li><li>Caneca com foto</li></ul><button class="btn btn-line btn-sm" data-price="0-50">Ver opções</button></div>
+      <div class="b rv"><span class="range">R$ 50 a R$ 120</span><ul><li>Quadro de memórias</li><li>Coração de bombons</li><li>Luminária com nome</li></ul><button class="btn btn-line btn-sm" data-price="50-120">Ver opções</button></div>
+      <div class="b rv"><span class="range">Acima de R$ 120</span><ul><li>Cesta café da manhã</li><li>Caixa surpresa</li><li>Kit Natal em família</li></ul><button class="btn btn-line btn-sm" data-price="120-9999">Ver opções</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section class="sec tint" id="sobre">
+  <div class="wrap">
+    <div class="story">
+      <div class="story-copy rv l">
+        <span class="eyebrow">Nossa história</span>
+        <h2>Uma loja de São Luís feita para quem gosta de cuidar dos outros</h2>
+        <p>A PresentYá nasceu de uma ideia simples: o presente certo faz alguém se sentir lembrado. Por isso cada pedido passa pelas nossas mãos, do laço ao cartão.</p>
+        <p>Aqui você conversa com gente de verdade, pelo WhatsApp, e recebe ajuda para escolher. Estilo e criatividade em cada detalhe.</p>
+      </div>
+      <div class="letter rv r">
+        <p class="hand">Querido cliente,</p>
+        <p style="margin-top:.6rem;color:var(--muted)">cada embrulho que sai daqui leva um pouco do nosso carinho. Obrigado por escolher a PresentYá para fazer alguém feliz.</p>
+        <p class="hand" style="margin-top:1rem">Equipe PresentYá</p>
+      </div>
+    </div>
+    <div class="diffs">
+      <div class="diff rv"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="9" width="16" height="11" rx="1"/><path d="M12 9v11M4 13h16M12 9c-2-4-6-3-5 0M12 9c2-4 6-3 5 0"/></svg></div><h3>Embalagem especial</h3><p>Papel, fita e laço escolhidos para a ocasião.</p></div>
+      <div class="diff rv"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg></div><h3>Cartão grátis</h3><p>Sua mensagem num cartão bonito, sem custo.</p></div>
+      <div class="diff rv"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5h16v11H8l-4 4z"/></svg></div><h3>Atendimento próximo</h3><p>Fale direto com a loja e aprove a arte antes.</p></div>
+      <div class="diff rv"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></svg></div><h3>Entrega na cidade</h3><p>São Luís com hora marcada, e envio para o Brasil.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section class="sec">
+  <div class="wrap"><div class="head center rv"><span class="eyebrow">Quem recebeu, conta</span><h2>Depoimentos de clientes</h2><span class="note-ex">Modelos: troque pelos comentários reais dos seus clientes</span></div></div>
+  <div class="tmarquee"><div class="track" id="tq"></div></div>
+  <div class="wrap seals">
+    <span class="seal rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Compra segura</span>
+    <span class="seal rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/></svg>Entrega rápida</span>
+    <span class="seal rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="9" width="16" height="11" rx="1"/><path d="M12 9v11M4 13h16"/></svg>Embalagem especial</span>
+  </div>
+</section>
+
+<!-- CLUBE -->
+<section class="sec rose" id="clube">
+  <div class="wrap club">
+    <div class="rv l">
+      <div class="head" style="margin-bottom:1rem"><span class="eyebrow">Clube PresentYá</span><h2>A cada compra, você ganha pontos que viram descontos e mimos!</h2></div>
+      <div class="perks">
+        <div class="perk"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 19L19 5M7 7h.01M17 17h.01"/></svg></span><p><b>Descontos progressivos</b>Quanto mais compra, maior o desconto do seu nível.</p></div>
+        <div class="perk"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="9" width="16" height="11" rx="1"/><path d="M12 9v11M4 13h16"/></svg></span><p><b>Surpresa na 5ª compra</b>Completou a cartela, ganhou um mimo.</p></div>
+        <div class="perk"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg></span><p><b>Acesso antecipado</b>Veja as novidades antes de todo mundo.</p></div>
+        <div class="perk"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11h16v9H4zM12 11v9M6 11V8h12v3M12 8V5"/></svg></span><p><b>Mês do aniversário</b>Uma oferta especial esperando por você.</p></div>
+      </div>
+      <form class="form" id="clubForm" style="margin-top:1.8rem">
+        <h3>Cadastre-se e comece a acumular agora. É grátis!</h3>
+        <div class="row">
+          <label for="cNome">Nome<input id="cNome" required autocomplete="name" placeholder="Como podemos te chamar?"></label>
+          <label for="cAniv">Aniversário<input id="cAniv" type="date"></label>
+        </div>
+        <button class="btn btn-wa" type="submit">Quero entrar no Clube</button>
+        <small>O WhatsApp abre com seus dados. É só enviar.</small>
+      </form>
+    </div>
+    <div class="stampcard rv r" aria-label="Cartela de fidelidade de exemplo">
+      <div class="top"><h3>Sua cartela</h3><span class="hand">5ª compra = surpresa</span></div>
+      <div class="stamps" id="stamps">
+        <div class="stamp">1ª</div><div class="stamp">2ª</div><div class="stamp">3ª</div><div class="stamp">4ª</div>
+        <div class="stamp gift" title="Presente surpresa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="9" width="16" height="11" rx="1"/><path d="M12 9v11M4 13h16M12 9c-2-4-6-3-5 0M12 9c2-4 6-3 5 0"/></svg></div>
+      </div>
+      <p style="color:var(--muted);font-size:.9rem">R$ 1 em compras = 1 ponto · 100 pontos = R$ 10 de desconto</p>
+      <div class="tiers">
+        <div class="tier"><b>5%</b><small>Nível Laço<br>da 2ª compra</small></div>
+        <div class="tier"><b>8%</b><small>Nível Fita<br>da 5ª compra</small></div>
+        <div class="tier"><b>10%</b><small>Nível Ouro<br>da 10ª compra</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NOVIDADES -->
+<section class="sec" id="novidades">
+  <div class="wrap news">
+    <div class="rv l" style="display:grid;gap:1.2rem">
+      <span class="eyebrow">Novidades e ofertas</span>
+      <h2>Receba ideias de presentes e descontos exclusivos por e-mail</h2>
+      <p style="color:var(--muted)">Não enviamos spam, apenas coisas boas 💌</p>
+      <form class="form" id="newsForm">
+        <label for="nEmail">Seu melhor e-mail<input id="nEmail" type="email" required autocomplete="email" placeholder="voce@email.com"></label>
+        <button class="btn btn-gold" type="submit">Quero receber</button>
+        <div class="ok" id="newsOk" hidden></div>
+      </form>
+    </div>
+    <div class="rv r" style="display:grid;gap:1rem">
+      <h3>Esta semana na loja</h3>
+      <div class="drops" id="drops"></div>
+      <p class="hand">Toda semana uma nova oferta limitada</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO -->
+<section class="sec tint" id="contato">
+  <div class="wrap">
+    <div class="head rv"><span class="eyebrow">Contato e localização</span><h2>Fale com a PresentYá</h2></div>
+    <div class="contact">
+      <div class="cbox rv"><span class="k">WhatsApp</span><span class="big">(98) 98408-4256</span><a class="btn btn-wa btn-sm" href="https://wa.me/5598984084256?text=Ol%C3%A1%2C%20PresentY%C3%A1!%20Vim%20pelo%20site." target="_blank" rel="noopener">Abrir conversa</a><button class="copy" data-copy="+55 98 98408-4256">Copiar número</button></div>
+      <div class="cbox rv"><span class="k">E-mail</span><span class="big">contato@presentya.com.br</span><button class="copy" data-copy="contato@presentya.com.br">Copiar e-mail</button><p>Respondemos em até 1 dia útil.</p></div>
+      <div class="cbox rv"><span class="k">Instagram</span><span class="big">@presentya_</span><a class="btn btn-line btn-sm" href="https://instagram.com/presentya_" target="_blank" rel="noopener">Ver o Instagram</a></div>
+      <div class="cbox rv"><span class="k">Horário</span><span class="big">Seg a Sáb, 9h às 19h</span><p>Pedidos pelo site a qualquer hora.</p></div>
+      <div class="cbox rv"><span class="k">Entregas</span><span class="big">São Luís – MA</span><p>Entrega na cidade com hora marcada e envio para todo o Brasil.</p></div>
+      <div class="cbox rv"><span class="k">Site</span><span class="big">presentya.com.br</span><p>Salve nos favoritos para ver as novidades.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- AJUDA -->
+<section class="sec" id="ajuda">
+  <div class="wrap">
+    <div class="head rv" id="como-comprar"><span class="eyebrow">Como comprar</span><h2>Do clique ao laço em 4 passos</h2></div>
+    <div class="howto">
+      <div class="s rv"><span class="n">1</span><b>Escolha</b><p>Navegue e salve seus favoritos no coração.</p></div>
+      <div class="s rv"><span class="n">2</span><b>Comprar Agora</b><p>O WhatsApp abre com o produto. Conte para quem é.</p></div>
+      <div class="s rv"><span class="n">3</span><b>Personalize e pague</b><p>Envie nome ou foto, aprove a arte e pague.</p></div>
+      <div class="s rv"><span class="n">4</span><b>Receba</b><p>Embrulhado, com cartão, no horário combinado.</p></div>
+    </div>
+    <div class="help2">
+      <div class="policy rv" id="entrega">
+        <h3 style="font-size:1.6rem">Entrega e Devolução</h3>
+        <h4>Entrega em São Luís – MA</h4>
+        <ul><li>Pronta entrega: no mesmo dia ou no seguinte, conforme o horário do pedido.</li><li>Personalizados: prazo contado a partir da aprovação da arte.</li><li>A taxa varia por bairro e é informada antes do pagamento.</li></ul>
+        <h4>Envio para todo o Brasil</h4>
+        <ul><li>Correios ou transportadora, com código de rastreio.</li><li>Prazo e frete calculados pelo CEP.</li></ul>
+        <h4>Trocas e devoluções</h4>
+        <ul><li>Compras pela internet podem ser canceladas em até 7 dias após o recebimento, conforme o Código de Defesa do Consumidor.</li><li>Personalizados são feitos sob medida e só são trocados em caso de defeito ou erro de produção.</li><li>Recebeu com defeito? Envie fotos pelo WhatsApp em até 7 dias.</li></ul>
+      </div>
+      <div class="rv" id="faq">
+        <h3 style="font-size:1.6rem;margin-bottom:.4rem">Perguntas frequentes</h3>
+        <details><summary>Quanto tempo leva um personalizado?</summary><p>Informamos o prazo exato no atendimento. A produção começa depois que você aprova a arte.</p></details>
+        <details><summary>Posso enviar direto para outra pessoa?</summary><p>Sim. Informe o endereço de quem recebe e a mensagem do cartão. Não colocamos preço na embalagem.</p></details>
+        <details><summary>O cartão é mesmo grátis?</summary><p>Sim, todo pedido pode levar um cartão com a sua mensagem.</p></details>
+        <details><summary>Quais as formas de pagamento?</summary><p>Pix e cartão. Confirme opções e parcelamento no WhatsApp.</p></details>
+        <details><summary>Fazem kits para empresas?</summary><p>Sim, com a identidade da sua empresa, para clientes, equipes e eventos.</p></details>
+        <details><summary>Como funciona a lista de desejos?</summary><p>Toque no coração do produto. A lista fica salva neste navegador e pode ser enviada pelo WhatsApp.</p></details>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<section class="comeback" aria-label="Convite">
+  <div class="wrap"><p class="hand">Não deixe de conferir nossas novidades: sempre tem algo especial chegando!</p><a class="btn btn-line btn-sm" href="#novidades">Ver novidades</a></div>
+</section>
+
+<footer class="site">
+  <div class="wrap foot">
+    <div style="display:grid;gap:.9rem;align-content:start;justify-items:start"><a class="foot-logo" href="#inicio" aria-label="PresentYá, início"><svg class="brand-svg" viewBox="54.1 29.9 230.7 73.4" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PresentYá — Estilo • Criatividade"><path fill-rule="evenodd" fill="var(--logo-w,#FEFEFE)" d="M 242.05 96.35 L 250.78 97.96 C 255.84 98.90 260.91 99.83 265.98 100.77 C 268.25 101.19 269.69 101.31 271.76 99.44 C 273.40 97.96 273.61 95.97 274.17 92.94 C 276.14 82.28 275.37 86.45 277.34 75.79 C 278.38 75.89 279.35 75.37 279.92 74.65 C 280.94 73.37 281.43 68.99 281.80 67.08 C 282.79 61.86 278.35 61.96 275.03 61.35 C 272.40 60.86 269.76 60.37 267.13 59.89 L 267.20 59.53 C 269.20 59.85 274.75 58.25 276.90 56.79 C 280.59 54.29 280.44 50.53 279.03 47.02 C 278.17 44.88 277.26 43.08 275.94 41.29 C 273.17 37.51 267.67 38.05 263.63 42 L 261.45 44.44 C 259.84 46.40 256.74 51.80 256.12 54.12 C 255.41 53.80 253.98 53.35 253.19 53.58 C 253.04 49.12 252.37 43.29 250.42 39.48 C 249.36 37.42 248.17 35.62 246.09 34.49 C 241.29 31.87 237.26 35.51 234.03 39.01 C 232.55 40.62 230.85 42.88 231.47 45.88 C 231.72 47.14 232.18 48.00 232.87 48.93 C 233.53 49.83 234.39 50.53 235.21 51.30 C 236.14 52.16 238.42 53.55 239.66 54.17 C 240.52 54.61 240.76 54.53 241.19 55.10 L 229.33 52.91 C 227.80 52.61 227.08 52.63 226.10 53.28 C 224.08 54.64 224.18 56.78 223.57 60.06 C 223.28 61.62 222.92 62.76 223.21 63.93 C 223.44 64.91 224.15 65.86 225.29 66.17 C 223.33 76.77 224.11 72.55 222.15 83.15 C 221.53 86.52 221.01 87.75 221.95 90.18 C 222.29 91.07 222.94 91.81 223.65 92.39 C 224.51 93.09 225.33 93.27 226.80 93.54 Z M 238.68 40.80 C 238.96 39.29 239.50 37.59 241.34 37.93 C 243.46 38.32 245.01 39.42 246.02 40.64 C 247.13 41.98 248.01 43.34 248.76 44.91 C 249.76 46.99 252.03 53.14 251.63 55.34 C 250.44 54.81 241.76 47.5 240.50 45.58 C 239.80 44.52 238.37 42.44 238.68 40.80 Z M 256.78 56.29 C 256.89 55.27 256.58 55.90 257.19 55.09 C 257.21 55.06 257.25 55.02 257.28 54.98 L 257.98 53.96 C 258.54 53.18 259.03 52.48 259.57 51.76 C 267.82 40.73 275.08 42.84 274.44 46.29 C 273.96 48.86 273.07 49.54 270.93 51.11 C 269.96 51.82 267.63 52.85 266.45 53.28 C 264.85 53.86 263.39 54.36 261.75 54.87 C 260.67 55.21 257.62 56.25 256.78 56.29 "/><path fill-rule="nonzero" fill="var(--logo-k,#111)" d="M 56.76 97.69 L 62.05 97.69 C 62.5 97.69 62.81 97.42 62.81 96.98 L 62.81 85.45 L 62.94 85.45 C 64.19 87.58 66.55 88.66 69.26 88.66 C 75.04 88.66 79.32 83.89 79.32 77.35 C 79.32 70.77 75.04 66.01 69.17 66.01 C 66.41 66.01 64.05 67.12 62.85 69.21 L 62.67 69.21 L 62.67 67.34 C 62.67 66.90 62.41 66.58 61.96 66.58 L 56.76 66.58 C 56.31 66.58 56.05 66.90 56.05 67.34 L 56.05 96.98 C 56.05 97.42 56.31 97.69 56.76 97.69 Z M 62.58 77.35 C 62.58 74.33 64.45 72.19 67.48 72.19 C 70.55 72.19 72.42 74.33 72.42 77.35 C 72.42 80.33 70.55 82.51 67.48 82.51 C 64.45 82.51 62.58 80.33 62.58 77.35 Z M 84.16 88.08 L 89.46 88.08 C 89.91 88.08 90.21 87.81 90.21 87.36 L 90.21 79.53 C 90.21 74.86 92.26 72.73 96.00 72.73 C 96.49 72.73 96.98 72.73 97.47 72.82 C 97.96 72.86 98.23 72.64 98.23 72.15 L 98.23 67.12 C 98.23 66.72 98.05 66.36 97.64 66.27 C 97.25 66.23 96.84 66.19 96.44 66.19 C 93.73 66.19 91.28 67.52 90.13 70.23 L 90.04 70.23 L 90.04 67.34 C 90.04 66.90 89.77 66.58 89.28 66.58 L 84.16 66.58 C 83.72 66.58 83.45 66.90 83.45 67.34 L 83.45 87.36 C 83.45 87.81 83.72 88.08 84.16 88.08 "/><path fill-rule="nonzero" fill="var(--logo-k,#111)" d="M 112.02 88.66 C 117.71 88.66 121.5 85.67 122.65 81.67 C 122.78 81.31 122.47 81.05 121.98 81.05 L 117.00 81.05 C 116.64 81.05 116.38 81.27 116.20 81.62 C 115.58 82.74 114.15 83.41 112.10 83.41 C 109.21 83.41 107.48 82.07 106.99 79.17 L 122.16 79.17 C 122.83 79.17 123.23 78.91 123.23 78.07 L 123.23 77.35 C 123.23 70.59 118.51 66.01 111.84 66.01 C 104.99 66.01 100.27 70.86 100.27 77.40 C 100.27 83.94 104.90 88.66 112.02 88.66 Z M 107.08 75.04 C 107.70 72.46 109.39 71.21 111.93 71.21 C 114.33 71.21 115.89 72.28 116.42 75.04 Z M 136.26 88.66 C 142.54 88.66 146.14 85.94 146.14 81.44 C 146.14 77.62 143.65 75.48 139.20 75 L 136.26 74.64 C 133.69 74.33 132.93 73.79 132.93 72.86 C 132.93 71.75 133.95 70.94 136.09 70.94 C 137.87 70.94 138.94 71.57 139.29 72.68 C 139.42 73.17 139.65 73.35 140.09 73.35 L 145.21 73.35 C 145.70 73.35 145.96 73.08 145.87 72.59 C 145.25 68.32 142.09 66.01 136.13 66.01 C 129.55 66.01 126.25 68.90 126.25 73.04 C 126.25 76.46 128.57 78.91 133.28 79.44 L 136.22 79.76 C 138.67 80.07 139.47 80.56 139.47 81.76 C 139.47 83.05 138.36 83.76 136.22 83.76 C 134.49 83.76 133.33 83.18 132.93 82.11 C 132.75 81.71 132.57 81.49 132.13 81.49 L 126.92 81.49 C 126.43 81.49 126.12 81.80 126.25 82.25 C 126.88 86.21 130.21 88.66 136.26 88.66 Z M 160.87 88.66 C 166.57 88.66 170.35 85.67 171.50 81.67 C 171.64 81.31 171.33 81.05 170.83 81.05 L 165.85 81.05 C 165.5 81.05 165.23 81.27 165.05 81.62 C 164.43 82.74 163.01 83.41 160.96 83.41 C 158.07 83.41 156.33 82.07 155.84 79.17 L 171.01 79.17 C 171.68 79.17 172.08 78.91 172.08 78.07 L 172.08 77.35 C 172.08 70.59 167.37 66.01 160.69 66.01 C 153.84 66.01 149.12 70.86 149.12 77.40 C 149.12 83.94 153.75 88.66 160.87 88.66 Z M 155.93 75.04 C 156.55 72.46 158.25 71.21 160.78 71.21 C 163.18 71.21 164.74 72.28 165.28 75.04 Z M 176.93 88.08 L 182.23 88.08 C 182.67 88.08 182.98 87.81 182.98 87.36 L 182.98 76.77 C 182.98 73.79 184.54 72.24 187.12 72.24 C 189.57 72.24 190.90 73.70 190.90 76.73 L 190.90 87.36 C 190.90 87.81 191.17 88.08 191.62 88.08 L 196.95 88.08 C 197.40 88.08 197.67 87.81 197.67 87.36 L 197.67 75 C 197.67 69.34 194.60 66.01 189.52 66.01 C 186.50 66.01 184.10 67.21 182.94 69.43 L 182.85 69.43 L 182.85 67.34 C 182.85 66.90 182.54 66.58 182.09 66.58 L 176.93 66.58 C 176.49 66.58 176.22 66.90 176.22 67.34 L 176.22 87.36 C 176.22 87.81 176.49 88.08 176.93 88.08 Z M 213.73 88.66 C 215.46 88.66 216.93 88.43 218.26 87.85 C 218.58 87.72 218.76 87.45 218.76 87.05 L 218.76 82.56 C 218.76 82.02 218.40 81.85 217.91 82.02 C 217.07 82.38 216.22 82.51 215.24 82.51 C 212.62 82.51 211.55 81.53 211.55 78.87 L 211.55 72.46 L 217.87 72.46 C 218.31 72.46 218.58 72.15 218.58 71.70 L 218.58 67.34 C 218.58 66.90 218.31 66.58 217.87 66.58 L 211.55 66.58 L 211.55 61.42 C 211.55 60.98 211.28 60.67 210.83 60.67 L 205.54 60.67 C 205.05 60.67 204.78 60.98 204.78 61.42 L 204.78 66.58 L 201.32 66.58 C 200.87 66.58 200.56 66.90 200.56 67.34 L 200.56 71.70 C 200.56 72.15 200.87 72.46 201.32 72.46 L 204.78 72.46 L 204.78 79.80 C 204.78 85.89 207.76 88.66 213.73 88.66 "/><path fill-rule="nonzero" fill="var(--logo-y,#F1C200)" d="M 234.73 88.25 L 239.57 89.14 C 239.94 89.21 240.20 89.03 240.27 88.66 L 241.96 79.49 L 253.76 65.95 C 254.10 65.56 253.97 65.23 253.5 65.14 L 248.10 64.15 C 247.80 64.09 247.53 64.16 247.32 64.46 L 240.06 73.14 L 239.99 73.12 L 236.35 62.43 C 236.22 62.07 235.99 61.91 235.69 61.86 L 230.30 60.86 C 229.82 60.77 229.58 61.03 229.76 61.52 L 235.94 78.38 L 234.25 87.55 C 234.18 87.92 234.36 88.18 234.73 88.25 "/><path fill-rule="nonzero" fill="var(--logo-y,#F1C200)" d="M 255.60 92.60 C 257.87 93.01 259.98 92.5 261.33 90.92 L 261.41 90.94 L 261.12 92.51 C 261.05 92.88 261.23 93.14 261.60 93.21 L 265.85 94 C 266.22 94.07 266.48 93.89 266.55 93.52 L 269.60 77.00 C 269.67 76.63 269.5 76.33 269.13 76.27 L 264.87 75.48 C 264.50 75.41 264.23 75.63 264.17 76 L 263.88 77.54 L 263.77 77.52 C 263.10 75.61 261.36 74.34 259.05 73.91 C 254.17 73.01 249.96 76.30 248.95 81.73 C 247.96 87.12 250.72 91.69 255.60 92.60 Z M 254.64 82.78 C 255.10 80.28 257.01 78.81 259.46 79.26 C 261.96 79.73 263.21 81.78 262.75 84.28 C 262.30 86.73 260.39 88.24 257.89 87.78 C 255.43 87.33 254.19 85.24 254.64 82.78 "/><path fill-rule="nonzero" fill="var(--logo-k,#111)" d="M 123.44 100.78 L 124.29 94.32 L 127.92 94.32 L 127.80 95.23 L 125.18 95.23 L 124.97 96.86 L 127.58 96.86 L 127.46 97.76 L 124.84 97.76 L 124.57 99.85 L 127.19 99.85 L 127.07 100.78 Z M 127.97 99.67 L 128.68 99.08 C 128.85 99.43 129.05 99.69 129.25 99.85 C 129.45 100.00 129.69 100.08 129.96 100.08 C 130.31 100.08 130.58 99.98 130.80 99.78 C 131.00 99.58 131.11 99.32 131.11 99.00 C 131.11 98.77 131.06 98.58 130.95 98.42 C 130.83 98.27 130.64 98.10 130.35 97.94 C 130.30 97.91 130.21 97.86 130.09 97.79 C 129.61 97.53 129.29 97.30 129.12 97.11 C 129.00 96.98 128.91 96.83 128.85 96.65 C 128.78 96.48 128.76 96.29 128.76 96.09 C 128.76 95.52 128.94 95.06 129.31 94.70 C 129.67 94.35 130.15 94.17 130.73 94.17 C 131.13 94.17 131.48 94.25 131.77 94.41 C 132.07 94.57 132.32 94.82 132.51 95.13 L 131.90 95.70 C 131.75 95.47 131.59 95.30 131.42 95.18 C 131.24 95.06 131.04 95.01 130.82 95.01 C 130.51 95.01 130.25 95.10 130.05 95.29 C 129.86 95.47 129.76 95.71 129.76 96.00 C 129.76 96.35 130.05 96.69 130.61 96.98 C 130.75 97.07 130.86 97.12 130.93 97.17 C 131.37 97.42 131.67 97.68 131.85 97.95 C 132.03 98.22 132.12 98.56 132.12 98.96 C 132.12 99.56 131.92 100.05 131.54 100.41 C 131.14 100.77 130.61 100.95 129.93 100.95 C 129.47 100.95 129.08 100.84 128.76 100.64 C 128.43 100.42 128.17 100.10 127.97 99.67 Z M 134.08 100.78 L 134.81 95.25 L 133.07 95.25 L 133.19 94.32 L 137.60 94.32 L 137.47 95.25 L 135.83 95.25 L 135.10 100.78 Z M 137.66 100.78 L 138.51 94.32 L 139.54 94.32 L 138.68 100.78 Z M 140.16 100.78 L 141.01 94.32 L 142.02 94.32 L 141.31 99.78 L 143.72 99.78 L 143.58 100.78 Z M 140.16 100.78 "/><path fill-rule="nonzero" fill="var(--logo-k,#111)" d="M 149.85 97.34 C 149.85 96.66 149.64 96.11 149.23 95.69 C 148.82 95.28 148.27 95.07 147.59 95.07 C 147.26 95.07 146.93 95.13 146.63 95.26 C 146.32 95.39 146.06 95.57 145.84 95.80 C 145.57 96.07 145.39 96.37 145.25 96.71 C 145.12 97.05 145.04 97.40 145.04 97.77 C 145.04 98.44 145.25 98.99 145.66 99.41 C 146.06 99.83 146.60 100.04 147.25 100.04 C 147.99 100.04 148.60 99.78 149.10 99.26 C 149.59 98.75 149.85 98.10 149.85 97.34 Z M 147.64 94.17 C 148.62 94.17 149.41 94.46 149.98 95.03 C 150.57 95.59 150.86 96.36 150.86 97.32 C 150.86 97.83 150.77 98.32 150.58 98.77 C 150.39 99.23 150.12 99.62 149.76 99.96 C 149.43 100.27 149.03 100.52 148.59 100.69 C 148.15 100.86 147.68 100.94 147.17 100.94 C 146.23 100.94 145.48 100.65 144.91 100.07 C 144.33 99.5 144.04 98.75 144.04 97.81 C 144.04 97.28 144.13 96.80 144.32 96.33 C 144.50 95.87 144.77 95.49 145.12 95.15 C 145.45 94.83 145.83 94.59 146.27 94.42 C 146.71 94.25 147.16 94.17 147.64 94.17 Z M 167.85 94.75 L 167.69 95.85 C 167.43 95.58 167.16 95.39 166.87 95.26 C 166.57 95.13 166.26 95.07 165.92 95.07 C 165.56 95.07 165.24 95.13 164.93 95.25 C 164.63 95.38 164.38 95.55 164.16 95.78 C 163.91 96.05 163.72 96.35 163.58 96.71 C 163.45 97.05 163.39 97.41 163.39 97.79 C 163.39 98.45 163.59 98.99 164.00 99.41 C 164.41 99.83 164.93 100.04 165.58 100.04 C 165.91 100.04 166.21 99.98 166.51 99.87 C 166.81 99.76 167.10 99.58 167.38 99.37 L 167.15 100.61 C 166.86 100.73 166.58 100.81 166.31 100.87 C 166.04 100.92 165.78 100.95 165.53 100.95 C 164.59 100.95 163.83 100.66 163.25 100.08 C 162.67 99.51 162.39 98.76 162.39 97.82 C 162.39 97.30 162.48 96.81 162.66 96.34 C 162.84 95.88 163.10 95.48 163.44 95.14 C 163.76 94.83 164.12 94.58 164.53 94.42 C 164.93 94.26 165.37 94.17 165.82 94.17 C 166.25 94.17 166.62 94.22 166.95 94.32 C 167.29 94.41 167.58 94.55 167.85 94.75 Z M 169.32 100.78 L 168.32 100.78 L 169.17 94.32 L 170.33 94.32 C 170.85 94.32 171.22 94.35 171.44 94.41 C 171.67 94.46 171.87 94.57 172.05 94.71 C 172.25 94.86 172.39 95.05 172.50 95.28 C 172.60 95.51 172.66 95.76 172.66 96.05 C 172.66 96.58 172.51 97.01 172.22 97.35 C 171.93 97.68 171.51 97.90 170.98 97.98 L 172.77 100.78 L 171.63 100.78 L 169.92 98.01 L 169.69 98.01 Z M 169.79 97.19 L 169.99 97.19 C 170.63 97.19 171.07 97.11 171.29 96.96 C 171.51 96.80 171.63 96.52 171.63 96.14 C 171.63 95.80 171.53 95.58 171.34 95.44 C 171.16 95.30 170.78 95.24 170.21 95.24 L 170.05 95.24 Z M 173.37 100.78 L 174.21 94.32 L 175.25 94.32 L 174.39 100.78 Z M 175.07 100.78 L 178.80 94.07 L 181.16 100.78 L 180.11 100.78 L 179.59 99.25 L 177.01 99.25 L 176.17 100.78 Z M 177.42 98.39 L 179.31 98.39 L 178.81 96.80 C 178.78 96.72 178.77 96.62 178.74 96.49 C 178.71 96.36 178.68 96.20 178.64 95.99 C 178.58 96.14 178.51 96.29 178.45 96.42 C 178.39 96.57 178.33 96.69 178.26 96.81 Z M 177.42 98.39 "/><path fill-rule="nonzero" fill="var(--logo-k,#111)" d="M 182.02 100.78 L 182.75 95.25 L 181.01 95.25 L 181.14 94.32 L 185.55 94.32 L 185.42 95.25 L 183.78 95.25 L 183.04 100.78 Z M 185.61 100.78 L 186.46 94.32 L 187.49 94.32 L 186.63 100.78 Z M 187.92 94.32 L 188.93 94.32 L 189.96 98.18 C 190.01 98.37 190.05 98.53 190.08 98.66 C 190.11 98.77 190.12 98.88 190.14 98.98 C 190.21 98.81 190.28 98.66 190.34 98.53 C 190.41 98.39 190.46 98.27 190.52 98.16 L 192.59 94.32 L 193.67 94.32 L 189.85 101.03 Z M 193.43 100.78 L 194.28 94.32 L 195.31 94.32 L 194.45 100.78 Z M 197.06 99.86 L 197.43 99.86 C 198.16 99.86 198.68 99.82 198.98 99.76 C 199.28 99.69 199.55 99.58 199.76 99.41 C 200.06 99.20 200.29 98.92 200.46 98.56 C 200.62 98.19 200.70 97.80 200.70 97.37 C 200.70 97.00 200.64 96.67 200.50 96.37 C 200.37 96.07 200.18 95.84 199.93 95.65 C 199.75 95.50 199.53 95.39 199.28 95.33 C 199.05 95.27 198.65 95.24 198.10 95.24 L 197.67 95.24 Z M 195.93 100.78 L 196.78 94.32 L 198.16 94.32 C 198.87 94.32 199.39 94.37 199.73 94.46 C 200.09 94.55 200.39 94.69 200.67 94.91 C 201.02 95.17 201.29 95.51 201.47 95.93 C 201.66 96.34 201.75 96.81 201.75 97.33 C 201.75 97.78 201.68 98.22 201.53 98.64 C 201.39 99.05 201.18 99.41 200.91 99.72 C 200.72 99.94 200.50 100.13 200.26 100.27 C 200.02 100.42 199.76 100.54 199.48 100.62 C 199.29 100.68 199.09 100.71 198.88 100.74 C 198.66 100.77 198.40 100.78 198.08 100.78 Z M 195.93 100.78 "/><path fill-rule="nonzero" fill="var(--logo-k,#111)" d="M 201.52 100.78 L 205.26 94.07 L 207.62 100.78 L 206.57 100.78 L 206.05 99.25 L 203.48 99.25 L 202.62 100.78 Z M 203.88 98.39 L 205.77 98.39 L 205.27 96.80 C 205.25 96.72 205.23 96.62 205.20 96.49 C 205.17 96.36 205.14 96.20 205.10 95.99 C 205.04 96.14 204.97 96.29 204.91 96.42 C 204.85 96.57 204.78 96.69 204.72 96.81 Z M 209.08 99.86 L 209.45 99.86 C 210.19 99.86 210.70 99.82 211.00 99.76 C 211.30 99.69 211.57 99.58 211.78 99.41 C 212.08 99.20 212.31 98.92 212.48 98.56 C 212.64 98.19 212.72 97.80 212.72 97.37 C 212.72 97.00 212.66 96.67 212.52 96.37 C 212.39 96.07 212.20 95.84 211.96 95.65 C 211.76 95.50 211.55 95.39 211.30 95.33 C 211.07 95.27 210.67 95.24 210.12 95.24 L 209.69 95.24 Z M 207.95 100.78 L 208.80 94.32 L 210.17 94.32 C 210.89 94.32 211.41 94.37 211.76 94.46 C 212.11 94.55 212.42 94.69 212.69 94.91 C 213.04 95.17 213.31 95.51 213.49 95.93 C 213.68 96.34 213.77 96.81 213.77 97.33 C 213.77 97.78 213.70 98.22 213.55 98.64 C 213.41 99.05 213.20 99.41 212.93 99.72 C 212.74 99.94 212.52 100.13 212.28 100.27 C 212.05 100.42 211.78 100.54 211.50 100.62 C 211.32 100.68 211.12 100.71 210.90 100.74 C 210.68 100.77 210.42 100.78 210.10 100.78 Z M 214.51 100.78 L 215.36 94.32 L 218.98 94.32 L 218.87 95.23 L 216.25 95.23 L 216.04 96.86 L 218.65 96.86 L 218.53 97.76 L 215.91 97.76 L 215.64 99.85 L 218.26 99.85 L 218.13 100.78 Z M 214.51 100.78 "/><path fill-rule="evenodd" fill="var(--logo-y,#F1C200)" d="M 259.02 68.86 C 259.11 69.01 259.13 68.98 259.35 69.02 L 261.39 69.62 C 261.95 69.89 262.23 70.23 262.41 70.82 C 262.49 71.11 262.54 71.31 262.59 71.66 L 262.74 73.03 C 262.75 73.22 262.71 73.37 262.91 73.39 C 263.12 73.40 263.13 72.94 263.21 72.64 C 263.29 72.34 263.34 72.08 263.42 71.78 C 263.51 71.45 263.77 70.54 264.08 70.30 C 264.49 69.98 264.69 69.89 265.16 69.77 L 265.69 69.66 C 266.00 69.62 267.05 69.48 267.30 69.49 C 267.32 69.13 267.25 69.29 266.60 69.11 C 266.40 69.05 266.32 69.08 266.13 69.01 L 265.29 68.75 C 265.12 68.69 265.05 68.67 264.89 68.60 C 264.65 68.48 264.45 68.28 264.28 68.09 C 263.80 67.55 263.73 66.31 263.66 65.62 C 263.59 65 263.64 64.86 263.42 64.78 C 263.28 64.87 263.29 64.91 263.27 65.13 C 263.25 65.39 263.23 65.37 263.17 65.58 C 263.08 65.92 263.03 66.16 262.95 66.48 C 262.66 67.65 262.19 68.23 261.02 68.47 L 260.95 68.49 C 260.82 68.52 260.99 68.49 260.85 68.51 L 260.07 68.63 C 259.41 68.77 259.12 68.56 259.02 68.86 "/><path fill-rule="evenodd" fill="var(--logo-k,#111)" d="M 156.76 95.73 C 157.77 95.73 158.59 96.54 158.59 97.55 C 158.59 98.56 157.77 99.37 156.76 99.37 C 155.76 99.37 154.94 98.56 154.94 97.55 C 154.94 96.54 155.76 95.73 156.76 95.73 "/></svg></a><p>PresentYá • Estilo • Criatividade. Presentes e personalizados em São Luís – MA, com envio para todo o Brasil.</p></div>
+    <div><h4>Loja</h4><ul><li><a href="#produtos">Nossos Produtos</a></li><li><a href="#ideias">Ideias de Presente</a></li><li><a href="#novidades">Novidades</a></li><li><a href="#clube">Clube Fidelidade</a></li></ul></div>
+    <div><h4>Ajuda</h4><ul><li><a href="#como-comprar">Como Comprar</a></li><li><a href="#entrega">Entrega e Devolução</a></li><li><a href="#faq">Perguntas Frequentes</a></li><li><a href="#sobre">Nossa história</a></li></ul></div>
+    <div><h4>Contato</h4><ul><li>(98) 98408-4256</li><li>contato@presentya.com.br</li><li><a href="https://instagram.com/presentya_" target="_blank" rel="noopener">@presentya_</a></li><li>São Luís – MA</li></ul></div>
+  </div>
+  <div class="wrap legal"><span>© <span id="yr"></span> PresentYá · presentya.com.br</span><span>Compra segura · Embalagem especial · Cartão grátis</span></div>
+</footer>
+
+<button class="round totop" id="totop" aria-label="Voltar ao topo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 15l6-6 6 6"/></svg></button>
+<a class="wa-float" href="https://wa.me/5598984084256?text=Ol%C3%A1%2C%20PresentY%C3%A1!%20Quero%20ajuda%20para%20escolher%20um%20presente." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4a.5.5 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.2c0-.1-.2-.2-.4-.3z"/></svg>
+  <span class="lbl">Fale conosco</span>
+</a>
+
+<div class="drawer" id="drawer" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="wlTitle">
+    <div class="panel-head"><h3 id="wlTitle">Minha lista de desejos</h3><button class="close" id="closeWish" aria-label="Fechar">×</button></div>
+    <p style="color:var(--muted);font-size:.9rem">Salva neste navegador. Envie para a loja ou mande como dica para alguém.</p>
+    <div id="wlList" style="display:grid;gap:.7rem"></div>
+    <div id="wlActions" style="display:grid;gap:.6rem;margin-top:auto"></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+document.documentElement.classList.add("js");
+const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const WA="5598984084256";
+const wa=t=>`https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
+const brl=n=>n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+
+/* product illustrations (placeholders for real photos) */
+function art(kind,a="var(--rose)",b="var(--gold-bright)"){
+  const S=c=>`<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${c}</svg>`;
+  const sh=`<ellipse cx="100" cy="146" rx="62" ry="7" fill="var(--ink)" opacity=".08"/>`;
+  switch(kind){
+    case "box":return S(sh+`<rect x="42" y="66" width="116" height="78" rx="4" fill="${a}"/><rect x="36" y="52" width="128" height="22" rx="4" fill="${a}" style="filter:brightness(1.06)"/><rect x="92" y="52" width="16" height="92" fill="${b}"/><path d="M100 52c-14-24-44-22-36-4 6 10 26 6 36 4z" fill="${b}"/><path d="M100 52c14-24 44-22 36-4-6 10-26 6-36 4z" fill="${b}"/><circle cx="100" cy="51" r="6" fill="${b}" style="filter:brightness(.9)"/>`);
+    case "tall":return S(sh+`<rect x="62" y="40" width="76" height="104" rx="4" fill="${a}"/><rect x="58" y="30" width="84" height="18" rx="4" fill="${a}" style="filter:brightness(1.06)"/><rect x="94" y="30" width="12" height="114" fill="${b}"/><rect x="62" y="84" width="76" height="10" fill="${b}"/><path d="M100 30c-10-18-32-16-26-3 5 7 19 4 26 3zM100 30c10-18 32-16 26-3-5 7-19 4-26 3z" fill="${b}"/>`);
+    case "mug":return S(sh+`<path d="M134 70h10a18 18 0 0 1 0 36h-10" fill="none" stroke="${a}" stroke-width="10"/><rect x="56" y="54" width="82" height="90" rx="10" fill="${a}"/><ellipse cx="97" cy="56" rx="41" ry="7" fill="var(--ink)" opacity=".15"/><path d="M97 112c-14-9-20-16-20-23a9 9 0 0 1 20-3 9 9 0 0 1 20 3c0 7-6 14-20 23z" fill="${b}"/><path d="M84 40c0-8 8-8 8-16M104 40c0-8 8-8 8-16" stroke="var(--muted)" stroke-width="3" fill="none" stroke-linecap="round" opacity=".5"/>`);
+    case "frame":return S(sh+`<rect x="46" y="22" width="108" height="122" rx="3" fill="${b}"/><rect x="58" y="34" width="84" height="98" fill="var(--card)"/><rect x="64" y="40" width="72" height="86" fill="${a}" opacity=".55"/><circle cx="84" cy="66" r="9" fill="var(--card)"/><path d="M64 126l26-34 16 18 12-12 18 28z" fill="${a}"/>`);
+    case "basket":return S(sh+`<path d="M52 82c0-46 96-46 96 0" fill="none" stroke="${b}" stroke-width="7"/><circle cx="80" cy="76" r="14" fill="${a}"/><rect x="96" y="56" width="18" height="30" rx="4" fill="var(--sage)"/><circle cx="124" cy="78" r="11" fill="${b}" style="filter:brightness(1.1)"/><path d="M40 84h120l-14 58H54z" fill="${b}"/><path d="M48 98h104M52 112h96M56 126h88" stroke="var(--card)" stroke-width="2" opacity=".5"/>`);
+    case "lamp":return S(sh+`<circle cx="100" cy="70" r="52" fill="${b}" opacity=".18"/><path d="M68 34h64l14 50H54z" fill="${a}"/><rect x="96" y="84" width="8" height="44" fill="${b}"/><rect x="70" y="128" width="60" height="14" rx="6" fill="${b}"/><text x="100" y="66" text-anchor="middle" font-family="Caveat,cursive" font-size="20" fill="var(--ink)" opacity=".7">Ana</text>`);
+    case "bear":return S(sh+`<circle cx="70" cy="44" r="14" fill="${a}"/><circle cx="130" cy="44" r="14" fill="${a}"/><circle cx="100" cy="64" r="34" fill="${a}"/><ellipse cx="100" cy="116" rx="40" ry="30" fill="${a}"/><ellipse cx="100" cy="74" rx="13" ry="10" fill="var(--card)" opacity=".7"/><circle cx="88" cy="58" r="3.5" fill="var(--ink)"/><circle cx="112" cy="58" r="3.5" fill="var(--ink)"/><path d="M100 114c-8-5-12-10-12-14a6 6 0 0 1 12-2 6 6 0 0 1 12 2c0 4-4 9-12 14z" fill="${b}"/>`);
+    case "spa":return S(sh+`<rect x="40" y="96" width="120" height="48" rx="6" fill="${b}"/><rect x="56" y="48" width="26" height="56" rx="6" fill="${a}"/><rect x="62" y="38" width="14" height="12" fill="var(--ink)" opacity=".5"/><rect x="92" y="62" width="40" height="40" rx="20" fill="var(--sage)"/><path d="M112 70c-4 8-4 16 0 24 4-8 4-16 0-24z" fill="var(--card)" opacity=".7"/><rect x="138" y="70" width="14" height="32" rx="3" fill="${a}" style="filter:brightness(1.1)"/>`);
+    case "key":return S(sh+`<circle cx="76" cy="68" r="26" fill="none" stroke="${b}" stroke-width="7"/><rect x="96" y="80" width="62" height="40" rx="8" fill="${a}" transform="rotate(18 127 100)"/><text x="127" y="106" text-anchor="middle" font-family="Marcellus,serif" font-size="18" fill="var(--ink)" transform="rotate(18 127 100)">M&amp;J</text>`);
+    case "tree":return S(sh+`<path d="M100 18l40 52h-18l26 34H52l26-34H60z" fill="var(--sage)"/><rect x="92" y="104" width="16" height="16" fill="${b}"/><rect x="62" y="116" width="34" height="28" rx="3" fill="${a}"/><rect x="76" y="116" width="6" height="28" fill="${b}"/><rect x="106" y="122" width="30" height="22" rx="3" fill="${b}"/><circle cx="100" cy="18" r="6" fill="${b}"/><circle cx="88" cy="62" r="4" fill="${a}"/><circle cx="114" cy="84" r="4" fill="${a}"/>`);
+    case "choc":return S(sh+`<path d="M100 60c-34-40-84-6-60 34 12 20 40 36 60 50 20-14 48-30 60-50 24-40-26-74-60-34z" fill="${a}"/><circle cx="78" cy="80" r="9" fill="var(--ink)" opacity=".55"/><circle cx="100" cy="96" r="9" fill="var(--ink)" opacity=".55"/><circle cx="122" cy="80" r="9" fill="var(--ink)" opacity=".55"/><circle cx="100" cy="118" r="9" fill="var(--ink)" opacity=".55"/>`);
+  }
+}
+
+/* catalog — examples; replace with real products, photos and prices */
+const P=[
+ {id:1,name:"Caixa Surpresa Amor",desc:"Camadas de carinho: bombons, cartinhas e uma lembrança personalizada no fundo.",price:149.9,occ:["namoro","aniversario"],para:["ela","ele"],perso:true,kind:"box",bg:"var(--rose-soft)",a:"var(--rose)",b:"var(--gold-bright)",tags:["hot"],pop:10,new:3},
+ {id:2,name:"Caneca com Foto",desc:"A foto de vocês estampada para lembrar do momento a cada café.",price:49.9,occ:["aniversario","namoro","maes"],para:["ela","ele","familia"],perso:true,kind:"mug",bg:"var(--sky)",a:"var(--card)",b:"var(--rose)",tags:["hot"],pop:9,new:2},
+ {id:3,name:"Quadro Memórias",desc:"Uma foto especial emoldurada com data e frase, pronta para a parede.",price:89.9,occ:["namoro","maes","aniversario"],para:["ela","familia"],perso:true,kind:"frame",bg:"var(--paper)",a:"var(--sage)",b:"var(--gold-bright)",tags:[],pop:7,new:4},
+ {id:4,name:"Cesta Café da Manhã",desc:"Delícias, flores e cartão escrito à mão para começar o dia sorrindo.",price:189.9,occ:["aniversario","maes","namoro"],para:["ela","ele","familia"],perso:false,kind:"basket",bg:"var(--gold-soft)",a:"var(--rose)",b:"var(--gold)",tags:["hot"],pop:8,new:1},
+ {id:5,name:"Luminária com Nome",desc:"Luz suave com o nome de quem você ama. Linda no quarto das crianças.",price:119.9,occ:["aniversario","natal"],para:["criancas","ela"],perso:true,kind:"lamp",bg:"var(--rose-soft)",a:"var(--gold-soft)",b:"var(--gold-bright)",tags:["new"],pop:6,new:10},
+ {id:6,name:"Ursinho + Bombons",desc:"Pelúcia macia com bombons e laço. Abraço garantido.",price:79.9,occ:["aniversario","namoro"],para:["criancas","ela"],perso:false,kind:"bear",bg:"var(--sage-soft)",a:"var(--gold-soft)",b:"var(--rose)",tags:[],pop:5,new:5},
+ {id:7,name:"Kit Spa Relax",desc:"Vela aromática, sais de banho e hidratante. Um convite para descansar.",price:129.9,occ:["maes","aniversario"],para:["ela","familia"],perso:false,kind:"spa",bg:"var(--sage-soft)",a:"var(--rose)",b:"var(--gold-soft)",tags:["new"],pop:6,new:9},
+ {id:8,name:"Chaveiro Iniciais",desc:"As iniciais de vocês sempre por perto. Pequeno no tamanho, enorme no significado.",price:34.9,occ:["namoro","aniversario"],para:["ele","ela"],perso:true,kind:"key",bg:"var(--paper)",a:"var(--rose)",b:"var(--gold-bright)",tags:[],pop:4,new:6},
+ {id:9,name:"Kit Natal em Família",desc:"Mimos natalinos e um enfeite com o sobrenome da família.",price:159.9,occ:["natal"],para:["familia"],perso:true,kind:"tree",bg:"var(--sage-soft)",a:"var(--rose)",b:"var(--gold-bright)",tags:["new"],pop:5,new:11},
+ {id:10,name:"Kit Corporativo",desc:"Caneca, bloco e chocolate com a marca da sua empresa.",price:99.9,occ:["corporativo","natal"],para:["empresa","ele"],perso:true,kind:"tall",bg:"var(--sky)",a:"var(--paper)",b:"var(--gold)",tags:[],pop:6,new:7},
+ {id:11,name:"Coração de Bombons",desc:"Caixa em coração com bombons finos e cartão. O clássico que funciona.",price:59.9,occ:["namoro","maes"],para:["ela"],perso:false,kind:"choc",bg:"var(--rose-soft)",a:"var(--rose)",b:"var(--gold-bright)",tags:[],pop:7,new:8},
+ {id:12,name:"Box Aniversário",desc:"Balão, confete, doces e cartão com o nome do aniversariante.",price:139.9,occ:["aniversario"],para:["ele","ela","criancas"],perso:true,kind:"box",bg:"var(--gold-soft)",a:"var(--sage)",b:"var(--rose)",tags:["new"],pop:8,new:12},
+];
+const byId=id=>P.find(p=>p.id===id);
+
+/* weekly rotating offer */
+const weekNo=Math.floor((Date.now()-new Date(2026,0,4).getTime())/(7*864e5));
+const pool=[1,4,7,12,3,9,5,11];
+const offerId=pool[((weekNo%pool.length)+pool.length)%pool.length];
+P.forEach(p=>{if(p.id===offerId){p.old=p.price;p.price=Math.round(p.price*90)/100;p.tags=[...p.tags,"off"];}});
+function offerEnd(){const d=new Date(),e=new Date(d);e.setDate(d.getDate()+((7-d.getDay())%7));e.setHours(23,59,59,0);return e;}
+function tickOffer(){
+  $("#offerText").innerHTML=`<b>${byId(offerId).name}</b> com 10% de desconto`;
+  const ms=offerEnd()-new Date(),d=Math.floor(ms/864e5),h=Math.floor(ms/36e5)%24,m=Math.floor(ms/6e4)%60;
+  $("#offerCount").textContent=`termina em ${d}d ${String(h).padStart(2,"0")}h ${String(m).padStart(2,"0")}min`;
+}
+
+/* wishlist */
+let wish=[];try{wish=JSON.parse(localStorage.getItem("py-wish")||"[]")}catch(e){wish=[]}
+const saveWish=()=>{try{localStorage.setItem("py-wish",JSON.stringify(wish))}catch(e){}};
+function flyToWish(from,p){
+  if(RM||!from)return;
+  const r=from.getBoundingClientRect(),t=$("#wishCount").getBoundingClientRect();
+  const f=document.createElement("div");f.className="flyer";f.innerHTML=art(p.kind,p.a,p.b);f.style.background=p.bg;
+  f.style.left=(r.left+r.width/2-28)+"px";f.style.top=(r.top+r.height/2-28)+"px";document.body.appendChild(f);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transform=`translate(${t.left-r.left-r.width/2+20}px,${t.top-r.top-r.height/2+10}px) scale(.25)`;f.style.opacity=".3"}));
+  setTimeout(()=>{f.remove();const b=$("#wishCount");b.classList.remove("bump");void b.offsetWidth;b.classList.add("bump")},820);
+}
+function toggleWish(id,btn){
+  const i=wish.indexOf(id);
+  if(i>-1){wish.splice(i,1);toast("Removido da lista de desejos")}
+  else{wish.push(id);toast("Salvo na sua lista de desejos ♡");flyToWish(btn&&btn.closest(".prod")?.querySelector(".art"),byId(id))}
+  if(btn){btn.classList.remove("pop");void btn.offsetWidth;btn.classList.add("pop")}
+  saveWish();syncHearts();renderWish();
+}
+function syncHearts(){$$(".heart").forEach(h=>h.setAttribute("aria-pressed",wish.includes(+h.dataset.id)));$("#wishCount").textContent=wish.length}
+function renderWish(){
+  const items=wish.map(byId).filter(Boolean);
+  if(!items.length){$("#wlList").innerHTML=`<div class="empty"><p>Sua lista está vazia.</p><p class="hand">Toque no coração dos produtos que você amar.</p></div>`;$("#wlActions").innerHTML=`<a class="btn btn-gold" href="#produtos" data-close>Ver produtos</a>`;return}
+  $("#wlList").innerHTML=items.map((p,i)=>`<div class="wl-item" style="animation-delay:${i*60}ms"><div class="art" style="background:${p.bg}">${art(p.kind,p.a,p.b)}</div><div><b>${p.name}</b><span>${brl(p.price)}</span></div><button data-rm="${p.id}">remover</button></div>`).join("");
+  const txt="Olá, PresentYá! Esta é a minha lista de desejos:\n"+items.map(p=>`• ${p.name} (${brl(p.price)})`).join("\n");
+  $("#wlActions").innerHTML=`<a class="btn btn-wa" target="_blank" rel="noopener" href="${wa(txt)}">Enviar lista para a loja</a><a class="btn btn-line" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent("Dica de presente pra mim — PresentYá (presentya.com.br):\n"+items.map(p=>"• "+p.name).join("\n"))}">Mandar como dica para alguém</a>`;
+}
+
+/* cards */
+const FL={new:["new","Novidade"],hot:["hot","Mais vendido"],off:["off","Oferta"]};
+const OCC={aniversario:"Aniversário",namoro:"Namoro",natal:"Natal",maes:"Dia das Mães",corporativo:"Corporativo"};
+const PARA={ela:"Para Ela",ele:"Para Ele",criancas:"Crianças",familia:"Família",empresa:"Empresas"};
+function card(p,i=0){
+  const msg=`Olá, PresentYá! Quero comprar: ${p.name} (${brl(p.price)}). Vim pelo site.`;
+  return `<article class="prod" data-tilt>
+    <div class="art" style="background:${p.bg};--d:${-(i%4)*1.1}s">${art(p.kind,p.a,p.b)}
+      <div class="flags">${p.tags.map(t=>`<span class="flag ${FL[t][0]}">${FL[t][1]}</span>`).join("")}${p.perso?'<span class="flag">Personalizável</span>':""}</div>
+      <button class="heart" data-id="${p.id}" aria-pressed="false" aria-label="Salvar ${p.name} na lista de desejos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+      <div class="quick"><a class="btn btn-gold" target="_blank" rel="noopener" href="${wa(msg)}" tabindex="-1">Compra rápida no WhatsApp</a></div>
+    </div>
+    <div class="body"><span class="meta">${p.occ.map(o=>OCC[o]).join(" · ")}</span><h3>${p.name}</h3><p class="desc">${p.desc}</p>
+      <div class="price-row"><span class="price">${p.old?`<s>${brl(p.old)}</s>`:""}${brl(p.price)}</span><a class="btn btn-gold btn-sm" target="_blank" rel="noopener" href="${wa(msg)}">Comprar Agora</a></div>
+    </div></article>`;
+}
+function bindTilt(root=document){
+  if(RM||matchMedia("(hover:none)").matches)return;
+  root.querySelectorAll("[data-tilt]").forEach(el=>{
+    if(el._t)return;el._t=1;
+    el.addEventListener("mousemove",e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+      el.style.transform=`perspective(900px) rotateX(${(.5-y)*8}deg) rotateY(${(x-.5)*10}deg) translateY(-6px)`;
+      const a=el.querySelector(".art");a.style.setProperty("--mx",x*100+"%");a.style.setProperty("--my",y*100+"%")});
+    el.addEventListener("mouseleave",()=>el.style.transform="");
+  });
+}
+
+/* HERO showcase */
+const SHOW=[1,4,5,2,7,9];
+let si=0,showTimer;
+function buildShow(){
+  $("#showcase").innerHTML=SHOW.map((id,i)=>`<div class="show-item${i===0?" on":""}">${art(byId(id).kind,byId(id).a,byId(id).b)}</div>`).join("");
+  $("#dots").innerHTML=SHOW.map((id,i)=>`<button aria-label="Ver ${byId(id).name}" class="${i===0?"on":""}" data-show="${i}"></button>`).join("");
+  [[3,"o1"],[11,"o2"],[6,"o3"]].forEach(([id,o])=>{const p=byId(id);$("#"+o).innerHTML=art(p.kind,p.a,p.b);$("#"+o).style.background=p.bg});
+  setShow(0);
+}
+function setShow(n){
+  const items=$$(".show-item"),prev=si;si=(n+SHOW.length)%SHOW.length;
+  items.forEach((el,i)=>{el.classList.toggle("on",i===si);el.classList.toggle("out",i===prev&&i!==si)});
+  setTimeout(()=>items[prev]&&items[prev].classList.remove("out"),900);
+  $$("#dots button").forEach((d,i)=>d.classList.toggle("on",i===si));
+  const p=byId(SHOW[si]);$("#showLabel").innerHTML=`<b>${p.name}</b><span>${brl(p.price)}</span>`;
+}
+function autoShow(){clearInterval(showTimer);if(!RM)showTimer=setInterval(()=>setShow(si+1),3200)}
+
+/* hero title word reveal */
+(function(){if(RM)return;const h=$("#heroTitle");let i=0;
+  h.querySelectorAll("em").forEach(e=>e.dataset.keep=1);
+  const out=[];h.childNodes.forEach(n=>{if(n.nodeType===3){n.textContent.split(/(\s+)/).forEach(w=>{if(!w.trim())out.push(w);else out.push(`<span class="word" style="animation-delay:${(i++)*70}ms">${w}</span>`)})}else{out.push(`<span class="word" style="animation-delay:${(i++)*70}ms">${n.outerHTML}</span>`)}});
+  h.innerHTML=out.join("");})();
+
+/* marquees */
+function buildMarquee(){
+  const one=P.map(p=>`<span class="mq"><span class="ic" style="background:${p.bg}">${art(p.kind,p.a,p.b)}</span>${p.name}<i>✦</i></span>`).join("");
+  $("#mq").innerHTML=one+one;
+  const q=[["[Depoimento sobre a embalagem e a reação de quem recebeu.]","Nome · bairro, São Luís"],["[Depoimento sobre a personalização com nome ou foto.]","Nome · bairro, São Luís"],["[Depoimento sobre a entrega no horário combinado.]","Nome · cidade"],["[Depoimento sobre o atendimento pelo WhatsApp.]","Nome · bairro, São Luís"],["[Depoimento sobre um presente corporativo.]","Nome · empresa"]];
+  const qq=q.map(([t,n])=>`<figure class="quote"><span class="stars">★★★★★</span><p>“${t}”</p><footer>${n}</footer></figure>`).join("");
+  $("#tq").innerHTML=qq+qq;
+}
+
+/* carousel */
+function buildCarousel(){
+  const list=[...P].sort((a,b)=>(b.tags.includes("off")-a.tags.includes("off"))||(b.pop+b.new/2)-(a.pop+a.new/2)).slice(0,8);
+  $("#carousel").innerHTML=list.map(card).join("");
+  const c=$("#carousel");
+  const upd=()=>{const max=c.scrollWidth-c.clientWidth,f=c.clientWidth/c.scrollWidth;$("#prog").style.width=(f*100)+"%";$("#prog").style.transform=`translateX(${max?(c.scrollLeft/max)*((1-f)/f)*100:0}%)`};
+  c.addEventListener("scroll",upd,{passive:true});upd();
+  const step=d=>{const w=c.firstElementChild.getBoundingClientRect().width+22;const max=c.scrollWidth-c.clientWidth;
+    if(d>0&&c.scrollLeft>=max-4)c.scrollTo({left:0});else c.scrollBy({left:d*w})};
+  $("#prev").onclick=()=>step(-1);$("#next").onclick=()=>step(1);
+  let t;const auto=()=>{clearInterval(t);if(!RM)t=setInterval(()=>step(1),4200)};
+  c.addEventListener("mouseenter",()=>clearInterval(t));c.addEventListener("mouseleave",auto);c.addEventListener("touchstart",()=>clearInterval(t),{passive:true});auto();
+}
+
+/* occasions */
+const OCC_UI=[["aniversario","Aniversário","Mais um ano para celebrar","var(--gold-soft)",'<path d="M4 11h16v9H4zM12 11v9M6 11V8h12v3M12 8V5"/>'],["namoro","Namoro","Para quem faz seu coração bater","var(--rose-soft)",'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>'],["natal","Natal","Mimos para a família toda","var(--sage-soft)",'<path d="M12 3l6 8h-3l4 6H5l4-6H6zM12 17v4"/>'],["maes","Dia das Mães","Para quem cuida de você","var(--rose-soft)",'<circle cx="12" cy="8" r="3"/><path d="M6 20c0-4 3-7 6-7s6 3 6 7"/>'],["corporativo","Corporativo","Clientes, equipes e eventos","var(--sky)",'<rect x="4" y="8" width="16" height="11" rx="2"/><path d="M9 8V5h6v3"/>']];
+$("#occ").innerHTML=OCC_UI.map(([k,t,s,bg,ic])=>`<button class="rv" data-occ="${k}"><span class="dot" style="background:${bg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">${ic}</svg></span><b>${t}</b><small>${s}</small></button>`).join("");
+
+/* catalog filters */
+const F={occ:new Set(),para:new Set(),price:null,perso:false,sort:"pop"};
+const PRICES={"0-50":"Até R$ 50","50-120":"R$ 50 a 120","120-9999":"Acima de R$ 120"};
+function buildChips(){[["occ",OCC],["para",PARA],["price",PRICES]].forEach(([k,m])=>{$(`[data-filter="${k}"]`).innerHTML=Object.entries(m).map(([v,t])=>`<button class="chip" data-k="${k}" data-v="${v}" aria-pressed="false">${t}</button>`).join(" ")})}
+function syncChips(){$$(".chip[data-k]").forEach(c=>{const{k,v}=c.dataset;c.setAttribute("aria-pressed",k==="price"?F.price===v:F[k].has(v))});$("#fPerso").checked=F.perso;$("#sortSel").value=F.sort}
+function renderCatalog(animate=true){
+  let list=P.filter(p=>{if(F.occ.size&&!p.occ.some(o=>F.occ.has(o)))return false;if(F.para.size&&!p.para.some(o=>F.para.has(o)))return false;if(F.perso&&!p.perso)return false;if(F.price){const[lo,hi]=F.price.split("-").map(Number);if(p.price<lo||p.price>hi)return false}return true});
+  list.sort({pop:(a,b)=>b.pop-a.pop,new:(a,b)=>b.new-a.new,low:(a,b)=>a.price-b.price,high:(a,b)=>b.price-a.price}[F.sort]);
+  const g=$("#catalog");
+  const draw=()=>{g.innerHTML=list.length?list.map(card).join(""):`<div class="empty"><p>Nenhum presente com esses filtros.</p><p>Fale com a gente no WhatsApp que encontramos a opção ideal.</p><button class="btn btn-line btn-sm" data-clear>Limpar filtros</button></div>`;
+    if(animate&&!RM){g.querySelectorAll(".prod").forEach((el,i)=>{el.classList.add("hide");setTimeout(()=>el.classList.remove("hide"),40+i*55)})}
+    bindTilt(g);syncHearts()};
+  $("#countTxt").textContent=`${list.length} ${list.length===1?"presente encontrado":"presentes encontrados"}`;
+  syncChips();
+  if(animate&&!RM&&g.children.length){g.querySelectorAll(".prod").forEach(el=>el.classList.add("hide"));setTimeout(draw,260)}else draw();
+}
+function clearFilters(){F.occ.clear();F.para.clear();F.price=null;F.perso=false;renderCatalog()}
+function goShop(o={}){F.occ.clear();F.para.clear();F.price=null;F.perso=false;if(o.occ)F.occ.add(o.occ);if(o.para)F.para.add(o.para);if(o.price)F.price=o.price;if(o.perso)F.perso=true;renderCatalog();$("#catalog").scrollIntoView({behavior:RM?"auto":"smooth",block:"start"})}
+
+/* personalized section: typing + stage */
+(function(){[[2,"mug"],[3,"frame"],[8,"key"]].forEach(([id])=>{const p=byId(id);$("#persoStage").insertAdjacentHTML("beforeend",`<div class="pc" style="background:${p.bg}">${art(p.kind,p.a,p.b)}</div>`)});
+  const words=["Feliz aniversário, Ana!","Te amo desde 12/06","Família Ribeiro","Melhor mãe do mundo"];
+  const el=$("#typed");if(RM){el.textContent=words[0];return}
+  let w=0,c=0,del=false;(function tick(){const s=words[w];el.textContent=s.slice(0,c);
+    if(!del&&c<s.length){c++;setTimeout(tick,70)}else if(!del){del=true;setTimeout(tick,1500)}else if(c>0){c--;setTimeout(tick,35)}else{del=false;w=(w+1)%words.length;setTimeout(tick,300)}})();})();
+
+/* curation */
+const CUR={ela:{t:"Para Ela",txt:"Fotos, cuidados e mimos que fazem ela se sentir lembrada.",ids:[1,7,3,11],para:"ela"},ele:{t:"Para Ele",txt:"Presentes práticos com toque pessoal, para usar todo dia.",ids:[2,8,10,4],para:"ele"},criancas:{t:"Para Crianças",txt:"Fofura, cor e o nome deles em destaque.",ids:[5,6,12],para:"criancas"},familia:{t:"Para a Família",txt:"Para dividir na mesa, na sala e nas memórias.",ids:[9,4,3,7],para:"familia"},exclusivos:{t:"Presentes Exclusivos",txt:"Peças 100% personalizadas, montadas para uma pessoa só.",ids:[1,5,9,12],perso:true}};
+let curKey="ela";
+function renderCur(){
+  $("#curTabs").innerHTML=Object.entries(CUR).map(([k,v])=>`<button role="tab" aria-selected="${k===curKey}" data-cur="${k}">${v.t}</button>`).join("");
+  const c=CUR[curKey];
+  $("#curIntro").innerHTML=`<span class="eyebrow">Curadoria</span><h3 style="font-size:1.7rem">${c.t}</h3><p style="color:var(--muted)">${c.txt}</p><div><button class="btn btn-gold btn-sm" data-curall>Ver todos</button></div>`;
+  $("#curGrid").innerHTML=c.ids.map((id,i)=>{const p=byId(id);return `<button class="mini" style="animation-delay:${i*80}ms" data-curall><div class="art" style="background:${p.bg}">${art(p.kind,p.a,p.b)}</div><div class="t"><b>${p.name}</b><span>${brl(p.price)}</span></div></button>`}).join("");
+}
+
+/* novidades */
+function renderNews(){
+  const off=byId(offerId),fresh=[...P].sort((a,b)=>b.new-a.new),end=offerEnd().toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
+  const row=(p,when,sub)=>`<div class="drop"><span class="ic" style="background:${p.bg}">${art(p.kind,p.a,p.b)}</span><div><span class="when">${when}</span><br><b>${p.name}</b><br><small style="color:var(--muted)">${sub}</small></div></div>`;
+  $("#drops").innerHTML=row(off,"Até "+end,"Oferta limitada · 10% off")+row(fresh[0],"Chegou","Novidade na loja")+row(fresh[1],"Chegou","Novidade na loja");
+}
+
+/* stamps animation */
+function playStamps(){const s=$$("#stamps .stamp");s.forEach(x=>x.classList.remove("done","win"));
+  if(RM){s.slice(0,2).forEach(x=>x.classList.add("done"));return}
+  s.slice(0,4).forEach((x,i)=>setTimeout(()=>x.classList.add("done"),300+i*450));setTimeout(()=>s[4].classList.add("win"),300+4*450)}
+
+/* counters */
+function countUp(el){const n=+el.dataset.count;if(RM)return;let v=0;const st=performance.now();(function f(t){const k=Math.min(1,(t-st)/1200);el.textContent=Math.round(n*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)})(st)}
+
+/* reveal on scroll */
+function setupReveal(){
+  if(RM||!("IntersectionObserver" in window))return;
+  const vh=innerHeight;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const el=e.target;const sib=[...el.parentElement.children].filter(c=>c.classList.contains("rv"));el.style.transitionDelay=Math.max(0,sib.indexOf(el))*90+"ms";el.classList.remove("pre");io.unobserve(el);if(el.querySelector("#stamps")||el.id==="stamps")playStamps()}}),{threshold:.15,rootMargin:"0px 0px -40px"});
+  $$(".rv").forEach(el=>{if(el.getBoundingClientRect().top>vh*.9){el.classList.add("pre");io.observe(el)}else if(el.querySelector("#stamps"))playStamps()});
+}
+
+/* scrollspy + nav pill */
+const SECS=["inicio","produtos","ideias","sobre","clube","novidades","contato","ajuda"];
+function movePill(a){const ul=$("#navlinks");let p=ul.querySelector(".navpill");if(!p){p=document.createElement("li");p.className="navpill";p.setAttribute("aria-hidden","true");ul.prepend(p)}
+  if(!a){p.style.width="0";return}const r=a.getBoundingClientRect(),u=ul.getBoundingClientRect();p.style.left=(r.left-u.left)+"px";p.style.width=r.width+"px"}
+function spy(){
+  const y=scrollY+140;let cur="inicio";SECS.forEach(id=>{const s=document.getElementById(id);if(s&&s.offsetTop<=y)cur=id});
+  $$(".navlinks a, .mobnav a").forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+cur));
+  movePill($(`.navlinks a[href="#${cur}"]`));
+  $("#hdr").classList.toggle("scrolled",scrollY>10);
+  $("#totop").classList.toggle("show",scrollY>900);
+}
+
+/* toast */
+let tT;function toast(t){const el=$("#toast");el.hidden=true;void el.offsetWidth;el.textContent=t;el.hidden=false;clearTimeout(tT);tT=setTimeout(()=>el.hidden=true,2200)}
+
+/* events */
+document.addEventListener("click",e=>{
+  const t=e.target;
+  const h=t.closest(".heart");if(h){toggleWish(+h.dataset.id,h);return}
+  const c=t.closest(".chip[data-k]");if(c){const{k,v}=c.dataset;if(k==="price")F.price=F.price===v?null:v;else F[k].has(v)?F[k].delete(v):F[k].add(v);renderCatalog();return}
+  if(t.closest("[data-clear]")||t.closest("#clearF")){clearFilters();return}
+  const o=t.closest("[data-occ]");if(o){goShop({occ:o.dataset.occ});return}
+  const cu=t.closest("[data-cur]");if(cu){curKey=cu.dataset.cur;renderCur();return}
+  if(t.closest("[data-curall]")){const k=CUR[curKey];goShop(k.perso?{perso:true}:{para:k.para});return}
+  const pr=t.closest("[data-price]");if(pr){goShop({price:pr.dataset.price});return}
+  const sh=t.closest("[data-show]");if(sh){setShow(+sh.dataset.show);autoShow();return}
+  const rm=t.closest("[data-rm]");if(rm){toggleWish(+rm.dataset.rm);return}
+  if(t.closest("[data-close]"))closeDrawer();
+  if(t.closest(".mobnav a")){$("#mobnav").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false")}
+  const cp=t.closest(".copy");if(cp){const v=cp.dataset.copy;try{navigator.clipboard.writeText(v).then(()=>toast("Copiado: "+v),()=>toast(v))}catch(err){toast(v)}}
+});
+$("#fPerso").addEventListener("change",e=>{F.perso=e.target.checked;renderCatalog()});
+$("#sortSel").addEventListener("change",e=>{F.sort=e.target.value;renderCatalog()});
+$("#showPerso").addEventListener("click",()=>goShop({perso:true}));
+$("#menuBtn").addEventListener("click",()=>{const m=$("#mobnav"),o=m.classList.toggle("open");$("#menuBtn").setAttribute("aria-expanded",o)});
+$("#totop").addEventListener("click",()=>scrollTo({top:0,behavior:RM?"auto":"smooth"}));
+const drawer=$("#drawer");function closeDrawer(){drawer.hidden=true}
+$("#openWish").addEventListener("click",()=>{renderWish();drawer.hidden=false;$("#closeWish").focus()});
+$("#closeWish").addEventListener("click",closeDrawer);
+drawer.addEventListener("click",e=>{if(e.target===drawer)closeDrawer()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer()});
+$("#clubForm").addEventListener("submit",e=>{e.preventDefault();const n=$("#cNome").value.trim(),a=$("#cAniv").value;
+  const dt=a?new Date(a+"T12:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"long"}):"(não informado)";
+  const url=wa(`Olá, PresentYá! Quero entrar no Clube Fidelidade.\nNome: ${n}\nAniversário: ${dt}`);
+  const w=window.open(url,"_blank");if(!w){const ok=document.createElement("p");ok.className="ok";ok.innerHTML=`Toque para enviar seu cadastro: <a href="${url}" target="_blank" rel="noopener"><b>abrir WhatsApp</b></a>`;e.target.appendChild(ok)}});
+$("#newsForm").addEventListener("submit",e=>{e.preventDefault();const em=$("#nEmail").value.trim();const ok=$("#newsOk");ok.hidden=false;
+  ok.innerHTML=`Quase lá! Confirme seu cadastro com a loja: <a href="${wa(`Olá, PresentYá! Quero receber novidades e ofertas por e-mail.\nE-mail: ${em}`)}" target="_blank" rel="noopener"><b>enviar pelo WhatsApp</b></a>.`});
+addEventListener("scroll",spy,{passive:true});addEventListener("resize",spy);
+
+/* init */
+$("#yr").textContent=new Date().getFullYear();
+buildShow();autoShow();buildMarquee();buildCarousel();buildChips();renderCatalog(false);renderCur();renderNews();
+tickOffer();setInterval(tickOffer,30000);
+$$("[data-count]").forEach(countUp);
+bindTilt();syncHearts();setupReveal();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(spy);spy();
+</script>
+
+</body>
+</html>
