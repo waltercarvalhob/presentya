@@ -124,6 +124,7 @@ export function Usuarios() {
   const { usuario, toast } = useLoja();
   const [lista, setLista] = useState([]);
   const [busca, setBusca] = useState("");
+  const [novo, setNovo] = useState(false);
   useEffect(() => { api("/api/admin/usuarios").then(setLista).catch((e) => toast(e.message)); }, [toast]);
   const alterar = async (u, patch) => {
     try {
@@ -135,10 +136,14 @@ export function Usuarios() {
   const filtrados = lista.filter((u) => (u.nome + u.email).toLowerCase().includes(busca.toLowerCase()));
   return (
     <>
-      <Topo titulo="Usuários e perfis"><input className="chip" placeholder="Buscar nome ou e-mail" value={busca} onChange={(e) => setBusca(e.target.value)} /></Topo>
+      <Topo titulo="Usuários e perfis">
+        <input className="chip" placeholder="Buscar nome ou e-mail" value={busca} onChange={(e) => setBusca(e.target.value)} />
+        <button className="btn btn-gold btn-sm" onClick={() => setNovo(!novo)}>{novo ? "Fechar" : "+ Novo usuário"}</button>
+      </Topo>
       <p style={{ color: "var(--muted)", marginBottom: "1rem", maxWidth: "70ch" }}>
-        <b>Administrador</b>: acesso total. <b>Técnico</b>: cadastra produtos e cuida dos pedidos (produção e entrega). <b>Usuário</b>: cliente da loja. Para criar um técnico, peça que ele crie uma conta no site e altere o perfil aqui.
+        <b>Administrador</b>: acesso total. <b>Técnico</b>: cadastra produtos e cuida dos pedidos (produção e entrega). <b>Usuário</b>: cliente da loja.
       </p>
+      {novo && <NovoUsuario aoCriar={(u) => { setLista([...lista, u].sort((a, b) => a.nome.localeCompare(b.nome))); setNovo(false); }} />}
       <div className="tbl-wrap">
         <table className="tbl">
           <thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th><th className="num">Pontos</th><th>Perfil</th><th>Situação</th></tr></thead>
@@ -158,6 +163,45 @@ export function Usuarios() {
         </table>
       </div>
     </>
+  );
+}
+
+const USUARIO_VAZIO = { nome: "", email: "", telefone: "", senha: "", perfil: "TECNICO" };
+
+function NovoUsuario({ aoCriar }) {
+  const { toast } = useLoja();
+  const [f, setF] = useState(USUARIO_VAZIO);
+  const [erro, setErro] = useState(null);
+  const [enviando, setEnviando] = useState(false);
+  const campo = (k) => ({ value: f[k], onChange: (e) => setF({ ...f, [k]: e.target.value }) });
+  const salvar = async (e) => {
+    e.preventDefault();
+    setErro(null); setEnviando(true);
+    try {
+      const u = await api("/api/admin/usuarios", { method: "POST", body: f });
+      toast(`${u.nome} cadastrado`);
+      aoCriar(u);
+    } catch (err) { setErro(err.message); }
+    finally { setEnviando(false); }
+  };
+  return (
+    <form className="form" onSubmit={salvar} style={{ maxWidth: 760, marginBottom: "1.4rem" }}>
+      <h3>Novo usuário</h3>
+      {erro && <div className="alert">{erro}</div>}
+      <div className="row">
+        <label>Nome<input required maxLength={120} {...campo("nome")} /></label>
+        <label>E-mail<input required type="email" maxLength={160} {...campo("email")} /></label>
+        <label>Telefone<input maxLength={30} {...campo("telefone")} /></label>
+        <label>Perfil
+          <select {...campo("perfil")}>
+            <option value="USUARIO">Usuário (cliente)</option><option value="TECNICO">Técnico</option><option value="ADMIN">Administrador</option>
+          </select>
+        </label>
+        <label>Senha inicial<input required type="password" minLength={6} maxLength={72} autoComplete="new-password" {...campo("senha")} />
+          <small>A pessoa pode trocar em "Minha conta".</small></label>
+      </div>
+      <button className="btn btn-gold" disabled={enviando}>{enviando ? "Salvando…" : "Cadastrar"}</button>
+    </form>
   );
 }
 

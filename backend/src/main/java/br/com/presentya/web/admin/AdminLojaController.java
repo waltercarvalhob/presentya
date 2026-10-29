@@ -2,9 +2,12 @@ package br.com.presentya.web.admin;
 
 import br.com.presentya.domain.Usuario;
 import br.com.presentya.dto.AdminDtos.AlterarUsuarioRequest;
+import br.com.presentya.dto.AuthDtos.NovoUsuarioRequest;
 import br.com.presentya.dto.AuthDtos.UsuarioDTO;
 import br.com.presentya.repository.UsuarioRepository;
+import br.com.presentya.service.AuthService;
 import br.com.presentya.service.ConfiguracaoService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -20,15 +23,23 @@ import org.springframework.web.server.ResponseStatusException;
 public class AdminLojaController {
     private final UsuarioRepository usuarios;
     private final ConfiguracaoService config;
+    private final AuthService auth;
 
-    public AdminLojaController(UsuarioRepository usuarios, ConfiguracaoService config) {
+    public AdminLojaController(UsuarioRepository usuarios, ConfiguracaoService config, AuthService auth) {
         this.usuarios = usuarios;
         this.config = config;
+        this.auth = auth;
     }
 
     @GetMapping("/usuarios")
     public List<UsuarioDTO> usuarios() {
         return usuarios.findAllByOrderByNomeAsc().stream().map(UsuarioDTO::de).toList();
+    }
+
+    @PostMapping("/usuarios")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UsuarioDTO cadastrar(@Valid @RequestBody NovoUsuarioRequest req) {
+        return auth.cadastrar(req);
     }
 
     @PatchMapping("/usuarios/{id}")

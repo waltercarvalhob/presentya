@@ -4,6 +4,7 @@ import br.com.presentya.domain.Perfil;
 import br.com.presentya.domain.Usuario;
 import br.com.presentya.dto.AuthDtos.AtualizarPerfilRequest;
 import br.com.presentya.dto.AuthDtos.LoginRequest;
+import br.com.presentya.dto.AuthDtos.NovoUsuarioRequest;
 import br.com.presentya.dto.AuthDtos.RegistroRequest;
 import br.com.presentya.dto.AuthDtos.TokenResponse;
 import br.com.presentya.dto.AuthDtos.UsuarioDTO;
@@ -28,18 +29,28 @@ public class AuthService {
 
     @Transactional
     public TokenResponse registrar(RegistroRequest req) {
-        String email = req.email().trim().toLowerCase();
+        Usuario u = criar(req.nome(), req.email(), req.senha(), req.telefone(), Perfil.USUARIO);
+        return new TokenResponse(tokens.gerar(u), UsuarioDTO.de(u));
+    }
+
+    /** Cadastro feito pelo administrador, já com o perfil de acesso. */
+    @Transactional
+    public UsuarioDTO cadastrar(NovoUsuarioRequest req) {
+        return UsuarioDTO.de(criar(req.nome(), req.email(), req.senha(), req.telefone(), req.perfil()));
+    }
+
+    private Usuario criar(String nome, String email, String senha, String telefone, Perfil perfil) {
+        email = email.trim().toLowerCase();
         if (usuarios.existsByEmailIgnoreCase(email)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe uma conta com este e-mail");
         }
         Usuario u = new Usuario();
-        u.setNome(req.nome().trim());
+        u.setNome(nome.trim());
         u.setEmail(email);
-        u.setTelefone(req.telefone());
-        u.setSenhaHash(senhas.encode(req.senha()));
-        u.setPerfil(Perfil.USUARIO);
-        usuarios.save(u);
-        return new TokenResponse(tokens.gerar(u), UsuarioDTO.de(u));
+        u.setTelefone(telefone);
+        u.setSenhaHash(senhas.encode(senha));
+        u.setPerfil(perfil);
+        return usuarios.save(u);
     }
 
     @Transactional(readOnly = true)

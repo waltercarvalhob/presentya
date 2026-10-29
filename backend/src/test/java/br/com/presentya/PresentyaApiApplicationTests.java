@@ -78,4 +78,26 @@ class PresentyaApiApplicationTests {
                 .andExpect(jsonPath("$.faturamento").value(greaterThan(0.0)));
         mvc.perform(get("/api/admin/produtos")).andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void adminCadastraUsuarioComPerfil() throws Exception {
+        String admin = token("/api/auth/login", "{\"email\":\"admin@presentya.com.br\",\"senha\":\"Admin@2026\"}", 200);
+        String novo = "{\"nome\":\"Técnico Teste\",\"email\":\"Tecnico@Teste.com\",\"senha\":\"segredo1\",\"perfil\":\"TECNICO\"}";
+
+        mvc.perform(post("/api/admin/usuarios").header("Authorization", admin)
+                        .contentType(MediaType.APPLICATION_JSON).content(novo))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.perfil").value("TECNICO"))
+                .andExpect(jsonPath("$.email").value("tecnico@teste.com"));
+        mvc.perform(post("/api/admin/usuarios").header("Authorization", admin)
+                        .contentType(MediaType.APPLICATION_JSON).content(novo))
+                .andExpect(status().isConflict());
+
+        // O técnico entra no painel de pedidos, mas não pode cadastrar usuários.
+        String tecnico = token("/api/auth/login", "{\"email\":\"tecnico@teste.com\",\"senha\":\"segredo1\"}", 200);
+        mvc.perform(get("/api/admin/pedidos").header("Authorization", tecnico)).andExpect(status().isOk());
+        mvc.perform(post("/api/admin/usuarios").header("Authorization", tecnico)
+                        .contentType(MediaType.APPLICATION_JSON).content(novo.replace("Tecnico@", "outro@")))
+                .andExpect(status().isForbidden());
+    }
 }

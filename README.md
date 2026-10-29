@@ -19,7 +19,7 @@ O visual é o do `presentya-site.html` original (cópia em `docs/`), agora com p
 | **TECNICO** | Cadastrar/editar produtos e fotos; acompanhar pedidos e mudar status (produção, entrega) |
 | **USUARIO** | Cliente: comprar, acompanhar pedidos, Clube de pontos |
 
-Na primeira execução é criado o administrador **admin@presentya.com.br / Admin@2026** (mude a senha em *Minha conta*, ou defina `ADMIN_EMAIL`/`ADMIN_PASSWORD` antes de rodar pela primeira vez). Para criar um técnico, a pessoa cria conta no site e o admin muda o perfil em **Painel > Usuários**.
+Na primeira execução é criado o administrador **admin@presentya.com.br / Admin@2026** (mude a senha em *Minha conta*, ou defina `ADMIN_EMAIL`/`ADMIN_PASSWORD` antes de rodar pela primeira vez). Para criar um técnico ou outro administrador, use **Painel > Usuários > + Novo usuário** (nome, e-mail, senha inicial e perfil). Quem já tem conta no site pode ter o perfil trocado na mesma tela.
 
 ## Rodar no computador
 

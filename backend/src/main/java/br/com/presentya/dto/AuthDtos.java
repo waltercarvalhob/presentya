@@ -4,6 +4,7 @@ import br.com.presentya.domain.Perfil;
 import br.com.presentya.domain.Usuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
 
@@ -15,6 +16,13 @@ public final class AuthDtos {
             @NotBlank(message = "Informe seu e-mail") @Email(message = "E-mail inválido") @Size(max = 160) String email,
             @NotBlank(message = "Informe uma senha") @Size(min = 6, max = 72, message = "A senha deve ter de 6 a 72 caracteres") String senha,
             @Size(max = 30) String telefone) {}
+
+    public record NovoUsuarioRequest(
+            @NotBlank(message = "Informe o nome") @Size(max = 120) String nome,
+            @NotBlank(message = "Informe o e-mail") @Email(message = "E-mail inválido") @Size(max = 160) String email,
+            @NotBlank(message = "Informe uma senha") @Size(min = 6, max = 72, message = "A senha deve ter de 6 a 72 caracteres") String senha,
+            @Size(max = 30) String telefone,
+            @NotNull(message = "Escolha o perfil") Perfil perfil) {}
 
     public record LoginRequest(
             @NotBlank(message = "Informe seu e-mail") String email,
