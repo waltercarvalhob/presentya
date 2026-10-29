@@ -13,6 +13,7 @@ frontend/dist/
 .env
 .env.*
 !.env.example
+!frontend/.env.production
 
 # Sistema
 .DS_Store
