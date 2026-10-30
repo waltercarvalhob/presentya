@@ -13,7 +13,7 @@ export default function Checkout() {
   const lojas = [config.loja1_nome, config.loja2_nome].filter(Boolean);
   const [d, setD] = useState({
     tipoEntrega: "ENTREGA", lojaRetirada: lojas[0] || "", formaPagamento: "PIX",
-    nomeDestinatario: usuario?.nome || "", telefone: usuario?.telefone || "",
+    nomeDestinatario: usuario?.nome || "", telefone: usuario?.telefone || "", email: usuario?.email || "",
     cep: "", endereco: "", numero: "", complemento: "", bairro: "", cidade: config.cidade_entrega || "São Luís", uf: "MA",
     mensagemCartao: "", observacoes: "",
   });
@@ -54,7 +54,10 @@ export default function Checkout() {
 
   return (
     <>
-      <div className="wrap page-head"><span className="eyebrow">Finalizar compra</span><h2>Quase lá!</h2></div>
+      <div className="wrap page-head">
+        <span className="eyebrow">Finalizar compra</span><h2>Quase lá!</h2>
+        {!usuario && <p style={{ color: "var(--muted)" }}>Pode comprar sem criar conta. Se quiser acompanhar seus pedidos e pontos, a gente oferece isso ao final.</p>}
+      </div>
       <form className="wrap page-grid" onSubmit={finalizar} style={{ paddingBottom: "4rem" }}>
         <div style={{ display: "grid", gap: "1.2rem" }}>
           <div className="form">
@@ -67,6 +70,7 @@ export default function Checkout() {
               <label>Quem recebe<input required maxLength={120} {...campo("nomeDestinatario")} /></label>
               <label>Telefone / WhatsApp<input required type="tel" maxLength={30} {...campo("telefone")} /></label>
             </div>
+            <label>E-mail<input required type="email" maxLength={160} {...campo("email")} /><small>Usamos para enviar a confirmação do pedido.</small></label>
             {retirada ? (
               <label>Loja para retirada
                 <select {...campo("lojaRetirada")}>{lojas.map((l) => <option key={l}>{l}</option>)}</select>

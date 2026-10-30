@@ -77,6 +77,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**", "/api/pagamentos/webhook/**", "/api/status").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/produtos/**", "/api/categorias/**",
                         "/api/configuracoes", "/api/imagens/**").permitAll()
+                // Checkout e acompanhamento de pedido não exigem login (compra como convidado);
+                // "/meus" precisa vir antes do padrão abaixo para continuar exigindo login.
+                .requestMatchers(HttpMethod.GET, "/api/pedidos/meus").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/pedidos").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/pedidos/*").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/pedidos/*/sincronizar", "/api/pedidos/*/simular-pagamento").permitAll()
                 .requestMatchers("/api/admin/categorias/**", "/api/admin/usuarios/**",
                         "/api/admin/configuracoes/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "TECNICO")

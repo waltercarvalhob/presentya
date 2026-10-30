@@ -13,9 +13,12 @@ public class Pedido {
     private Long id;
     @Column(nullable = false, unique = true, length = 20)
     private String codigo;
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+    /** E-mail de quem comprou sem criar conta (compra como convidado). */
+    @Column(length = 160)
+    private String emailConvidado;
     @Enumerated(EnumType.STRING) @Column(nullable = false, length = 30)
     private StatusPedido status = StatusPedido.AGUARDANDO_PAGAMENTO;
     @Enumerated(EnumType.STRING) @Column(nullable = false, length = 10)
@@ -63,6 +66,8 @@ public class Pedido {
     public void setCodigo(String codigo) { this.codigo = codigo; }
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public String getEmailConvidado() { return emailConvidado; }
+    public void setEmailConvidado(String emailConvidado) { this.emailConvidado = emailConvidado; }
     public StatusPedido getStatus() { return status; }
     public void setStatus(StatusPedido status) { this.status = status; }
     public FormaPagamento getFormaPagamento() { return formaPagamento; }

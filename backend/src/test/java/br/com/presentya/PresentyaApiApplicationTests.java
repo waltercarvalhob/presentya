@@ -52,6 +52,7 @@ class PresentyaApiApplicationTests {
         String pedido = """
                 {"itens":[{"produtoId":%d,"quantidade":2,"personalizacao":"Ana & João"}],
                  "formaPagamento":"PIX","tipoEntrega":"ENTREGA","nomeDestinatario":"Ana","telefone":"98999990000",
+                 "email":"cliente@teste.com",
                  "cep":"65000-000","endereco":"Rua Grande","numero":"10","bairro":"Centro","cidade":"Sao Luis","uf":"MA",
                  "subtotal":0.01}
                 """.formatted(caneca);
@@ -77,6 +78,39 @@ class PresentyaApiApplicationTests {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.pagos").value(1))
                 .andExpect(jsonPath("$.faturamento").value(greaterThan(0.0)));
         mvc.perform(get("/api/admin/produtos")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void compraComoConvidadoELiberaAoCriarConta() throws Exception {
+        String catalogo = mvc.perform(get("/api/produtos")).andReturn().getResponse().getContentAsString();
+        int produto = ((Number) ((java.util.Map<?, ?>) JsonPath.read(catalogo, "$[0]")).get("id")).intValue();
+
+        String pedido = """
+                {"itens":[{"produtoId":%d,"quantidade":1}],
+                 "formaPagamento":"PIX","tipoEntrega":"RETIRADA","lojaRetirada":"Loja 1",
+                 "nomeDestinatario":"Convidada","telefone":"98999990000","email":"convidada@teste.com"}
+                """.formatted(produto);
+
+        // Sem token: a compra é aceita e o pedido pode ser acompanhado só com o código.
+        String criado = mvc.perform(post("/api/pedidos").contentType(MediaType.APPLICATION_JSON).content(pedido))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.convidado").value(true))
+                .andExpect(jsonPath("$.clienteEmail").value("convidada@teste.com"))
+                .andReturn().getResponse().getContentAsString();
+        String codigo = JsonPath.read(criado, "$.codigo");
+        mvc.perform(get("/api/pedidos/" + codigo)).andExpect(status().isOk());
+        mvc.perform(post("/api/pedidos/" + codigo + "/simular-pagamento")).andExpect(status().isOk());
+
+        // Outra pessoa não acha o pedido de ninguém pelo "meus" sem login.
+        mvc.perform(get("/api/pedidos/meus")).andExpect(status().isUnauthorized());
+
+        // Ao criar conta com o mesmo e-mail, o pedido de convidado passa a aparecer em "Meus pedidos".
+        String cliente = token("/api/auth/registrar",
+                "{\"nome\":\"Convidada\",\"email\":\"convidada@teste.com\",\"senha\":\"segredo1\"}", 201);
+        mvc.perform(get("/api/pedidos/meus").header("Authorization", cliente))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].codigo").value(codigo))
+                .andExpect(jsonPath("$[0].convidado").value(false));
     }
 
     @Test

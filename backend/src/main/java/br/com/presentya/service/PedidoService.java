@@ -48,12 +48,15 @@ public class PedidoService {
         this.gateway = gateway;
     }
 
-    /** Preços, frete e total são sempre calculados aqui, nunca aceitos do navegador. */
+    /** Preços, frete e total são sempre calculados aqui, nunca aceitos do navegador. Sem login, compra como convidado. */
     @Transactional
     public PedidoDTO criar(Usuario cliente, NovoPedidoRequest req) {
         Pedido p = new Pedido();
         p.setCodigo(novoCodigo());
         p.setUsuario(cliente);
+        if (cliente == null) {
+            p.setEmailConvidado(req.email().trim().toLowerCase());
+        }
         p.setFormaPagamento(req.formaPagamento());
         p.setTipoEntrega(req.tipoEntrega());
         p.setNomeDestinatario(req.nomeDestinatario().trim());
@@ -129,6 +132,12 @@ public class PedidoService {
         return PedidoDTO.de(doDono(codigo, quem), gateway.simulado());
     }
 
+    /** Depois que um convidado cria conta, seus pedidos antigos (mesmo e-mail) passam a aparecer em "Meus pedidos". */
+    @Transactional
+    public void vincularConvidado(Usuario novo) {
+        pedidos.findByUsuarioIsNullAndEmailConvidadoIgnoreCase(novo.getEmail()).forEach(p -> p.setUsuario(novo));
+    }
+
     /** Pergunta ao gateway se o pagamento já caiu (útil quando o webhook não alcança o servidor). */
     @Transactional
     public PedidoDTO sincronizar(String codigo, Usuario quem) {
@@ -161,9 +170,11 @@ public class PedidoService {
         if (novo == StatusPedido.PAGO) {
             p.setStatus(StatusPedido.PAGO);
             Usuario u = p.getUsuario();
-            u.setPontos(u.getPontos() + p.getTotal().intValue());
-            u.setComprasPagas(u.getComprasPagas() + 1);
-            usuarios.save(u);
+            if (u != null) {
+                u.setPontos(u.getPontos() + p.getTotal().intValue());
+                u.setComprasPagas(u.getComprasPagas() + 1);
+                usuarios.save(u);
+            }
             p.getItens().forEach(i -> produtos.findById(i.getProdutoId())
                     .ifPresent(prod -> prod.setVendidos(prod.getVendidos() + i.getQuantidade())));
         } else if (novo == StatusPedido.CANCELADO) {
@@ -220,11 +231,15 @@ public class PedidoService {
 
     // ---------- apoio ----------
 
+    /** Pedido de convidado (sem conta) é liberado por quem souber o código; os demais exigem ser o dono ou a equipe. */
     private Pedido doDono(String codigo, Usuario quem) {
         Pedido p = pedidos.findByCodigo(codigo)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
-        boolean equipe = quem.getPerfil() == Perfil.ADMIN || quem.getPerfil() == Perfil.TECNICO;
-        if (!equipe && !p.getUsuario().getId().equals(quem.getId())) {
+        if (p.getUsuario() == null) {
+            return p;
+        }
+        boolean equipe = quem != null && (quem.getPerfil() == Perfil.ADMIN || quem.getPerfil() == Perfil.TECNICO);
+        if (quem == null || (!equipe && !p.getUsuario().getId().equals(quem.getId()))) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado");
         }
         return p;

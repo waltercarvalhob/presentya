@@ -20,16 +20,19 @@ public class AuthService {
     private final UsuarioRepository usuarios;
     private final PasswordEncoder senhas;
     private final TokenService tokens;
+    private final PedidoService pedidos;
 
-    public AuthService(UsuarioRepository usuarios, PasswordEncoder senhas, TokenService tokens) {
+    public AuthService(UsuarioRepository usuarios, PasswordEncoder senhas, TokenService tokens, PedidoService pedidos) {
         this.usuarios = usuarios;
         this.senhas = senhas;
         this.tokens = tokens;
+        this.pedidos = pedidos;
     }
 
     @Transactional
     public TokenResponse registrar(RegistroRequest req) {
         Usuario u = criar(req.nome(), req.email(), req.senha(), req.telefone(), Perfil.USUARIO);
+        pedidos.vincularConvidado(u);
         return new TokenResponse(tokens.gerar(u), UsuarioDTO.de(u));
     }
 

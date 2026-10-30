@@ -30,6 +30,11 @@ public class ContaController {
         return auth.usuarioAtivo(Long.valueOf(jwt.getSubject()));
     }
 
+    /** null quando a requisição não traz login (compra ou acompanhamento como convidado). */
+    private Usuario euOuConvidado(Jwt jwt) {
+        return jwt != null ? eu(jwt) : null;
+    }
+
     @GetMapping("/usuarios/me")
     public UsuarioDTO me(@AuthenticationPrincipal Jwt jwt) {
         return UsuarioDTO.de(eu(jwt));
@@ -43,7 +48,7 @@ public class ContaController {
     @PostMapping("/pedidos")
     @ResponseStatus(HttpStatus.CREATED)
     public PedidoDTO criar(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody NovoPedidoRequest req) {
-        return pedidos.criar(eu(jwt), req);
+        return pedidos.criar(euOuConvidado(jwt), req);
     }
 
     @GetMapping("/pedidos/meus")
@@ -53,16 +58,16 @@ public class ContaController {
 
     @GetMapping("/pedidos/{codigo}")
     public PedidoDTO detalhe(@AuthenticationPrincipal Jwt jwt, @PathVariable String codigo) {
-        return pedidos.detalhe(codigo, eu(jwt));
+        return pedidos.detalhe(codigo, euOuConvidado(jwt));
     }
 
     @PostMapping("/pedidos/{codigo}/sincronizar")
     public PedidoDTO sincronizar(@AuthenticationPrincipal Jwt jwt, @PathVariable String codigo) {
-        return pedidos.sincronizar(codigo, eu(jwt));
+        return pedidos.sincronizar(codigo, euOuConvidado(jwt));
     }
 
     @PostMapping("/pedidos/{codigo}/simular-pagamento")
     public PedidoDTO simular(@AuthenticationPrincipal Jwt jwt, @PathVariable String codigo) {
-        return pedidos.simularPagamento(codigo, eu(jwt));
+        return pedidos.simularPagamento(codigo, euOuConvidado(jwt));
     }
 }

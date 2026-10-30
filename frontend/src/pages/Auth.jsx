@@ -54,7 +54,8 @@ export function Cadastro() {
   const { registrar, toast } = useLoja();
   const nav = useNavigate();
   const destino = useDestino();
-  const [d, setD] = useState({ nome: "", email: "", telefone: "", senha: "" });
+  const [q] = useSearchParams();
+  const [d, setD] = useState({ nome: q.get("nome") || "", email: q.get("email") || "", telefone: "", senha: "" });
   const [erro, setErro] = useState(null);
   const [enviando, setEnviando] = useState(false);
   const campo = (k) => ({ value: d[k], onChange: (e) => setD({ ...d, [k]: e.target.value }) });

@@ -18,10 +18,10 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="entrar" element={<Entrar />} />
         <Route path="cadastro" element={<Cadastro />} />
-        <Route path="checkout" element={<Protegido><Checkout /></Protegido>} />
+        <Route path="checkout" element={<Checkout />} />
         <Route path="minha-conta" element={<Protegido><Conta /></Protegido>} />
-        <Route path="pedido/:codigo" element={<Protegido><Pedido /></Protegido>} />
-        <Route path="pagamento-simulado/:codigo" element={<Protegido><PagamentoSimulado /></Protegido>} />
+        <Route path="pedido/:codigo" element={<Pedido />} />
+        <Route path="pagamento-simulado/:codigo" element={<PagamentoSimulado />} />
         <Route path="*" element={<section className="sec"><div className="wrap empty"><h2>Página não encontrada</h2><a className="btn btn-gold" href="/">Voltar à loja</a></div></section>} />
       </Route>
       <Route path="admin" element={<Protegido perfis={EQUIPE}><AdminLayout /></Protegido>}>

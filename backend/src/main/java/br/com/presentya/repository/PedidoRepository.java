@@ -13,6 +13,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     Optional<Pedido> findByCodigo(String codigo);
     boolean existsByCodigo(String codigo);
     List<Pedido> findByUsuarioIdOrderByCriadoEmDesc(Long usuarioId);
+    List<Pedido> findByUsuarioIsNullAndEmailConvidadoIgnoreCase(String emailConvidado);
     List<Pedido> findTop200ByOrderByCriadoEmDesc();
     List<Pedido> findTop200ByStatusOrderByCriadoEmDesc(StatusPedido status);
     long countByStatus(StatusPedido status);

@@ -85,6 +85,19 @@ export default function Pedido() {
           {aguardando && p.pagamentoSimulado && <SimularBotao codigo={p.codigo} aoPagar={setP} />}
 
           <div className="form"><h3>Entrega</h3><Entrega p={p} />{p.mensagemCartao && <p><b>Cartão:</b> “{p.mensagemCartao}”</p>}</div>
+
+          {p.convidado && (
+            <div className="form">
+              <h3>Quer acompanhar seus pedidos?</h3>
+              <p style={{ color: "var(--muted)" }}>Crie sua conta grátis com o mesmo e-mail da compra e esse pedido (e os próximos) aparecem em "Meus pedidos", além de entrar no Clube PresentYá.</p>
+              <Link
+                className="btn btn-gold btn-sm"
+                to={"/cadastro?next=" + encodeURIComponent("/pedido/" + p.codigo)
+                  + "&nome=" + encodeURIComponent(p.clienteNome || "")
+                  + "&email=" + encodeURIComponent(p.clienteEmail || "")}
+              >Criar minha conta</Link>
+            </div>
+          )}
         </div>
         <aside className="form sticky"><h3>Itens</h3><Itens p={p} /><span className={"status " + p.status}>{STATUS[p.status]}</span><Link to="/minha-conta" className="btn btn-line btn-sm">Meus pedidos</Link></aside>
       </div>
