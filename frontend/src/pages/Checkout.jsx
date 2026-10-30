@@ -13,8 +13,8 @@ export default function Checkout() {
   const lojas = [config.loja1_nome, config.loja2_nome].filter(Boolean);
   const [d, setD] = useState({
     tipoEntrega: "ENTREGA", lojaRetirada: lojas[0] || "", formaPagamento: "PIX",
-    nomeDestinatario: usuario?.nome || "", telefone: usuario?.telefone || "", email: usuario?.email || "",
-    cep: "", endereco: "", numero: "", complemento: "", bairro: "", cidade: config.cidade_entrega || "São Luís", uf: "MA",
+    nomeDestinatario: "", telefone: "", email: "",
+    cep: "", endereco: "", numero: "", complemento: "", bairro: "", cidade: "", uf: "",
     mensagemCartao: "", observacoes: "",
   });
   const [erro, setErro] = useState(null);
