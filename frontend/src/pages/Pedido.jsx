@@ -90,12 +90,15 @@ export default function Pedido() {
             <div className="form">
               <h3>Quer acompanhar seus pedidos?</h3>
               <p style={{ color: "var(--muted)" }}>Crie sua conta grátis com o mesmo e-mail da compra e esse pedido (e os próximos) aparecem em "Meus pedidos", além de entrar no Clube PresentYá.</p>
-              <Link
-                className="btn btn-gold btn-sm"
-                to={"/cadastro?next=" + encodeURIComponent("/pedido/" + p.codigo)
-                  + "&nome=" + encodeURIComponent(p.clienteNome || "")
-                  + "&email=" + encodeURIComponent(p.clienteEmail || "")}
-              >Criar minha conta</Link>
+              <div style={{ display: "flex", gap: ".6rem", flexWrap: "wrap" }}>
+                <Link
+                  className="btn btn-gold btn-sm"
+                  to={"/cadastro?next=" + encodeURIComponent("/pedido/" + p.codigo)
+                    + "&nome=" + encodeURIComponent(p.clienteNome || "")
+                    + "&email=" + encodeURIComponent(p.clienteEmail || "")}
+                >Criar minha conta</Link>
+                <Link className="btn btn-line btn-sm" to="/">Não, voltar à loja</Link>
+              </div>
             </div>
           )}
         </div>
