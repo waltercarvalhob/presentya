@@ -56,8 +56,8 @@ export function Painel() {
   );
 }
 
-function TabelaPedidos({ pedidos, aoMudar }) {
-  const { toast } = useLoja();
+function TabelaPedidos({ pedidos, aoMudar, aoExcluir }) {
+  const { toast, usuario } = useLoja();
   const [aberto, setAberto] = useState(null);
   const mudar = async (p, status) => {
     if (status === "CANCELADO" && !confirm(`Cancelar o pedido ${p.codigo}? O estoque será devolvido. Se já foi pago, faça o estorno no Mercado Pago.`)) return;
@@ -65,6 +65,14 @@ function TabelaPedidos({ pedidos, aoMudar }) {
       const r = await api(`/api/admin/pedidos/${p.codigo}/status`, { method: "PATCH", body: { status } });
       aoMudar?.(r);
       toast(`Pedido ${p.codigo}: ${STATUS[r.status]}`);
+    } catch (e) { toast(e.message); }
+  };
+  const excluir = async (p) => {
+    if (!confirm(`Excluir o pedido ${p.codigo} e todos os seus dados? Essa ação não pode ser desfeita.`)) return;
+    try {
+      await api(`/api/admin/pedidos/${p.codigo}`, { method: "DELETE" });
+      aoExcluir?.(p.codigo);
+      toast(`Pedido ${p.codigo} excluído`);
     } catch (e) { toast(e.message); }
   };
   if (!pedidos.length) return <p style={{ color: "var(--muted)" }}>Nenhum pedido por aqui.</p>;
@@ -85,7 +93,10 @@ function TabelaPedidos({ pedidos, aoMudar }) {
                   {Object.entries(STATUS).map(([v, t]) => <option key={v} value={v}>{t}</option>)}
                 </select>
               ) : <span className={"status " + p.status}>{STATUS[p.status]}</span>}</td>
-              <td><button className="mini-btn" onClick={() => setAberto(aberto === p.codigo ? null : p.codigo)}>{aberto === p.codigo ? "Fechar" : "Detalhes"}</button></td>
+              <td>
+                <button className="mini-btn" onClick={() => setAberto(aberto === p.codigo ? null : p.codigo)}>{aberto === p.codigo ? "Fechar" : "Detalhes"}</button>
+                {aoExcluir && usuario.perfil === "ADMIN" && <button className="mini-btn danger" onClick={() => excluir(p)}>Excluir</button>}
+              </td>
             </tr>,
             aberto === p.codigo && (
               <tr key={p.codigo + "-d"}><td colSpan={7}>
@@ -115,7 +126,11 @@ export function Pedidos() {
         <button role="tab" aria-selected={status === ""} onClick={() => setStatus("")}>Todos</button>
         {Object.entries(STATUS).map(([v, t]) => <button key={v} role="tab" aria-selected={status === v} onClick={() => setStatus(v)}>{t}</button>)}
       </div>
-      {lista === null ? <p className="hand">Carregando…</p> : <TabelaPedidos pedidos={lista} aoMudar={(r) => setLista(lista.map((p) => (p.codigo === r.codigo ? r : p)))} />}
+      {lista === null ? <p className="hand">Carregando…</p> : (
+        <TabelaPedidos pedidos={lista}
+          aoMudar={(r) => setLista(lista.map((p) => (p.codigo === r.codigo ? r : p)))}
+          aoExcluir={(codigo) => setLista(lista.filter((p) => p.codigo !== codigo))} />
+      )}
     </>
   );
 }

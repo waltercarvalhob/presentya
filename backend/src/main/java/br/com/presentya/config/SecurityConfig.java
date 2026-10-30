@@ -85,6 +85,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/pedidos/*/sincronizar", "/api/pedidos/*/simular-pagamento").permitAll()
                 .requestMatchers("/api/admin/categorias/**", "/api/admin/usuarios/**",
                         "/api/admin/configuracoes/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/pedidos/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "TECNICO")
                 .anyRequest().authenticated())
             .oauth2ResourceServer(o -> o.jwt(j -> j.jwtAuthenticationConverter(conversor)));

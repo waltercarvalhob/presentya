@@ -7,6 +7,7 @@ import br.com.presentya.dto.PedidoDtos.PedidoDTO;
 import br.com.presentya.service.PedidoService;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 /** ADMIN e TECNICO acompanham pedidos, produção e entrega. */
@@ -32,5 +33,12 @@ public class AdminPedidoController {
     @PatchMapping("/pedidos/{codigo}/status")
     public PedidoDTO alterarStatus(@PathVariable String codigo, @Valid @RequestBody AlterarStatusRequest req) {
         return pedidos.alterarStatus(codigo, req.status());
+    }
+
+    /** Restrito a ADMIN (ver SecurityConfig): apaga de vez, por exemplo pedidos de teste. */
+    @DeleteMapping("/pedidos/{codigo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluir(@PathVariable String codigo) {
+        pedidos.excluir(codigo);
     }
 }

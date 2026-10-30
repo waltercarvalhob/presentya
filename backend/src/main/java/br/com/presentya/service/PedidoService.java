@@ -215,6 +215,19 @@ public class PedidoService {
         return PedidoDTO.de(p, gateway.simulado());
     }
 
+    /** Remove o pedido e seus dados por completo (ex.: pedido de teste) — diferente de cancelar, que mantém o histórico. */
+    @Transactional
+    public void excluir(String codigo) {
+        Pedido p = pedidos.findByCodigo(codigo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+        if (p.getStatus() == StatusPedido.AGUARDANDO_PAGAMENTO) {
+            p.getItens().forEach(i -> produtos.findById(i.getProdutoId())
+                    .filter(prod -> prod.getEstoque() != null)
+                    .ifPresent(prod -> prod.setEstoque(prod.getEstoque() + i.getQuantidade())));
+        }
+        pedidos.delete(p);
+    }
+
     @Transactional(readOnly = true)
     public DashboardDTO painel() {
         return new DashboardDTO(
