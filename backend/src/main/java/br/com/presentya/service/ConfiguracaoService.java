@@ -27,6 +27,11 @@ public class ConfiguracaoService {
         PADRAO.put("frete_cidade", "15.00");
         PADRAO.put("frete_brasil", "35.00");
         PADRAO.put("aviso_topo", "");
+        // Aviso "você está perto da loja" na página /ofertas (coordenadas vazias = desligado)
+        PADRAO.put("loja_latitude", "");
+        PADRAO.put("loja_longitude", "");
+        PADRAO.put("raio_proximidade", "20");
+        PADRAO.put("mensagem_proximidade", "Você está pertinho da PresentYá! Passe na loja e aproveite as ofertas de hoje.");
     }
 
     private final ConfiguracaoRepository repo;

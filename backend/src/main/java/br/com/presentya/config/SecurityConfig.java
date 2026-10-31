@@ -76,7 +76,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**", "/api/pagamentos/webhook/**", "/api/status").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/produtos/**", "/api/categorias/**",
-                        "/api/configuracoes", "/api/imagens/**").permitAll()
+                        "/api/configuracoes", "/api/imagens/**", "/api/ofertas", "/api/push/chave").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/interessados", "/api/push/inscricoes", "/api/push/cancelar").permitAll()
                 // Checkout e acompanhamento de pedido não exigem login (compra como convidado);
                 // "/meus" precisa vir antes do padrão abaixo para continuar exigindo login.
                 .requestMatchers(HttpMethod.GET, "/api/pedidos/meus").authenticated()
@@ -84,7 +85,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/pedidos/*").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/pedidos/*/sincronizar", "/api/pedidos/*/simular-pagamento").permitAll()
                 .requestMatchers("/api/admin/categorias/**", "/api/admin/usuarios/**",
-                        "/api/admin/configuracoes/**").hasRole("ADMIN")
+                        "/api/admin/configuracoes/**", "/api/admin/ofertas/**",
+                        "/api/admin/interessados/**", "/api/admin/push/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/pedidos/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "TECNICO")
                 .anyRequest().authenticated())

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
 import Drawers from "./Drawers";
 import Logo from "./Logo";
+import PertoDaLoja from "./PertoDaLoja";
 import { Icon, SecLink } from "./nav";
 import { useLoja } from "../lib/store";
 import { RM } from "../lib/util";
@@ -23,6 +24,7 @@ function Footer() {
           <div><h4>Loja</h4><ul>
             <li><SecLink id="produtos">Nossos Produtos</SecLink></li><li><SecLink id="ideias">Ideias de Presente</SecLink></li>
             <li><SecLink id="novidades">Novidades</SecLink></li><li><SecLink id="clube">Clube Fidelidade</SecLink></li>
+            <li><Link to="/ofertas">Ofertas da loja</Link></li>
           </ul></div>
           <div><h4>Ajuda</h4><ul>
             <li><SecLink id="como-comprar">Como Comprar</SecLink></li><li><SecLink id="entrega">Entrega e Devolução</SecLink></li>
@@ -70,6 +72,7 @@ export default function Layout() {
       <main><Outlet /></main>
       <Footer />
       <Floating />
+      <PertoDaLoja />
       <Drawers />
     </>
   );

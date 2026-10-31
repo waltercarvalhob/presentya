@@ -20,6 +20,8 @@ export function AdminLayout() {
           <NavLink to="/admin/produtos">Produtos</NavLink>
           {admin && <NavLink to="/admin/categorias">Categorias</NavLink>}
           {admin && <NavLink to="/admin/usuarios">Usuários</NavLink>}
+          {admin && <NavLink to="/admin/ofertas">Ofertas e QR Code</NavLink>}
+          {admin && <NavLink to="/admin/interessados">Interessados</NavLink>}
           {admin && <NavLink to="/admin/loja">Dados da loja</NavLink>}
         </nav>
         <div className="who">

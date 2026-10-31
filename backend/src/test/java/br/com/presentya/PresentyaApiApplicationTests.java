@@ -134,4 +134,67 @@ class PresentyaApiApplicationTests {
                         .contentType(MediaType.APPLICATION_JSON).content(novo.replace("Tecnico@", "outro@")))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void ofertasDoQrCodeEInteressados() throws Exception {
+        String admin = token("/api/auth/login", "{\"email\":\"admin@presentya.com.br\",\"senha\":\"Admin@2026\"}", 200);
+        mvc.perform(post("/api/admin/ofertas").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"titulo\":\"Canecas 20% off\",\"cupom\":\"vitrine20\"}"))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.cupom").value("VITRINE20"));
+        mvc.perform(post("/api/admin/ofertas").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"titulo\":\"Vencida\",\"validaAte\":\"2000-01-01\"}"))
+                .andExpect(status().isCreated());
+
+        // A página pública só mostra as ofertas ativas e dentro do prazo.
+        mvc.perform(get("/api/ofertas")).andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].titulo").value("Canecas 20% off"));
+
+        String pessoa = "{\"nome\":\"Maria\",\"whatsapp\":\"%s\",\"origem\":\"qrcode\",\"aceite\":%s}";
+        mvc.perform(post("/api/interessados").contentType(MediaType.APPLICATION_JSON).content(pessoa.formatted("(98) 99999-0000", false)))
+                .andExpect(status().isBadRequest());
+        mvc.perform(post("/api/interessados").contentType(MediaType.APPLICATION_JSON).content(pessoa.formatted("(98) 99999-0000", true)))
+                .andExpect(status().isNoContent());
+        mvc.perform(post("/api/interessados").contentType(MediaType.APPLICATION_JSON).content(pessoa.formatted("5598999990000", true)))
+                .andExpect(status().isNoContent());
+
+        // Mesmo número em formatos diferentes vira um cadastro só; a lista é só do administrador.
+        mvc.perform(get("/api/admin/interessados")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/admin/interessados").header("Authorization", admin)).andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].whatsapp").value("5598999990000"))
+                .andExpect(jsonPath("$[0].origem").value("qrcode"));
+    }
+
+    @Test
+    void inscricaoNasNotificacoes() throws Exception {
+        String admin = token("/api/auth/login", "{\"email\":\"admin@presentya.com.br\",\"senha\":\"Admin@2026\"}", 200);
+        String chave = JsonPath.read(mvc.perform(get("/api/push/chave")).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(), "$.chave");
+        org.junit.jupiter.api.Assertions.assertEquals(65, br.com.presentya.push.WebPush.b64(chave).length);
+
+        String p256dh = br.com.presentya.push.WebPush.b64(br.com.presentya.push.WebPush.pontoBruto(
+                (java.security.interfaces.ECPublicKey) br.com.presentya.push.WebPush.novoParDeChaves().getPublic()));
+        String inscricao = "{\"endpoint\":\"%s\",\"keys\":{\"p256dh\":\"" + p256dh + "\",\"auth\":\"BTBZMqHH6r4Tts7J_aSIgg\"},\"origem\":\"qrcode\"}";
+
+        // Endereço fora dos serviços de push dos navegadores é recusado.
+        mvc.perform(post("/api/push/inscricoes").contentType(MediaType.APPLICATION_JSON).content(inscricao.formatted("https://exemplo.com/x")))
+                .andExpect(status().isBadRequest());
+        mvc.perform(post("/api/push/inscricoes").contentType(MediaType.APPLICATION_JSON).content(inscricao.formatted("https://fcm.googleapis.com/fcm/send/abc")))
+                .andExpect(status().isNoContent());
+        mvc.perform(post("/api/push/inscricoes").contentType(MediaType.APPLICATION_JSON).content(inscricao.formatted("https://fcm.googleapis.com/fcm/send/abc")))
+                .andExpect(status().isNoContent());
+
+        mvc.perform(get("/api/admin/push").header("Authorization", admin)).andExpect(jsonPath("$.inscritos").value(1));
+        mvc.perform(post("/api/admin/push/enviar").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"titulo\":\"Hoje\",\"mensagem\":\"Tudo com 10%\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.enviadas").value(1));
+        mvc.perform(post("/api/admin/push/enviar").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"titulo\":\"Hoje\",\"mensagem\":\"x\"}"))
+                .andExpect(status().isUnauthorized());
+
+        mvc.perform(post("/api/push/cancelar").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"endpoint\":\"https://fcm.googleapis.com/fcm/send/abc\"}"))
+                .andExpect(status().isNoContent());
+        mvc.perform(get("/api/admin/push").header("Authorization", admin)).andExpect(jsonPath("$.inscritos").value(0));
+    }
 }

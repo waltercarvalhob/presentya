@@ -566,3 +566,47 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.92rem}
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   .js .rv.pre{opacity:1;transform:none}
 }
+
+/* ===== Ofertas da vitrine (QR Code) e aviso de proximidade ===== */
+.ofertas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem}
+.oferta-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:1.4rem;display:grid;gap:.7rem;align-content:start}
+.oferta-card p{color:var(--muted)}
+.cupom{display:flex;align-items:center;gap:.7rem;border:2px dashed var(--ink);border-radius:12px;padding:.55rem .9rem;background:var(--card);justify-self:start}
+.cupom small{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.cupom b{font-family:var(--f-display);font-size:1.2rem;letter-spacing:.06em}
+.oferta-pe{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;margin-top:auto}
+.oferta-pe small{color:var(--muted)}
+.perto-card{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;background:var(--sage-soft);border-radius:var(--r);padding:1rem 1.2rem}
+.perto-card.perto{background:var(--brand)}
+.perto-card p{max-width:60ch}
+.form .aceite{display:flex;gap:.6rem;align-items:flex-start;font-weight:500}
+.form .aceite input{width:auto;margin-top:.25rem}
+.perto-faixa{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;width:min(640px,calc(100% - 32px));display:flex;align-items:center;gap:.8rem;background:var(--brand);color:var(--ink);border-radius:16px;padding:.8rem 1rem;box-shadow:0 12px 30px var(--shadow);animation:cardIn .5s var(--ease)}
+.perto-faixa span{flex:1;font-size:.92rem;line-height:1.35}
+.perto-faixa .x{background:none;border:none;font-size:1.4rem;line-height:1;cursor:pointer;color:var(--ink);padding:.2rem .4rem}
+a.mini-btn{text-decoration:none;display:inline-block}
+.qr-painel{display:grid;grid-template-columns:auto 1fr;gap:1.4rem;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.4rem;max-width:900px}
+.qr-img{width:220px;height:220px;border-radius:12px;border:1px solid var(--line)}
+.qr-link{font-size:.85rem;background:var(--sage-soft);padding:.45rem .7rem;border-radius:8px;word-break:break-all;justify-self:start}
+.cartaz-pg{min-height:100vh;background:var(--sage-soft);display:grid;justify-items:center;gap:1rem;padding:1rem}
+.cartaz-acoes{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
+.cartaz{--logo-y:#141414;width:min(210mm,100%);aspect-ratio:210/297;background:var(--brand);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4mm;padding:12mm;text-align:center;box-shadow:0 10px 30px var(--shadow)}
+.cartaz .brand-svg{height:30mm;width:auto}
+.cartaz h1{font-size:clamp(1.8rem,7vw,3.4rem)}
+.cartaz-sub{font-family:var(--f-hand);font-size:clamp(1.4rem,5vw,2.4rem)}
+.cartaz-qr{width:min(110mm,70%);height:auto;background:#fff;padding:4mm;border-radius:6mm}
+.cartaz-ofertas{list-style:none;margin:0;padding:0;display:grid;gap:1.5mm;font:600 clamp(1rem,3vw,1.35rem) var(--f-display)}
+.cartaz-pe{font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.85rem}
+@media (max-width:640px){
+  .qr-painel{grid-template-columns:1fr;justify-items:start}
+}
+@media print{
+  @page{size:A4;margin:0}
+  body::before,.cartaz-acoes{display:none!important}
+  .cartaz-pg{padding:0;background:none;display:block}
+  .cartaz{width:210mm;height:297mm;box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+.push-card{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;background:var(--brand);border-radius:var(--r);padding:1.2rem 1.4rem;box-shadow:0 10px 26px color-mix(in srgb,var(--brand) 40%,transparent)}
+.push-card>div{display:grid;gap:.3rem;max-width:62ch;flex:1 1 280px}
+.push-card b{font-family:var(--f-display);font-size:1.08rem}
+.push-card.ok{background:var(--sage-soft);box-shadow:none}
