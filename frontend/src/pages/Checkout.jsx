@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Art } from "../lib/art";
 import { api } from "../lib/api";
@@ -20,6 +20,12 @@ export default function Checkout() {
   const [erro, setErro] = useState(null);
   const [enviando, setEnviando] = useState(false);
   const campo = (k) => ({ value: d[k], onChange: (e) => setD({ ...d, [k]: e.target.value }) });
+
+  // Os dados da loja (nome das lojas para retirada) podem chegar depois do primeiro render;
+  // sem isso, o select mostrava uma loja mas o pedido ia sem nenhuma escolhida.
+  useEffect(() => {
+    if (!d.lojaRetirada && lojas.length) setD((x) => (x.lojaRetirada ? x : { ...x, lojaRetirada: lojas[0] }));
+  }, [lojas.join("|")]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const buscarCep = async () => {
     const cep = d.cep.replace(/\D/g, "");
