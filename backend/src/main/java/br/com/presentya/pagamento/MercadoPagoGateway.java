@@ -58,7 +58,7 @@ public class MercadoPagoGateway implements GatewayPagamento {
         corpo.put("description", "Pedido " + pedido.getCodigo() + " - PresentYá");
         corpo.put("payment_method_id", "pix");
         corpo.put("external_reference", pedido.getCodigo());
-        corpo.put("payer", Map.of("email", pedido.getUsuario().getEmail(), "first_name", pedido.getUsuario().getNome()));
+        corpo.put("payer", Map.of("email", emailCliente(pedido), "first_name", nomeCliente(pedido)));
         if (publico(apiUrl)) corpo.put("notification_url", apiUrl + "/api/pagamentos/webhook/mercadopago");
 
         Map<?, ?> r = http.post().uri("/v1/payments")
@@ -86,7 +86,7 @@ public class MercadoPagoGateway implements GatewayPagamento {
                 "quantity", 1,
                 "currency_id", "BRL",
                 "unit_price", pedido.getTotal())));
-        corpo.put("payer", Map.of("email", pedido.getUsuario().getEmail(), "name", pedido.getUsuario().getNome()));
+        corpo.put("payer", Map.of("email", emailCliente(pedido), "name", nomeCliente(pedido)));
         corpo.put("external_reference", pedido.getCodigo());
         corpo.put("statement_descriptor", "PRESENTYA");
         corpo.put("back_urls", Map.of("success", retorno, "failure", retorno, "pending", retorno));
@@ -148,5 +148,14 @@ public class MercadoPagoGateway implements GatewayPagamento {
     /** O Mercado Pago só aceita URLs de retorno/aviso públicas (https). */
     private static boolean publico(String url) {
         return url != null && url.startsWith("https://");
+    }
+
+    /** Pedido de convidado não tem conta: usa os dados informados no checkout. */
+    private static String emailCliente(Pedido pedido) {
+        return pedido.getUsuario() != null ? pedido.getUsuario().getEmail() : pedido.getEmailConvidado();
+    }
+
+    private static String nomeCliente(Pedido pedido) {
+        return pedido.getUsuario() != null ? pedido.getUsuario().getNome() : pedido.getNomeDestinatario();
     }
 }
