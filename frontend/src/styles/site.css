@@ -650,3 +650,12 @@ a.mini-btn{text-decoration:none;display:inline-block}
 .cartaz-qrs figure{margin:0;display:grid;gap:2mm;justify-items:center;flex:0 1 auto}
 .cartaz-qrs figcaption{font:700 clamp(1rem,3vw,1.5rem) var(--f-display)}
 .cartaz-qrs.dois .cartaz-qr{width:min(78mm,40vw)}
+.cartaz-nfc{display:flex;align-items:center;gap:5mm;text-align:left;background:#fff;border-radius:6mm;padding:3mm 6mm 3mm 3mm}
+.cartaz-nfc b{display:block;font:700 clamp(1.1rem,3.4vw,1.6rem) var(--f-display)}
+.cartaz-nfc small{font-size:clamp(.75rem,2vw,.95rem);color:var(--muted)}
+.nfc-alvo{width:min(38mm,22vw);aspect-ratio:1;border-radius:50%;border:2.5px dashed var(--ink);display:grid;place-items:center;flex:none;background:var(--brand)}
+.nfc-alvo svg{width:55%;height:55%}
+.cartaz.com-nfc{gap:3mm}
+.cartaz.com-nfc .cartaz-qr{width:min(88mm,62%)}
+.cartaz.com-nfc .cartaz-qrs.dois .cartaz-qr{width:min(66mm,34vw)}
+.cartaz.com-nfc .brand-svg{height:24mm}

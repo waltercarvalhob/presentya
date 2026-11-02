@@ -41,7 +41,11 @@ const baixar = async (link, nome) => {
 
 /** Robô de ofertas: quem lê o QR manda uma mensagem e recebe as ofertas sozinho no WhatsApp ou no Telegram. */
 function Canais() {
+  const { toast } = useLoja();
   const [c, setC] = useState(null);
+  const copiar = (link) => navigator.clipboard.writeText(link).then(
+    () => toast("Link copiado: no app NFC Tools, Escrever → URL → cole e encoste a etiqueta"),
+    () => prompt("Copie o link para gravar na etiqueta NFC:", link));
   useEffect(() => { api("/api/admin/canais").then(setC).catch(() => {}); }, []);
   if (!c) return null;
   const situacao = (ativo) => (ativo ? <span className="status PAGO">Ligado</span> : <span className="status AGUARDANDO_PAGAMENTO">Falta configurar</span>);
@@ -60,7 +64,10 @@ function Canais() {
           <small>{c.whatsapp.contatos} contato(s) recebendo</small>
           {c.whatsapp.ativo && !c.whatsapp.modelo && <small>⚠️ Sem modelo aprovado: ofertas novas só chegam a quem falou com a loja nas últimas 24 h (regra da Meta).</small>}
           {!c.whatsapp.ativo && <small>Sem a API configurada, este QR abre a conversa, mas quem responde é você, manualmente.</small>}
-          <button type="button" className="btn btn-line btn-sm" onClick={() => baixar(c.whatsapp.link, "presentya-qr-whatsapp.png")}>Baixar QR</button>
+          <div style={{ display: "flex", gap: ".4rem", flexWrap: "wrap" }}>
+            <button type="button" className="btn btn-line btn-sm" onClick={() => baixar(c.whatsapp.link, "presentya-qr-whatsapp.png")}>Baixar QR</button>
+            <button type="button" className="btn btn-line btn-sm" onClick={() => copiar(c.whatsapp.link)}>Copiar link para NFC</button>
+          </div>
         </div>
         <div className="canal">
           <div className="canal-topo"><b>Telegram</b>{situacao(c.telegram.ativo)}</div>
@@ -72,6 +79,16 @@ function Canais() {
         </div>
       </div>
       {c.ultimoEnvio && <small>Último envio do robô: {c.ultimoEnvio.endsWith(" OK") ? "✅ entregue" : "⚠️ " + c.ultimoEnvio.replace(/^\S+ /, "")}</small>}
+      <details>
+        <summary><b>Etiqueta NFC na vitrine (“encoste o celular”)</b></summary>
+        <div className="como-ligar">
+          <p>Compre etiquetas <b>NFC NTAG215</b> (uns R$ 2 a 5 cada). Instale o app gratuito <b>NFC Tools</b> no celular,
+            toque em <i>Escrever → Adicionar registro → URL</i>, cole o link do WhatsApp (botão “Copiar link para NFC” acima),
+            toque em <i>Escrever</i> e encoste a etiqueta. Cole-a do lado de dentro do vidro, atrás do círculo do cartaz.
+            Quem encostar o celular abre o WhatsApp da loja na hora, sem câmera, no Android e no iPhone (XS ou mais novo).
+            Vidro muito grosso (mais de ~1 cm) pode impedir a leitura: teste antes.</p>
+        </div>
+      </details>
       <details>
         <summary><b>Como ligar</b></summary>
         <div className="como-ligar">
@@ -409,6 +426,7 @@ export function Cartaz() {
   const [ofertas, setOfertas] = useState([]);
   const [qrs, setQrs] = useState(null);
   const [escolha, setEscolha] = useState("todos");
+  const [nfc, setNfc] = useState(true);
   useEffect(() => {
     api("/api/ofertas").then(setOfertas).catch(() => {});
     api("/api/admin/canais").then((c) => setQrs(qrsDoCartaz(c))).catch(() => setQrs(qrsDoCartaz(null)));
@@ -425,9 +443,12 @@ export function Cartaz() {
             {qrs.map((q) => <option key={q.id} value={q.id}>Só {q.nome}</option>)}
           </select>
         )}
-        <span>Dica: papel A4, sem margens, em cores. Cole na altura dos olhos.</span>
+        <label style={{ display: "flex", gap: ".4rem", alignItems: "center" }}>
+          <input type="checkbox" checked={nfc} onChange={(e) => setNfc(e.target.checked)} /> Área NFC (“Encoste o celular aqui”)
+        </label>
+        <span>Dica: papel A4, sem margens, em cores. Cole na altura dos olhos{nfc ? " e a etiqueta NFC atrás do círculo, do lado de dentro do vidro" : ""}.</span>
       </div>
-      <div className="cartaz">
+      <div className={"cartaz" + (nfc ? " com-nfc" : "")}>
         <Logo />
         <h1>Ofertas no seu celular</h1>
         <p className="cartaz-sub">{mostrar.length > 1 ? "Aponte a câmera e escolha onde receber" : mostrar[0].chamada}</p>
@@ -439,6 +460,17 @@ export function Cartaz() {
             </figure>
           ))}
         </div>
+        {nfc && (
+          <div className="cartaz-nfc">
+            <span className="nfc-alvo" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round">
+                <rect x="9" y="6" width="18" height="36" rx="4" /><path d="M15 36h6" />
+                <path d="M32 18a9 9 0 0 1 0 12M36 14a15 15 0 0 1 0 20M40 10a21 21 0 0 1 0 28" />
+              </svg>
+            </span>
+            <div><b>ou encoste o celular aqui</b><small>Funciona com aproximação (NFC), como no pagamento</small></div>
+          </div>
+        )}
         {ofertas.length > 0 && <ul className="cartaz-ofertas">{ofertas.slice(0, 3).map((o) => <li key={o.id}>{o.titulo}</li>)}</ul>}
         <p className="cartaz-pe">Promoções exclusivas · Cupons · Novidades</p>
       </div>
