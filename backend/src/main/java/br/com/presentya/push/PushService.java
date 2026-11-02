@@ -43,7 +43,12 @@ public class PushService {
     private final ConfiguracaoService config;
     private final boolean envioAtivo;
     private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
-    private final ExecutorService fila = Executors.newVirtualThreadPerTaskExecutor();
+    /** Threads comuns, não virtuais: no Java 21 do Render o envio feito em thread virtual não chegava a sair. */
+    private final ExecutorService fila = Executors.newFixedThreadPool(2, r -> {
+        Thread t = new Thread(r, "envio-push");
+        t.setDaemon(true);
+        return t;
+    });
     private volatile ChavesPush chaves;
 
     public PushService(InscricaoPushRepository inscricoes, ChavesPushRepository chavesRepo, ConfiguracaoService config,
