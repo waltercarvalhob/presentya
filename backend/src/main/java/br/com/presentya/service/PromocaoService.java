@@ -126,24 +126,28 @@ public class PromocaoService {
     }
 
     /**
-     * Envio diário: a partir da hora escolhida (e até as 21 h), uma vez por dia. Se o servidor estava
+     * Envio diário: uma vez por dia, entre a hora escolhida e o horário limite (padrão 10:00 às 23:00). Se o servidor estava
      * dormindo (plano gratuito do Render), manda assim que acordar, ainda no mesmo dia.
      */
     @Transactional
     public boolean envioDiarioSePreciso() {
         if (!"true".equals(config.valor("envio_diario_ativo"))) return false;
-        LocalTime hora;
-        try {
-            hora = LocalTime.parse(config.valor("envio_diario_hora").trim());
-        } catch (DateTimeParseException e) {
-            hora = LocalTime.of(10, 0);
-        }
+        LocalTime hora = horario("envio_diario_hora", LocalTime.of(10, 0));
+        LocalTime fim = horario("envio_diario_fim", LocalTime.of(23, 0));
         LocalDateTime agora = LocalDateTime.now(FUSO);
-        if (agora.toLocalTime().isBefore(hora) || agora.getHour() >= 21) return false;
+        if (agora.toLocalTime().isBefore(hora) || !agora.toLocalTime().isBefore(fim)) return false;
         String hoje = agora.toLocalDate().toString();
         if (hoje.equals(config.valor("envio_diario_ultimo"))) return false;
         config.gravarInterno("envio_diario_ultimo", hoje);
         return enviarResumoDoDia();
+    }
+
+    private LocalTime horario(String chave, LocalTime padrao) {
+        try {
+            return LocalTime.parse(config.valor(chave).trim());
+        } catch (DateTimeParseException e) {
+            return padrao;
+        }
     }
 
     private boolean enviarResumoDoDia() {

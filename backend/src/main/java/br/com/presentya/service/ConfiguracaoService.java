@@ -35,6 +35,7 @@ public class ConfiguracaoService {
         // Envio diário automático das ofertas (hora no fuso de São Luís)
         PADRAO.put("envio_diario_ativo", "false");
         PADRAO.put("envio_diario_hora", "10:00");
+        PADRAO.put("envio_diario_fim", "23:00");
     }
 
     private final ConfiguracaoRepository repo;

@@ -265,13 +265,13 @@ function Notificacoes() {
   const [ultimo, setUltimo] = useState("");
   const [diario, setDiario] = useState(null);
   useEffect(() => {
-    api("/api/admin/configuracoes").then((c) => setDiario({ ativo: c.envio_diario_ativo === "true", hora: c.envio_diario_hora || "10:00", ultimo: c.envio_diario_ultimo || "" })).catch(() => {});
+    api("/api/admin/configuracoes").then((c) => setDiario({ ativo: c.envio_diario_ativo === "true", hora: c.envio_diario_hora || "10:00", fim: c.envio_diario_fim || "23:00", ultimo: c.envio_diario_ultimo || "" })).catch(() => {});
   }, []);
   const salvarDiario = async (novo) => {
     setDiario(novo);
     try {
-      await api("/api/admin/configuracoes", { method: "PUT", body: { envio_diario_ativo: String(novo.ativo), envio_diario_hora: novo.hora } });
-      toast(novo.ativo ? `Envio diário ligado: todo dia às ${novo.hora}` : "Envio diário desligado");
+      await api("/api/admin/configuracoes", { method: "PUT", body: { envio_diario_ativo: String(novo.ativo), envio_diario_hora: novo.hora, envio_diario_fim: novo.fim } });
+      toast(novo.ativo ? `Envio diário ligado: todo dia entre ${novo.hora} e ${novo.fim}` : "Envio diário desligado");
     } catch (e) { toast(e.message); }
   };
   const [f, setF] = useState({ titulo: "🎁 PresentYá", mensagem: "" });
@@ -303,11 +303,16 @@ function Notificacoes() {
         <div className="diario">
           <label className="aceite"><input type="checkbox" checked={diario.ativo} onChange={(e) => salvarDiario({ ...diario, ativo: e.target.checked })} />
             <span><b>Envio diário automático</b>: todo dia manda sozinho as ofertas do dia e os produtos em promoção para todos (notificação, WhatsApp e Telegram).</span></label>
-          <label style={{ maxWidth: 200 }}>Horário
-            <input type="time" value={diario.hora} onChange={(e) => setDiario({ ...diario, hora: e.target.value })} onBlur={() => salvarDiario(diario)} />
-          </label>
+          <div style={{ display: "flex", gap: ".8rem", flexWrap: "wrap" }}>
+            <label style={{ maxWidth: 170 }}>Envia a partir das
+              <input type="time" value={diario.hora} onChange={(e) => setDiario({ ...diario, hora: e.target.value })} onBlur={() => salvarDiario(diario)} />
+            </label>
+            <label style={{ maxWidth: 170 }}>Não envia depois das
+              <input type="time" value={diario.fim} onChange={(e) => setDiario({ ...diario, fim: e.target.value })} onBlur={() => salvarDiario(diario)} />
+            </label>
+          </div>
           <small>{diario.ultimo ? `Último envio diário: ${dataCurta(diario.ultimo)}.` : "Ainda não houve envio diário."} Dias sem oferta ativa nem produto em promoção não mandam nada.
-            No plano gratuito o servidor dorme sem visitas: se estiver dormindo no horário, envia assim que acordar (até as 21 h).
+            No plano gratuito o servidor dorme sem visitas: se estiver dormindo no horário, envia assim que acordar, se ainda estiver dentro desse intervalo.
             Para pontualidade, cadastre em cron-job.org (grátis) uma chamada a cada 10 minutos para https://presentya-api.onrender.com/api/status.</small>
         </div>
       )}
