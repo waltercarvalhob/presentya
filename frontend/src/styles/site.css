@@ -640,3 +640,13 @@ a.mini-btn{text-decoration:none;display:inline-block}
   .destaque-midia{min-height:200px;max-height:300px}
   .destaque-texto{padding:1.2rem 1.2rem 2.2rem}
 }
+.canais{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.canal{display:grid;gap:.5rem;justify-items:start;align-content:start;border:1px solid var(--line);border-radius:12px;padding:1rem}
+.canal-topo{display:flex;gap:.6rem;align-items:center;justify-content:space-between;width:100%}
+.canal .qr-img{width:180px;height:180px}
+.como-ligar{display:grid;gap:.7rem;margin-top:.7rem;font-size:.92rem;color:var(--muted)}
+.como-ligar code{background:var(--sage-soft);padding:.05rem .35rem;border-radius:5px;color:var(--ink);word-break:break-all}
+.cartaz-qrs{display:flex;gap:6mm;justify-content:center;width:100%}
+.cartaz-qrs figure{margin:0;display:grid;gap:2mm;justify-items:center;flex:0 1 auto}
+.cartaz-qrs figcaption{font:700 clamp(1rem,3vw,1.5rem) var(--f-display)}
+.cartaz-qrs.dois .cartaz-qr{width:min(78mm,40vw)}

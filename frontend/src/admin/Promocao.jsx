@@ -13,13 +13,80 @@ import { dataHora, waLink } from "../lib/util";
 export const linkOfertas = () => `${location.origin}/ofertas?origem=qr`;
 const local = () => ["localhost", "127.0.0.1"].includes(location.hostname);
 
-export function QrOfertas({ tamanho = 560, className }) {
+export function QrOfertas({ tamanho = 560, className, link, rotulo = "da página de ofertas" }) {
   const [src, setSrc] = useState(null);
+  const destino = link || linkOfertas();
   useEffect(() => {
-    QRCode.toDataURL(linkOfertas(), { width: tamanho, margin: 2, errorCorrectionLevel: "M", color: { dark: "#141414", light: "#FFFFFF" } })
+    QRCode.toDataURL(destino, { width: tamanho, margin: 2, errorCorrectionLevel: "M", color: { dark: "#141414", light: "#FFFFFF" } })
       .then(setSrc);
-  }, [tamanho]);
-  return src ? <img className={className} src={src} width={tamanho} height={tamanho} alt="QR Code da página de ofertas da PresentYá" /> : null;
+  }, [tamanho, destino]);
+  return src ? <img className={className} src={src} width={tamanho} height={tamanho} alt={"QR Code " + rotulo + " da PresentYá"} /> : null;
+}
+
+/** QR Codes que o cartaz usa: os canais do robô que estão ligados; sem robô, a página de ofertas. */
+export function qrsDoCartaz(canais) {
+  const lista = [];
+  if (canais?.whatsapp?.ativo) lista.push({ id: "whatsapp", nome: "WhatsApp", link: canais.whatsapp.link, chamada: "Receba no WhatsApp" });
+  if (canais?.telegram?.ativo) lista.push({ id: "telegram", nome: "Telegram", link: canais.telegram.link, chamada: "Receba no Telegram" });
+  if (!lista.length) lista.push({ id: "site", nome: "Site", link: linkOfertas(), chamada: "Aponte a câmera e ative as notificações" });
+  return lista;
+}
+
+const baixar = async (link, nome) => {
+  const a = document.createElement("a");
+  a.href = await QRCode.toDataURL(link, { width: 1200, margin: 2, errorCorrectionLevel: "M" });
+  a.download = nome;
+  a.click();
+};
+
+/** Robô de ofertas: quem lê o QR manda uma mensagem e recebe as ofertas sozinho no WhatsApp ou no Telegram. */
+function Canais() {
+  const [c, setC] = useState(null);
+  useEffect(() => { api("/api/admin/canais").then(setC).catch(() => {}); }, []);
+  if (!c) return null;
+  const situacao = (ativo) => (ativo ? <span className="status PAGO">Ligado</span> : <span className="status AGUARDANDO_PAGAMENTO">Falta configurar</span>);
+  return (
+    <div className="form" style={{ maxWidth: 900, marginTop: "1.4rem" }}>
+      <h3>🤖 Robô de ofertas no WhatsApp e no Telegram</h3>
+      <p style={{ color: "var(--muted)" }}>
+        A pessoa lê o QR Code, o WhatsApp (ou Telegram) abre com a mensagem pronta e ela só toca em <b>Enviar</b>.
+        O robô responde <b>na hora</b> com as ofertas do dia (fotos e vídeos) e, daí em diante, <b>toda oferta nova chega sozinha</b>.
+        Quem mandar <b>PARAR</b> sai da lista.
+      </p>
+      <div className="canais">
+        <div className="canal">
+          <div className="canal-topo"><b>WhatsApp</b>{situacao(c.whatsapp.ativo)}</div>
+          <QrOfertas tamanho={180} className="qr-img" link={c.whatsapp.link} rotulo="do WhatsApp" />
+          <small>{c.whatsapp.contatos} contato(s) recebendo</small>
+          {c.whatsapp.ativo && !c.whatsapp.modelo && <small>⚠️ Sem modelo aprovado: ofertas novas só chegam a quem falou com a loja nas últimas 24 h (regra da Meta).</small>}
+          {!c.whatsapp.ativo && <small>Sem a API configurada, este QR abre a conversa, mas quem responde é você, manualmente.</small>}
+          <button type="button" className="btn btn-line btn-sm" onClick={() => baixar(c.whatsapp.link, "presentya-qr-whatsapp.png")}>Baixar QR</button>
+        </div>
+        <div className="canal">
+          <div className="canal-topo"><b>Telegram</b>{situacao(c.telegram.ativo)}</div>
+          {c.telegram.ativo ? <>
+            <QrOfertas tamanho={180} className="qr-img" link={c.telegram.link} rotulo="do Telegram" />
+            <small>@{c.telegram.bot} · {c.telegram.contatos} contato(s) recebendo</small>
+            <button type="button" className="btn btn-line btn-sm" onClick={() => baixar(c.telegram.link, "presentya-qr-telegram.png")}>Baixar QR</button>
+          </> : <small>Gratuito e pronto em 2 minutos: veja “Como ligar” abaixo.</small>}
+        </div>
+      </div>
+      {c.ultimoEnvio && <small>Último envio do robô: {c.ultimoEnvio.endsWith(" OK") ? "✅ entregue" : "⚠️ " + c.ultimoEnvio.replace(/^\S+ /, "")}</small>}
+      <details>
+        <summary><b>Como ligar</b></summary>
+        <div className="como-ligar">
+          <p><b>Telegram (gratuito, 2 minutos):</b> no Telegram, abra <b>@BotFather</b> → <code>/newbot</code> → dê o nome “PresentYá Ofertas” e um usuário terminado em “bot”.
+            Copie o token que ele mandar e, no Render (serviço <i>presentya-api</i> → Environment), crie <code>TELEGRAM_BOT_TOKEN</code> com esse valor. Pronto: o servidor reinicia e liga sozinho.</p>
+          <p><b>WhatsApp (API oficial da Meta):</b> em developers.facebook.com crie um app do tipo <i>Business</i> com o produto <i>WhatsApp</i> e cadastre o número da loja.
+            No Render crie <code>WHATSAPP_TOKEN</code> (token permanente de usuário do sistema), <code>WHATSAPP_PHONE_NUMBER_ID</code>, <code>WHATSAPP_APP_SECRET</code> (Configurações do app → Básico)
+            e <code>WHATSAPP_VERIFY_TOKEN</code> (uma senha que você inventa). No painel do WhatsApp → Configuração → Webhook, use a URL <code>https://presentya-api.onrender.com/api/whatsapp/webhook</code>,
+            a mesma senha do VERIFY_TOKEN, e assine o campo <i>messages</i>.
+            Para mandar ofertas a quem não falou com a loja nas últimas 24 h, aprove um modelo de mensagem de <i>Marketing</i> com uma variável <code>{"{{1}}"}</code> (o título da oferta) e informe o nome dele em <code>WHATSAPP_MODELO</code>.
+            A Meta cobra por conversa de marketing.</p>
+        </div>
+      </details>
+    </div>
+  );
 }
 
 const OFERTA_VAZIA = { titulo: "", descricao: "", cupom: "", validaAte: "", ordem: 0, ativo: true, imagemId: null, imagemUrl: null, videoId: null, videoUrl: null };
@@ -132,6 +199,8 @@ export function Divulgacao() {
           </div>
         </div>
       </div>
+
+      <Canais />
 
       <Notificacoes />
 
@@ -338,18 +407,38 @@ export function Interessados() {
 /** Cartaz A4 para a vitrine (abre em outra aba e manda imprimir). */
 export function Cartaz() {
   const [ofertas, setOfertas] = useState([]);
-  useEffect(() => { api("/api/ofertas").then(setOfertas).catch(() => {}); }, []);
+  const [qrs, setQrs] = useState(null);
+  const [escolha, setEscolha] = useState("todos");
+  useEffect(() => {
+    api("/api/ofertas").then(setOfertas).catch(() => {});
+    api("/api/admin/canais").then((c) => setQrs(qrsDoCartaz(c))).catch(() => setQrs(qrsDoCartaz(null)));
+  }, []);
+  if (!qrs) return <p className="hand" style={{ padding: "2rem" }}>Carregando…</p>;
+  const mostrar = escolha === "todos" ? qrs : qrs.filter((q) => q.id === escolha);
   return (
     <div className="cartaz-pg">
       <div className="cartaz-acoes">
         <button className="btn btn-gold" onClick={() => print()}>Imprimir</button>
+        {qrs.length > 1 && (
+          <select value={escolha} onChange={(e) => setEscolha(e.target.value)} aria-label="QR Codes do cartaz">
+            <option value="todos">WhatsApp e Telegram</option>
+            {qrs.map((q) => <option key={q.id} value={q.id}>Só {q.nome}</option>)}
+          </select>
+        )}
         <span>Dica: papel A4, sem margens, em cores. Cole na altura dos olhos.</span>
       </div>
       <div className="cartaz">
         <Logo />
         <h1>Ofertas no seu celular</h1>
-        <p className="cartaz-sub">Aponte a câmera e ative as notificações</p>
-        <QrOfertas tamanho={640} className="cartaz-qr" />
+        <p className="cartaz-sub">{mostrar.length > 1 ? "Aponte a câmera e escolha onde receber" : mostrar[0].chamada}</p>
+        <div className={"cartaz-qrs" + (mostrar.length > 1 ? " dois" : "")}>
+          {mostrar.map((q) => (
+            <figure key={q.id}>
+              <QrOfertas tamanho={640} className="cartaz-qr" link={q.link} rotulo={"do " + q.nome} />
+              {mostrar.length > 1 && <figcaption>{q.nome}</figcaption>}
+            </figure>
+          ))}
+        </div>
         {ofertas.length > 0 && <ul className="cartaz-ofertas">{ofertas.slice(0, 3).map((o) => <li key={o.id}>{o.titulo}</li>)}</ul>}
         <p className="cartaz-pe">Promoções exclusivas · Cupons · Novidades</p>
       </div>

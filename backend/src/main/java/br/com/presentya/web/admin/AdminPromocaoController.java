@@ -4,8 +4,10 @@ import br.com.presentya.dto.PromocaoDtos.EnvioPushRequest;
 import br.com.presentya.dto.PromocaoDtos.InteressadoDTO;
 import br.com.presentya.dto.PromocaoDtos.OfertaDTO;
 import br.com.presentya.dto.PromocaoDtos.OfertaRequest;
+import br.com.presentya.mensageiro.MensageiroService;
 import br.com.presentya.push.PushService;
 import br.com.presentya.push.PushService.Notificacao;
+import br.com.presentya.service.ConfiguracaoService;
 import br.com.presentya.service.PromocaoService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -19,10 +21,21 @@ import org.springframework.web.bind.annotation.*;
 public class AdminPromocaoController {
     private final PromocaoService promocao;
     private final PushService push;
+    private final MensageiroService mensageiro;
+    private final ConfiguracaoService config;
 
-    public AdminPromocaoController(PromocaoService promocao, PushService push) {
+    public AdminPromocaoController(PromocaoService promocao, PushService push, MensageiroService mensageiro,
+                                   ConfiguracaoService config) {
         this.promocao = promocao;
         this.push = push;
+        this.mensageiro = mensageiro;
+        this.config = config;
+    }
+
+    /** Situação do robô de ofertas no WhatsApp e no Telegram, com os links dos QR Codes. */
+    @GetMapping("/canais")
+    public Map<String, Object> canais() {
+        return mensageiro.resumo(config.valor("whatsapp"));
     }
 
     @GetMapping("/ofertas")

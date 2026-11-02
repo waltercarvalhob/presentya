@@ -9,6 +9,7 @@ import br.com.presentya.dto.PromocaoDtos.InteressadoRequest;
 import br.com.presentya.dto.PromocaoDtos.OfertaDTO;
 import br.com.presentya.dto.PromocaoDtos.OfertaRequest;
 import br.com.presentya.repository.InteressadoRepository;
+import br.com.presentya.mensageiro.MensageiroService;
 import br.com.presentya.push.PushService;
 import br.com.presentya.push.PushService.Notificacao;
 import br.com.presentya.repository.OfertaRepository;
@@ -33,14 +34,16 @@ public class PromocaoService {
     private final InteressadoRepository interessados;
     private final PushService push;
     private final CatalogoService catalogo;
+    private final MensageiroService mensageiro;
     private final String apiUrl;
 
     public PromocaoService(OfertaRepository ofertas, InteressadoRepository interessados, PushService push,
-                           CatalogoService catalogo, @Value("${app.api-url}") String apiUrl) {
+                           CatalogoService catalogo, MensageiroService mensageiro, @Value("${app.api-url}") String apiUrl) {
         this.ofertas = ofertas;
         this.interessados = interessados;
         this.push = push;
         this.catalogo = catalogo;
+        this.mensageiro = mensageiro;
         this.apiUrl = apiUrl.replaceAll("/+$", "");
     }
 
@@ -76,6 +79,7 @@ public class PromocaoService {
                     + (o.getCupom() == null ? "" : " · Cupom " + o.getCupom());
             String foto = o.getImagemId() == null ? null : apiUrl + "/api/imagens/" + o.getImagemId();
             push.enviarParaTodos(new Notificacao("🎁 Nova oferta na PresentYá", texto, "/ofertas", foto));
+            mensageiro.divulgar(o);
         }
         return OfertaDTO.de(o);
     }
@@ -112,7 +116,7 @@ public class PromocaoService {
         return id;
     }
 
-    private static boolean vigente(Oferta o) {
+    public static boolean vigente(Oferta o) {
         return o.isAtivo() && (o.getValidaAte() == null || !o.getValidaAte().isBefore(LocalDate.now(FUSO)));
     }
 

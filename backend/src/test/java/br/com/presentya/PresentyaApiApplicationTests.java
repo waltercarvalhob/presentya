@@ -242,4 +242,47 @@ class PresentyaApiApplicationTests {
                 br.com.presentya.service.CodigoBarrasService.gtin("https://id.gs1.org/01/07891234567895/21/abc"));
         org.junit.jupiter.api.Assertions.assertNull(br.com.presentya.service.CodigoBarrasService.gtin("https://presentya.vercel.app"));
     }
+    @Autowired
+    br.com.presentya.mensageiro.TelegramService telegram;
+
+    @Test
+    void roboDeOfertasNoWhatsappENoTelegram() throws Exception {
+        String admin = token("/api/auth/login", "{\"email\":\"admin@presentya.com.br\",\"senha\":\"Admin@2026\"}", 200);
+
+        // Meta confere o webhook com o token de verificação.
+        mvc.perform(get("/api/whatsapp/webhook").param("hub.mode", "subscribe").param("hub.verify_token", "verifica-presentya")
+                .param("hub.challenge", "12345")).andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content().string("12345"));
+        mvc.perform(get("/api/whatsapp/webhook").param("hub.mode", "subscribe").param("hub.verify_token", "errado")
+                .param("hub.challenge", "12345")).andExpect(status().isForbidden());
+
+        // Mensagem do QR Code no WhatsApp: só aceita com a assinatura da Meta.
+        String msg = "{\"entry\":[{\"changes\":[{\"value\":{\"contacts\":[{\"profile\":{\"name\":\"Ana Lima\"},\"wa_id\":\"5598999990001\"}],"
+                + "\"messages\":[{\"from\":\"5598999990001\",\"type\":\"text\",\"text\":{\"body\":\"Quero receber as ofertas da PresentYá (QR da vitrine)\"}}]}}]}]}";
+        javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+        mac.init(new javax.crypto.spec.SecretKeySpec("segredo-do-app".getBytes(java.nio.charset.StandardCharsets.UTF_8), "HmacSHA256"));
+        String assinatura = "sha256=" + java.util.HexFormat.of().formatHex(mac.doFinal(msg.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+        mvc.perform(post("/api/whatsapp/webhook").contentType(MediaType.APPLICATION_JSON).content(msg).header("X-Hub-Signature-256", "sha256=00"))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/api/whatsapp/webhook").contentType(MediaType.APPLICATION_JSON).content(msg).header("X-Hub-Signature-256", assinatura))
+                .andExpect(status().isOk());
+
+        // Telegram: "/start qrcode" vindo do QR; sem o segredo do webhook é recusado.
+        String inicio = "{\"message\":{\"chat\":{\"id\":777001},\"from\":{\"first_name\":\"Bia\"},\"text\":\"/start qrcode\"}}";
+        mvc.perform(post("/api/telegram/webhook").contentType(MediaType.APPLICATION_JSON).content(inicio)).andExpect(status().isForbidden());
+        mvc.perform(post("/api/telegram/webhook").contentType(MediaType.APPLICATION_JSON).content(inicio)
+                .header("X-Telegram-Bot-Api-Secret-Token", telegram.segredoWebhook())).andExpect(status().isOk());
+
+        mvc.perform(get("/api/admin/canais").header("Authorization", admin)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.whatsapp.contatos").value(1))
+                .andExpect(jsonPath("$.telegram.contatos").value(1))
+                .andExpect(jsonPath("$.whatsapp.link").value(startsWith("https://wa.me/")));
+
+        // "PARAR" tira a pessoa da lista.
+        mvc.perform(post("/api/telegram/webhook").contentType(MediaType.APPLICATION_JSON)
+                .content(inicio.replace("/start qrcode", "PARAR")).header("X-Telegram-Bot-Api-Secret-Token", telegram.segredoWebhook()))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/admin/canais").header("Authorization", admin)).andExpect(jsonPath("$.telegram.contatos").value(0));
+        mvc.perform(get("/api/admin/canais")).andExpect(status().isUnauthorized());
+    }
 }

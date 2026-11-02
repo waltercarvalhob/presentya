@@ -25,3 +25,17 @@ services:
         sync: false
       - key: MP_ACCESS_TOKEN # Mercado Pago > Suas integrações > Credenciais de produção
         sync: false
+      - key: TELEGRAM_BOT_TOKEN  # robô de ofertas no Telegram: token do @BotFather
+        sync: false
+      - key: WHATSAPP_TOKEN      # robô de ofertas no WhatsApp (Cloud API da Meta)
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_APP_SECRET
+        sync: false
+      - key: WHATSAPP_VERIFY_TOKEN
+        sync: false
+      - key: WHATSAPP_MODELO     # modelo de marketing aprovado, com {{1}} = título da oferta
+        sync: false
+      - key: COSMOS_TOKEN        # base brasileira de códigos de barras (opcional)
+        sync: false
