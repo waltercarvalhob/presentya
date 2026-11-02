@@ -8,6 +8,8 @@ import br.com.presentya.service.ConfiguracaoService;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -51,11 +53,12 @@ public class LojaController {
     }
 
     @GetMapping("/imagens/{id}")
-    public ResponseEntity<byte[]> imagem(@PathVariable Long id) {
+    public ResponseEntity<Resource> imagem(@PathVariable Long id) {
         Imagem i = catalogo.imagem(id);
+        // Resource (e não byte[]) faz o Spring atender pedidos de "Range": o Safari só toca vídeo assim.
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(i.getContentType()))
                 .cacheControl(CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable())
-                .body(i.getDados());
+                .body(new ByteArrayResource(i.getDados()));
     }
 }

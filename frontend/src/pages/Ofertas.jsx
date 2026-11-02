@@ -1,20 +1,99 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
-import { api } from "../lib/api";
+import { api, imagemUrl } from "../lib/api";
 import { lojaNoMapa, metros, useProximidade } from "../lib/proximidade";
 import { ativarPush, desativarPush, notificarAqui, situacaoPush } from "../lib/push";
 import { useLoja } from "../lib/store";
 
 export const dataCurta = (iso) => new Date(iso + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 
+const ATUALIZA_MS = 45000;
+
+/**
+ * Ofertas sempre em dia sem recarregar a página: busca de novo a cada 45 s, quando a pessoa volta
+ * para a aba e na hora em que chega uma notificação (o service worker avisa a página).
+ */
+function useOfertasAoVivo() {
+  const { recarregar } = useLoja();
+  const [ofertas, setOfertas] = useState(null);
+  const [novas, setNovas] = useState(() => new Set());
+  const vistas = useRef(null);
+  const buscar = useCallback(async (tudo) => {
+    try {
+      const lista = await api("/api/ofertas");
+      if (vistas.current) {
+        const chegaram = lista.filter((o) => !vistas.current.has(o.id)).map((o) => o.id);
+        if (chegaram.length) setNovas((s) => new Set([...s, ...chegaram]));
+      }
+      vistas.current = new Set(lista.map((o) => o.id));
+      setOfertas(lista);
+      if (tudo) recarregar();
+    } catch { setOfertas((x) => x ?? []); }
+  }, [recarregar]);
+  useEffect(() => {
+    buscar(false);
+    const t = setInterval(() => document.visibilityState === "visible" && buscar(false), ATUALIZA_MS);
+    const voltou = () => document.visibilityState === "visible" && buscar(true);
+    const aviso = (e) => e.data?.tipo === "ofertas" && buscar(true);
+    document.addEventListener("visibilitychange", voltou);
+    navigator.serviceWorker?.addEventListener("message", aviso);
+    return () => { clearInterval(t); document.removeEventListener("visibilitychange", voltou); navigator.serviceWorker?.removeEventListener("message", aviso); };
+  }, [buscar]);
+  return { ofertas, novas };
+}
+
+/** Vídeo (tocando sem som, em loop) ou foto da oferta. */
+function Midia({ o, className }) {
+  if (o.videoUrl) {
+    return <video className={className} src={imagemUrl(o.videoUrl)} poster={imagemUrl(o.imagemUrl) || undefined}
+      autoPlay muted loop playsInline controls preload="metadata" aria-label={"Vídeo: " + o.titulo} />;
+  }
+  return o.imagemUrl ? <img className={className} src={imagemUrl(o.imagemUrl)} alt={o.titulo} loading="lazy" /> : null;
+}
+
+/** Carrossel automático com as ofertas que têm foto ou vídeo. */
+function Destaques({ ofertas, wa }) {
+  const [i, setI] = useState(0);
+  const [pausado, setPausado] = useState(false);
+  const total = ofertas.length;
+  useEffect(() => { if (i >= total) setI(0); }, [i, total]);
+  useEffect(() => {
+    if (total < 2 || pausado) return;
+    const t = setInterval(() => setI((x) => (x + 1) % total), 7000);
+    return () => clearInterval(t);
+  }, [total, pausado]);
+  if (!total) return null;
+  const o = ofertas[Math.min(i, total - 1)];
+  return (
+    <div className="destaques" onMouseEnter={() => setPausado(true)} onMouseLeave={() => setPausado(false)} aria-roledescription="carrossel" aria-label="Ofertas em destaque">
+      <div className="destaque" key={o.id}>
+        <Midia o={o} className="destaque-midia" />
+        <div className="destaque-texto">
+          <h3>{o.titulo}</h3>
+          {o.descricao && <p>{o.descricao}</p>}
+          <div style={{ display: "flex", gap: ".6rem", flexWrap: "wrap", alignItems: "center" }}>
+            {o.cupom && <div className="cupom"><small>Cupom</small><b>{o.cupom}</b></div>}
+            <a className="btn btn-wa btn-sm" target="_blank" rel="noopener"
+              href={wa(`Olá, PresentYá! Quero aproveitar a oferta "${o.titulo}"${o.cupom ? ` (cupom ${o.cupom})` : ""}.`)}>Quero esta</a>
+          </div>
+        </div>
+      </div>
+      {total > 1 && (
+        <div className="destaque-pontos">
+          {ofertas.map((x, n) => <button key={x.id} aria-label={"Ver oferta " + (n + 1)} aria-current={n === i} onClick={() => setI(n)} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** Página aberta pelo QR Code da vitrine: ofertas do dia, aviso de proximidade e cadastro para receber promoções. */
 export default function Ofertas() {
   const { produtos, wa } = useLoja();
   const [busca] = useSearchParams();
-  const [ofertas, setOfertas] = useState(null);
+  const { ofertas, novas } = useOfertasAoVivo();
   const origem = busca.get("origem") === "qr" ? "qrcode" : "site";
-  useEffect(() => { api("/api/ofertas").then(setOfertas).catch(() => setOfertas([])); }, []);
   const emPromocao = produtos.filter((p) => p.old).sort((a, b) => b.old / b.price - a.old / a.price);
 
   return (
@@ -30,10 +109,14 @@ export default function Ofertas() {
 
         <AvisoProximidade />
 
+        {ofertas && <Destaques ofertas={ofertas.filter((o) => o.imagemUrl || o.videoUrl)} wa={wa} />}
+
         {ofertas === null ? <p className="hand">Carregando ofertas…</p> : ofertas.length > 0 && (
           <div className="ofertas-grid">
             {ofertas.map((o) => (
-              <article className="oferta-card" key={o.id}>
+              <article className={"oferta-card" + (novas.has(o.id) ? " nova" : "")} key={o.id}>
+                {novas.has(o.id) && <span className="flag new" style={{ justifySelf: "start" }}>Acabou de chegar!</span>}
+                <Midia o={o} className="oferta-midia" />
                 <h3>{o.titulo}</h3>
                 {o.descricao && <p>{o.descricao}</p>}
                 {o.cupom && <div className="cupom"><small>Cupom</small><b>{o.cupom}</b></div>}

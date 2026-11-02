@@ -5,7 +5,9 @@ import br.com.presentya.dto.ProdutoDtos.CategoriaRequest;
 import br.com.presentya.dto.ProdutoDtos.ImagemDTO;
 import br.com.presentya.dto.ProdutoDtos.ProdutoDTO;
 import br.com.presentya.dto.ProdutoDtos.ProdutoRequest;
+import br.com.presentya.dto.ProdutoDtos.CodigoDTO;
 import br.com.presentya.service.CatalogoService;
+import br.com.presentya.service.CodigoBarrasService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -17,9 +19,17 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/admin")
 public class AdminCatalogoController {
     private final CatalogoService catalogo;
+    private final CodigoBarrasService codigos;
 
-    public AdminCatalogoController(CatalogoService catalogo) {
+    public AdminCatalogoController(CatalogoService catalogo, CodigoBarrasService codigos) {
         this.catalogo = catalogo;
+        this.codigos = codigos;
+    }
+
+    /** Código lido pela câmera (ou digitado/leitor USB): produto já cadastrado ou dados das bases públicas. */
+    @GetMapping("/produtos/codigo")
+    public CodigoDTO codigo(@RequestParam("valor") String valor) {
+        return codigos.consultar(valor);
     }
 
     @GetMapping("/produtos")
@@ -53,6 +63,13 @@ public class AdminCatalogoController {
     @ResponseStatus(HttpStatus.CREATED)
     public ImagemDTO enviarImagem(@RequestParam("arquivo") MultipartFile arquivo) {
         return catalogo.salvarImagem(arquivo);
+    }
+
+    /** Foto ou vídeo (ofertas e promoções). */
+    @PostMapping("/midias")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ImagemDTO enviarMidia(@RequestParam("arquivo") MultipartFile arquivo) {
+        return catalogo.salvarMidia(arquivo);
     }
 
     @GetMapping("/categorias")

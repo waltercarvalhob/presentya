@@ -27,6 +27,9 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class CatalogoService {
     private static final Set<String> TIPOS_IMAGEM = Set.of("image/jpeg", "image/png", "image/webp", "image/gif");
+    private static final Set<String> TIPOS_VIDEO = Set.of("video/mp4", "video/webm", "video/quicktime");
+    public static final long MAX_IMAGEM = 5L * 1024 * 1024;
+    public static final long MAX_VIDEO = 25L * 1024 * 1024;
 
     private final ProdutoRepository produtos;
     private final CategoriaRepository categorias;
@@ -75,6 +78,8 @@ public class CatalogoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Imagem não encontrada");
         }
         p.setImagemId(req.imagemId());
+        String codigo = req.codigoBarras() == null ? null : req.codigoBarras().strip();
+        p.setCodigoBarras(codigo == null || codigo.isEmpty() ? null : codigo);
         if (req.ilustracao() != null && !req.ilustracao().isBlank()) p.setIlustracao(req.ilustracao());
         if (req.corFundo() != null && !req.corFundo().isBlank()) p.setCorFundo(req.corFundo());
         if (req.corA() != null && !req.corA().isBlank()) p.setCorA(req.corA());
@@ -178,6 +183,40 @@ public class CatalogoService {
         if (!TIPOS_IMAGEM.contains(arquivo.getContentType())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Use imagens JPG, PNG, WEBP ou GIF");
         }
+        if (arquivo.getSize() > MAX_IMAGEM) throw new ResponseStatusException(HttpStatus.CONTENT_TOO_LARGE, "Imagem muito grande (máx. 5 MB)");
+        return guardar(arquivo);
+    }
+
+    /** Foto ou vídeo das ofertas; os vídeos ficam no banco como as fotos, então o limite é menor que o normal. */
+    @Transactional
+    public ImagemDTO salvarMidia(MultipartFile arquivo) {
+        if (arquivo == null || arquivo.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Envie uma foto ou um vídeo");
+        }
+        String tipo = arquivo.getContentType();
+        if (TIPOS_IMAGEM.contains(tipo)) return salvarImagem(arquivo);
+        if (!TIPOS_VIDEO.contains(tipo)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Use foto (JPG, PNG, WEBP, GIF) ou vídeo (MP4, WEBM, MOV)");
+        }
+        if (arquivo.getSize() > MAX_VIDEO) {
+            throw new ResponseStatusException(HttpStatus.CONTENT_TOO_LARGE, "Vídeo muito grande (máx. 25 MB). Grave mais curto ou em resolução menor.");
+        }
+        return guardar(arquivo);
+    }
+
+    /** Foto baixada de uma base pública (leitura do código de barras). */
+    @Transactional
+    public ImagemDTO salvarImagem(String contentType, byte[] dados) {
+        String tipo = contentType == null ? "" : contentType.split(";")[0].trim().toLowerCase();
+        if (!TIPOS_IMAGEM.contains(tipo) || dados == null || dados.length == 0 || dados.length > MAX_IMAGEM) return null;
+        Imagem i = new Imagem();
+        i.setContentType(tipo);
+        i.setDados(dados);
+        imagens.save(i);
+        return new ImagemDTO(i.getId(), "/api/imagens/" + i.getId());
+    }
+
+    private ImagemDTO guardar(MultipartFile arquivo) {
         try {
             Imagem i = new Imagem();
             i.setContentType(arquivo.getContentType());
@@ -185,8 +224,14 @@ public class CatalogoService {
             imagens.save(i);
             return new ImagemDTO(i.getId(), "/api/imagens/" + i.getId());
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não foi possível ler a imagem");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não foi possível ler o arquivo");
         }
+    }
+
+    /** Tipo (image/..., video/...) sem carregar o arquivo; null se não existe. */
+    @Transactional(readOnly = true)
+    public String tipoMidia(Long id) {
+        return id == null ? null : imagens.tipo(id).orElse(null);
     }
 
     @Transactional(readOnly = true)

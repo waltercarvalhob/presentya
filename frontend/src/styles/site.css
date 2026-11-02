@@ -610,3 +610,33 @@ a.mini-btn{text-decoration:none;display:inline-block}
 .push-card>div{display:grid;gap:.3rem;max-width:62ch;flex:1 1 280px}
 .push-card b{font-family:var(--f-display);font-size:1.08rem}
 .push-card.ok{background:var(--sage-soft);box-shadow:none}
+
+/* ===== Leitor de código, mídia das ofertas e carrossel ===== */
+.leitor{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:16px}
+.leitor-caixa{background:var(--card);border-radius:var(--r);padding:1.2rem;width:min(520px,100%);display:grid;gap:.8rem;max-height:calc(100vh - 32px);overflow:auto}
+.leitor-video{position:relative;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:4/3}
+.leitor-video video{width:100%;height:100%;object-fit:cover;display:block}
+.leitor-mira{position:absolute;inset:22% 12%;border:3px solid var(--brand);border-radius:12px;box-shadow:0 0 0 999px rgba(0,0,0,.25)}
+.leitor-mira::after{content:"";position:absolute;left:6%;right:6%;top:50%;height:2px;background:#ff3b30;animation:mira 1.6s ease-in-out infinite alternate}
+@keyframes mira{from{transform:translateY(-40px)}to{transform:translateY(40px)}}
+.oferta-midia{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;background:#000;display:block}
+.oferta-card.nova{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand);animation:cardIn .6s var(--ease)}
+.destaques{position:relative;background:var(--ink);color:#fff;border-radius:var(--r);overflow:hidden}
+.destaque{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:center;animation:cardIn .6s var(--ease)}
+.destaque-midia{width:100%;height:100%;min-height:260px;max-height:440px;object-fit:cover;display:block;background:#000}
+.destaque-texto{padding:1.6rem;display:grid;gap:.8rem}
+.destaque-texto h3{font-size:clamp(1.4rem,3vw,2rem);color:var(--brand)}
+.destaque-texto p{color:#ddd}
+.destaque-texto .cupom{background:#fff;color:var(--ink)}
+.destaque-pontos{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:6px}
+.destaque-pontos button{width:9px;height:9px;border-radius:50%;border:none;background:rgba(255,255,255,.45);cursor:pointer;padding:0}
+.destaque-pontos button[aria-current="true"]{background:var(--brand);width:22px;border-radius:5px}
+.campo-midia{display:grid;gap:.45rem;align-content:start;border:1px dashed var(--line);border-radius:12px;padding:.8rem}
+.campo-midia img,.campo-midia video{width:100%;max-height:200px;object-fit:cover;border-radius:10px;background:#000}
+.barra{position:relative;isolation:isolate;height:28px;border-radius:999px;background:var(--sage-soft);overflow:hidden;display:grid;place-items:center;font-size:.8rem;font-weight:700}
+.barra span{position:absolute;z-index:-1;inset:0 auto 0 0;background:var(--brand);transition:width .2s}
+@media (max-width:780px){
+  .destaque{grid-template-columns:1fr}
+  .destaque-midia{min-height:200px;max-height:300px}
+  .destaque-texto{padding:1.2rem 1.2rem 2.2rem}
+}

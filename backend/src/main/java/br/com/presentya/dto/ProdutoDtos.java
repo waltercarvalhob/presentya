@@ -25,7 +25,7 @@ public final class ProdutoDtos {
                              boolean maisVendido, boolean ativo, Long imagemId, String imagemUrl, String ilustracao,
                              String corFundo, String corA, String corB, Long categoriaId, String categoriaNome,
                              String categoriaSlug, Set<String> ocasioes, Set<String> publicos, int vendidos,
-                             Instant criadoEm) {
+                             Instant criadoEm, String codigoBarras) {
         public static ProdutoDTO de(Produto p) {
             Categoria c = p.getCategoria();
             return new ProdutoDTO(p.getId(), p.getNome(), p.getDescricao(), p.getPreco(), p.getPrecoPromocional(),
@@ -33,7 +33,8 @@ public final class ProdutoDtos {
                     p.isAtivo(), p.getImagemId(), p.getImagemId() == null ? null : "/api/imagens/" + p.getImagemId(),
                     p.getIlustracao(), p.getCorFundo(), p.getCorA(), p.getCorB(),
                     c == null ? null : c.getId(), c == null ? null : c.getNome(), c == null ? null : c.getSlug(),
-                    new TreeSet<>(p.getOcasioes()), new TreeSet<>(p.getPublicos()), p.getVendidos(), p.getCriadoEm());
+                    new TreeSet<>(p.getOcasioes()), new TreeSet<>(p.getPublicos()), p.getVendidos(), p.getCriadoEm(),
+                    p.getCodigoBarras());
         }
     }
 
@@ -50,7 +51,8 @@ public final class ProdutoDtos {
             @Pattern(regexp = COR, message = "Cor inválida") String corA,
             @Pattern(regexp = COR, message = "Cor inválida") String corB,
             Long categoriaId,
-            Set<String> ocasioes, Set<String> publicos) {}
+            Set<String> ocasioes, Set<String> publicos,
+            @Size(max = 200, message = "Código de barras muito longo") String codigoBarras) {}
 
     public record CategoriaDTO(Long id, String nome, String slug, Long paiId, int ordem, boolean ativo,
                                List<CategoriaDTO> filhas) {}
@@ -60,4 +62,8 @@ public final class ProdutoDtos {
             Long paiId, Integer ordem, Boolean ativo) {}
 
     public record ImagemDTO(Long id, String url) {}
+
+    /** Resultado da leitura do código de barras: produto já cadastrado e/ou dados achados nas bases públicas. */
+    public record CodigoDTO(String codigo, ProdutoDTO existente, String nome, String descricao, Long imagemId,
+                            String imagemUrl, String fonte) {}
 }

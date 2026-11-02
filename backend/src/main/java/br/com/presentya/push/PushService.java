@@ -32,9 +32,15 @@ public class PushService {
     private static final List<String> SERVICOS = List.of("fcm.googleapis.com", "android.googleapis.com",
             "push.services.mozilla.com", "push.apple.com", "notify.windows.com");
 
-    public record Notificacao(String titulo, String mensagem, String url) {
+    /** imagem: endereço completo de uma foto, que o Android mostra grande na notificação (opcional). */
+    public record Notificacao(String titulo, String mensagem, String url, String imagem) {
+        public Notificacao(String titulo, String mensagem, String url) {
+            this(titulo, mensagem, url, null);
+        }
+
         String json() {
-            return "{\"title\":" + js(titulo, 80) + ",\"body\":" + js(mensagem, 300) + ",\"url\":" + js(url, 200) + "}";
+            return "{\"title\":" + js(titulo, 80) + ",\"body\":" + js(mensagem, 300) + ",\"url\":" + js(url, 200)
+                    + (imagem == null ? "" : ",\"image\":" + js(imagem, 300)) + "}";
         }
     }
 

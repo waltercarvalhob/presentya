@@ -4,7 +4,7 @@ import QRCode from "qrcode";
 import { Topo } from "./Admin";
 import Logo from "../components/Logo";
 import { dataCurta } from "../pages/Ofertas";
-import { api } from "../lib/api";
+import { API, api, getToken, imagemUrl } from "../lib/api";
 import { textoOfertas } from "../lib/proximidade";
 import { useLoja } from "../lib/store";
 import { dataHora, waLink } from "../lib/util";
@@ -22,7 +22,63 @@ export function QrOfertas({ tamanho = 560, className }) {
   return src ? <img className={className} src={src} width={tamanho} height={tamanho} alt="QR Code da página de ofertas da PresentYá" /> : null;
 }
 
-const OFERTA_VAZIA = { titulo: "", descricao: "", cupom: "", validaAte: "", ordem: 0, ativo: true };
+const OFERTA_VAZIA = { titulo: "", descricao: "", cupom: "", validaAte: "", ordem: 0, ativo: true, imagemId: null, imagemUrl: null, videoId: null, videoUrl: null };
+const MB = 1024 * 1024;
+
+/** Envio com barra de progresso (vídeo pelo celular pode demorar). */
+function enviarMidia(arquivo, aoProgredir) {
+  return new Promise((ok, falha) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", API + "/api/admin/midias");
+    const token = getToken();
+    if (token) xhr.setRequestHeader("Authorization", "Bearer " + token);
+    xhr.upload.onprogress = (e) => e.lengthComputable && aoProgredir(Math.round((e.loaded / e.total) * 100));
+    xhr.onload = () => {
+      let r = null;
+      try { r = JSON.parse(xhr.responseText); } catch { /* resposta vazia */ }
+      xhr.status < 300 ? ok(r) : falha(new Error(r?.erro || "Não foi possível enviar o arquivo"));
+    };
+    xhr.onerror = () => falha(new Error("Falha de conexão ao enviar o arquivo"));
+    const form = new FormData();
+    form.append("arquivo", arquivo);
+    xhr.send(form);
+  });
+}
+
+/** Foto ou vídeo da oferta: tirar na hora pela câmera ou escolher da galeria. */
+function CampoMidia({ tipo, url, aoMudar }) {
+  const [progresso, setProgresso] = useState(null);
+  const [erro, setErro] = useState(null);
+  const video = tipo === "video";
+  const escolher = async (e) => {
+    const arq = e.target.files[0];
+    e.target.value = "";
+    if (!arq) return;
+    if (arq.size > (video ? 25 : 5) * MB) return setErro(video ? "Vídeo maior que 25 MB: grave mais curto (até ~30 s) ou em resolução menor." : "Foto maior que 5 MB.");
+    setErro(null); setProgresso(0);
+    try { const r = await enviarMidia(arq, setProgresso); aoMudar(r.id, r.url); }
+    catch (err) { setErro(err.message); }
+    finally { setProgresso(null); }
+  };
+  const aceita = video ? "video/mp4,video/webm,video/quicktime" : "image/jpeg,image/png,image/webp,image/gif";
+  return (
+    <div className="campo-midia">
+      <b>{video ? "🎬 Vídeo da oferta" : "📷 Foto da oferta"}</b>
+      {url && (video
+        ? <video src={imagemUrl(url)} muted playsInline controls preload="metadata" />
+        : <img src={imagemUrl(url)} alt="Foto da oferta" />)}
+      {progresso !== null ? <div className="barra" role="progressbar" aria-valuenow={progresso}><span style={{ width: progresso + "%" }} />{progresso}%</div> : (
+        <div style={{ display: "flex", gap: ".4rem", flexWrap: "wrap" }}>
+          <label className="btn btn-dark btn-sm">{video ? "Gravar vídeo" : "Tirar foto"}<input hidden type="file" accept={video ? "video/*" : "image/*"} capture="environment" onChange={escolher} /></label>
+          <label className="btn btn-line btn-sm">Da galeria<input hidden type="file" accept={aceita} onChange={escolher} /></label>
+          {url && <button type="button" className="mini-btn danger" onClick={() => aoMudar(null, null)}>Remover</button>}
+        </div>
+      )}
+      <small>{video ? "MP4 ou MOV até 25 MB (uns 30 s). Toca sozinho, sem som." : "JPG, PNG ou WEBP até 5 MB. Vai junto na notificação."}</small>
+      {erro && <div className="alert">{erro}</div>}
+    </div>
+  );
+}
 const PROX = ["loja_latitude", "loja_longitude", "raio_proximidade", "mensagem_proximidade"];
 
 export function Divulgacao() {
@@ -89,7 +145,7 @@ export function Divulgacao() {
             <tbody>
               {ofertas.map((o) => (
                 <tr key={o.id} className={o.ativo ? "" : "off"}>
-                  <td><b>{o.titulo}</b>{o.descricao && <><br /><small>{o.descricao}</small></>}</td>
+                  <td><b>{o.titulo}</b>{(o.imagemUrl || o.videoUrl) && <> {o.imagemUrl && "📷"}{o.videoUrl && "🎬"}</>}{o.descricao && <><br /><small>{o.descricao}</small></>}</td>
                   <td>{o.cupom || "—"}</td>
                   <td>{o.validaAte ? dataCurta(o.validaAte) : "Sem prazo"}</td>
                   <td className="num">{o.ordem}</td>
@@ -164,6 +220,10 @@ function FormOferta({ inicial, salvo }) {
       {erro && <div className="alert">{erro}</div>}
       <label>Título<input required maxLength={120} placeholder="Ex.: Caneca personalizada com 20% off" {...campo("titulo")} /></label>
       <label>Descrição<textarea maxLength={1000} placeholder="Detalhes, regras, quantidade limitada…" {...campo("descricao")} /></label>
+      <div className="row">
+        <CampoMidia tipo="imagem" url={d.imagemUrl} aoMudar={(id, url) => setD((x) => ({ ...x, imagemId: id, imagemUrl: url }))} />
+        <CampoMidia tipo="video" url={d.videoUrl} aoMudar={(id, url) => setD((x) => ({ ...x, videoId: id, videoUrl: url }))} />
+      </div>
       <div className="row">
         <label>Cupom (opcional)<input maxLength={40} placeholder="Ex.: VITRINE10" {...campo("cupom")} /></label>
         <label>Válida até (opcional)<input type="date" {...campo("validaAte")} /></label>

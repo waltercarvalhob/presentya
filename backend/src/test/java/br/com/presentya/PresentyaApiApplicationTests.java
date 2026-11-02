@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -196,5 +198,48 @@ class PresentyaApiApplicationTests {
                         .content("{\"endpoint\":\"https://fcm.googleapis.com/fcm/send/abc\"}"))
                 .andExpect(status().isNoContent());
         mvc.perform(get("/api/admin/push").header("Authorization", admin)).andExpect(jsonPath("$.inscritos").value(0));
+    }
+
+    @Test
+    void ofertaComFotoEVideoELeituraDeCodigo() throws Exception {
+        String admin = token("/api/auth/login", "{\"email\":\"admin@presentya.com.br\",\"senha\":\"Admin@2026\"}", 200);
+        byte[] bytes = new byte[200];
+        for (int i = 0; i < bytes.length; i++) bytes[i] = (byte) i;
+
+        String foto = mvc.perform(multipart("/api/admin/midias").file(new MockMultipartFile("arquivo", "f.png", "image/png", bytes))
+                        .header("Authorization", admin)).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        String video = mvc.perform(multipart("/api/admin/midias").file(new MockMultipartFile("arquivo", "v.mp4", "video/mp4", bytes))
+                        .header("Authorization", admin)).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        mvc.perform(multipart("/api/admin/midias").file(new MockMultipartFile("arquivo", "x.exe", "application/octet-stream", bytes))
+                .header("Authorization", admin)).andExpect(status().isBadRequest());
+        Integer fotoId = JsonPath.read(foto, "$.id"), videoId = JsonPath.read(video, "$.id");
+
+        // Vídeo responde a "Range" (o Safari do iPhone só toca assim).
+        mvc.perform(get("/api/imagens/" + videoId).header("Range", "bytes=0-9"))
+                .andExpect(status().isPartialContent())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.header().string("Content-Range", "bytes 0-9/200"));
+
+        // Foto no lugar do vídeo é recusada; certo, a oferta aparece com as duas mídias.
+        String oferta = "{\"titulo\":\"Kit Natal\",\"imagemId\":%d,\"videoId\":%d}";
+        mvc.perform(post("/api/admin/ofertas").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
+                .content(oferta.formatted(fotoId, fotoId))).andExpect(status().isBadRequest());
+        mvc.perform(post("/api/admin/ofertas").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
+                        .content(oferta.formatted(fotoId, videoId)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.imagemUrl").value("/api/imagens/" + fotoId))
+                .andExpect(jsonPath("$.videoUrl").value("/api/imagens/" + videoId));
+
+        // Código já cadastrado em um produto: a leitura devolve o produto para editar.
+        String produto = "{\"nome\":\"Caneca QR\",\"preco\":10,\"ativo\":false,\"codigoBarras\":\"PRESENTYA-CANECA-01\"}";
+        mvc.perform(post("/api/admin/produtos").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON).content(produto))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.codigoBarras").value("PRESENTYA-CANECA-01"));
+        mvc.perform(get("/api/admin/produtos/codigo").param("valor", "PRESENTYA-CANECA-01").header("Authorization", admin))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.existente.nome").value("Caneca QR"));
+        mvc.perform(get("/api/admin/produtos/codigo").param("valor", "PRESENTYA-CANECA-01"))
+                .andExpect(status().isUnauthorized());
+
+        org.junit.jupiter.api.Assertions.assertEquals("07891234567895",
+                br.com.presentya.service.CodigoBarrasService.gtin("https://id.gs1.org/01/07891234567895/21/abc"));
+        org.junit.jupiter.api.Assertions.assertNull(br.com.presentya.service.CodigoBarrasService.gtin("https://presentya.vercel.app"));
     }
 }

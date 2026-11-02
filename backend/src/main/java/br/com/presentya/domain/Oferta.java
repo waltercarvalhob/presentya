@@ -19,6 +19,9 @@ public class Oferta {
     private String cupom;
     /** Último dia da oferta; vazio = sem prazo. */
     private LocalDate validaAte;
+    /** Foto e vídeo da oferta (tabela imagem, que guarda os dois). */
+    private Long imagemId;
+    private Long videoId;
     private int ordem;
     private boolean ativo = true;
     private Instant criadoEm = Instant.now();
@@ -32,6 +35,10 @@ public class Oferta {
     public void setCupom(String cupom) { this.cupom = cupom; }
     public LocalDate getValidaAte() { return validaAte; }
     public void setValidaAte(LocalDate validaAte) { this.validaAte = validaAte; }
+    public Long getImagemId() { return imagemId; }
+    public void setImagemId(Long imagemId) { this.imagemId = imagemId; }
+    public Long getVideoId() { return videoId; }
+    public void setVideoId(Long videoId) { this.videoId = videoId; }
     public int getOrdem() { return ordem; }
     public void setOrdem(int ordem) { this.ordem = ordem; }
     public boolean isAtivo() { return ativo; }

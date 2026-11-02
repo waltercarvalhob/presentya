@@ -27,6 +27,9 @@ public class Produto {
     private boolean maisVendido;
     private boolean ativo = true;
     private Long imagemId;
+    /** Código de barras (EAN/GTIN) ou conteúdo do QR Code da embalagem, lido pela câmera no cadastro. */
+    @Column(length = 200)
+    private String codigoBarras;
     /** Ilustração usada quando não há foto: box, tall, mug, frame, basket, lamp, bear, spa, key, tree, choc, card. */
     @Column(length = 20)
     private String ilustracao = "box";
@@ -76,6 +79,8 @@ public class Produto {
     public void setAtivo(boolean ativo) { this.ativo = ativo; }
     public Long getImagemId() { return imagemId; }
     public void setImagemId(Long imagemId) { this.imagemId = imagemId; }
+    public String getCodigoBarras() { return codigoBarras; }
+    public void setCodigoBarras(String codigoBarras) { this.codigoBarras = codigoBarras; }
     public String getIlustracao() { return ilustracao; }
     public void setIlustracao(String ilustracao) { this.ilustracao = ilustracao; }
     public String getCorFundo() { return corFundo; }

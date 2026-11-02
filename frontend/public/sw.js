@@ -6,14 +6,19 @@ self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
 self.addEventListener("push", (e) => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch { d = { body: e.data ? e.data.text() : "" }; }
-  e.waitUntil(self.registration.showNotification(d.title || "PresentYá", {
-    body: d.body || "Confira as ofertas de hoje!",
-    icon: "/icone-192.png",
-    badge: "/icone-192.png",
-    tag: "presentya-ofertas",
-    renotify: true,
-    data: { url: d.url || "/ofertas" },
-  }));
+  e.waitUntil(Promise.all([
+    self.registration.showNotification(d.title || "PresentYá", {
+      body: d.body || "Confira as ofertas de hoje!",
+      icon: "/icone-192.png",
+      badge: "/icone-192.png",
+      ...(d.image ? { image: d.image } : {}),
+      tag: "presentya-ofertas",
+      renotify: true,
+      data: { url: d.url || "/ofertas" },
+    }),
+    // Página de ofertas aberta? Ela atualiza na hora, sem a pessoa recarregar.
+    self.clients.matchAll({ type: "window" }).then((abas) => abas.forEach((c) => c.postMessage({ tipo: "ofertas" }))),
+  ]));
 });
 
 // Tocar na notificação abre (ou traz para frente) a página de ofertas.

@@ -17,6 +17,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +32,16 @@ public class PromocaoService {
     private final OfertaRepository ofertas;
     private final InteressadoRepository interessados;
     private final PushService push;
+    private final CatalogoService catalogo;
+    private final String apiUrl;
 
-    public PromocaoService(OfertaRepository ofertas, InteressadoRepository interessados, PushService push) {
+    public PromocaoService(OfertaRepository ofertas, InteressadoRepository interessados, PushService push,
+                           CatalogoService catalogo, @Value("${app.api-url}") String apiUrl) {
         this.ofertas = ofertas;
         this.interessados = interessados;
         this.push = push;
+        this.catalogo = catalogo;
+        this.apiUrl = apiUrl.replaceAll("/+$", "");
     }
 
     @Transactional(readOnly = true)
@@ -62,11 +68,14 @@ public class PromocaoService {
         o.setValidaAte(req.validaAte());
         if (req.ordem() != null) o.setOrdem(req.ordem());
         if (req.ativo() != null) o.setAtivo(req.ativo());
+        o.setImagemId(midia(req.imagemId(), "image/", "Foto da oferta não encontrada"));
+        o.setVideoId(midia(req.videoId(), "video/", "Vídeo da oferta não encontrado"));
         ofertas.save(o);
         if (!jaValia && vigente(o)) {
             String texto = o.getTitulo() + (o.getDescricao() == null ? "" : " – " + o.getDescricao())
                     + (o.getCupom() == null ? "" : " · Cupom " + o.getCupom());
-            push.enviarParaTodos(new Notificacao("🎁 Nova oferta na PresentYá", texto, "/ofertas"));
+            String foto = o.getImagemId() == null ? null : apiUrl + "/api/imagens/" + o.getImagemId();
+            push.enviarParaTodos(new Notificacao("🎁 Nova oferta na PresentYá", texto, "/ofertas", foto));
         }
         return OfertaDTO.de(o);
     }
@@ -94,6 +103,13 @@ public class PromocaoService {
             push.cancelar(i.getEndpoint());
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Não conseguimos enviar a notificação: " + erro);
         }
+    }
+
+    private Long midia(Long id, String tipo, String erro) {
+        if (id == null) return null;
+        String t = catalogo.tipoMidia(id);
+        if (t == null || !t.startsWith(tipo)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, erro);
+        return id;
     }
 
     private static boolean vigente(Oferta o) {

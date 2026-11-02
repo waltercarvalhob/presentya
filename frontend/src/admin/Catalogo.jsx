@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Topo } from "./Admin";
+import LeitorCodigo from "../components/LeitorCodigo";
 import { Art, ILUSTRACOES } from "../lib/art";
 import { api } from "../lib/api";
 import { useLoja } from "../lib/store";
@@ -15,8 +16,27 @@ const CORES = {
 const VAZIO = {
   nome: "", descricao: "", preco: "", precoPromocional: "", estoque: "", personalizavel: false, novidade: true, maisVendido: false, ativo: true,
   imagemId: null, imagemUrl: null, ilustracao: "box", corFundo: "var(--rose-soft)", corA: "var(--rose)", corB: "var(--gold-bright)",
-  categoriaId: "", ocasioes: [], publicos: [],
+  categoriaId: "", ocasioes: [], publicos: [], codigoBarras: "",
 };
+
+const paraEdicao = (d) => ({ ...VAZIO, ...d, precoPromocional: d.precoPromocional ?? "", estoque: d.estoque ?? "", categoriaId: d.categoriaId || "", codigoBarras: d.codigoBarras || "" });
+
+/** Procura o código no catálogo e nas bases públicas (nome, descrição e foto). */
+const consultarCodigo = (codigo) => api("/api/admin/produtos/codigo?valor=" + encodeURIComponent(codigo));
+
+/** Preenche só o que ainda está vazio, para não apagar o que a pessoa já digitou. */
+function comDadosDoCodigo(d, r) {
+  return {
+    ...d, codigoBarras: r.codigo,
+    nome: d.nome || r.nome || "",
+    descricao: d.descricao || r.descricao || "",
+    ...(!d.imagemId && r.imagemId ? { imagemId: r.imagemId, imagemUrl: r.imagemUrl } : {}),
+  };
+}
+
+const avisoCodigo = (r) => (r.fonte
+  ? `Produto encontrado (${r.fonte}): confira nome, foto e preço`
+  : "Código guardado. Não achamos este produto nas bases públicas: preencha o nome e tire a foto.");
 
 function OpcoesCategoria({ categorias }) {
   return categorias.map((c) => c.filhas.length ? (
@@ -27,9 +47,28 @@ function OpcoesCategoria({ categorias }) {
   ) : <option key={c.id} value={c.id}>{c.nome}</option>);
 }
 
-function FormProduto({ inicial, categorias, fechar, salvo }) {
+function FormProduto({ inicial, categorias, fechar, salvo, abrir }) {
   const { toast } = useLoja();
   const [d, setD] = useState(inicial);
+  const [lendo, setLendo] = useState(false);
+  const [buscando, setBuscando] = useState(false);
+
+  const lerCodigo = async (codigo) => {
+    setLendo(false);
+    if (!codigo) return;
+    setBuscando(true);
+    try {
+      const r = await consultarCodigo(codigo);
+      if (r.existente && r.existente.id !== d.id) {
+        if (confirm(`Já existe “${r.existente.nome}” com este código. Abrir esse produto para editar?`)) return abrir(r.existente);
+        setD((x) => ({ ...x, codigoBarras: codigo }));
+        return;
+      }
+      setD((x) => comDadosDoCodigo(x, r));
+      toast(r.existente ? "Código confere com este produto" : avisoCodigo(r));
+    } catch (err) { toast(err.message); setD((x) => ({ ...x, codigoBarras: codigo })); }
+    finally { setBuscando(false); }
+  };
   const [erro, setErro] = useState(null);
   const [enviando, setEnviando] = useState(false);
   const set = (k) => (e) => setD({ ...d, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value });
@@ -61,6 +100,15 @@ function FormProduto({ inicial, categorias, fechar, salvo }) {
       <form className="panel wide form" style={{ borderRadius: 0 }} onSubmit={salvar} role="dialog" aria-modal="true" aria-label="Produto">
         <div className="panel-head"><h3>{d.id ? "Editar produto" : "Novo produto"}</h3><button type="button" className="close" onClick={fechar} aria-label="Fechar">×</button></div>
         {erro && <div className="alert" role="alert">{erro}</div>}
+        <label>Código de barras / QR Code
+          <div style={{ display: "flex", gap: ".5rem" }}>
+            <input maxLength={200} value={d.codigoBarras || ""} onChange={set("codigoBarras")} placeholder="Leia com a câmera, um leitor USB ou digite"
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); lerCodigo(e.currentTarget.value.trim()); } }} />
+            <button type="button" className="btn btn-dark btn-sm" onClick={() => setLendo(true)} disabled={buscando}>{buscando ? "Buscando…" : "📷 Ler código"}</button>
+          </div>
+          <small>Ao ler, buscamos nome, descrição e foto do produto automaticamente.</small>
+        </label>
+        {lendo && <LeitorCodigo aoLer={lerCodigo} fechar={() => setLendo(false)} />}
         <label>Nome<input required maxLength={140} value={d.nome} onChange={set("nome")} /></label>
         <label>Descrição<textarea maxLength={4000} value={d.descricao || ""} onChange={set("descricao")} /></label>
         <label>Categoria<select value={d.categoriaId || ""} onChange={set("categoriaId")}><option value="">Sem categoria</option><OpcoesCategoria categorias={categorias} /></select></label>
@@ -84,7 +132,10 @@ function FormProduto({ inicial, categorias, fechar, salvo }) {
         <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap" }}>
           <div className="preview-art" style={{ background: d.corFundo }}><Art p={prev} /></div>
           <div style={{ display: "grid", gap: ".4rem" }}>
-            <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={enviarFoto} />
+            <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap" }}>
+              <label className="btn btn-dark btn-sm">📷 Tirar foto<input hidden type="file" accept="image/*" capture="environment" onChange={enviarFoto} /></label>
+              <label className="btn btn-line btn-sm">Escolher arquivo<input hidden type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={enviarFoto} /></label>
+            </div>
             {d.imagemId && <button type="button" className="mini-btn" onClick={() => setD({ ...d, imagemId: null, imagemUrl: null })}>Remover foto (usar ilustração)</button>}
             <small>JPG, PNG ou WEBP até 5 MB. Sem foto, a loja mostra a ilustração abaixo.</small>
           </div>
@@ -109,6 +160,7 @@ export function Produtos() {
   const [lista, setLista] = useState(null);
   const [categorias, setCategorias] = useState([]);
   const [editando, setEditando] = useState(null);
+  const [lendo, setLendo] = useState(false);
   const [busca, setBusca] = useState("");
   const [q, setQ] = useSearchParams();
 
@@ -119,6 +171,16 @@ export function Produtos() {
   }, []);
   useEffect(() => { if (q.get("novo")) { setEditando(VAZIO); setQ({}); } }, [q, setQ]);
 
+  /** Lê o código primeiro: abre o produto que já tem esse código ou um novo já preenchido. */
+  const lerDaLista = async (codigo) => {
+    setLendo(false);
+    try {
+      const r = await consultarCodigo(codigo);
+      if (r.existente) { setEditando(paraEdicao(r.existente)); toast(`Este código já é do produto “${r.existente.nome}”`); return; }
+      setEditando(comDadosDoCodigo(VAZIO, r));
+      toast(avisoCodigo(r));
+    } catch (e) { toast(e.message); setEditando({ ...VAZIO, codigoBarras: codigo }); }
+  };
   const salvo = async (r) => { setEditando(null); toast(`“${r.nome}” salvo`); await carregar(); recarregar(); };
   const remover = async (p) => {
     if (!confirm(`Remover “${p.nome}”? Produtos que já foram vendidos são apenas ocultados.`)) return;
@@ -131,6 +193,7 @@ export function Produtos() {
     <>
       <Topo titulo="Produtos">
         <input className="chip" placeholder="Buscar produto" value={busca} onChange={(e) => setBusca(e.target.value)} />
+        <button className="btn btn-dark btn-sm" onClick={() => setLendo(true)}>📷 Cadastrar pelo código</button>
         <button className="btn btn-gold btn-sm" onClick={() => setEditando(VAZIO)}>+ Novo produto</button>
       </Topo>
       {lista === null ? <p className="hand">Carregando…</p> : (
@@ -149,7 +212,7 @@ export function Produtos() {
                     <td className="num">{d.estoque ?? "sob encomenda"}</td>
                     <td className="num">{d.vendidos}</td>
                     <td><div className="acts">
-                      <button className="mini-btn" onClick={() => setEditando({ ...VAZIO, ...d, precoPromocional: d.precoPromocional ?? "", estoque: d.estoque ?? "", categoriaId: d.categoriaId || "" })}>Editar</button>
+                      <button className="mini-btn" onClick={() => setEditando(paraEdicao(d))}>Editar</button>
                       <button className="mini-btn danger" onClick={() => remover(d)}>Remover</button>
                     </div></td>
                   </tr>
@@ -159,7 +222,9 @@ export function Produtos() {
           </table>
         </div>
       )}
-      {editando && <FormProduto inicial={editando} categorias={categorias} fechar={() => setEditando(null)} salvo={salvo} />}
+      {lendo && <LeitorCodigo aoLer={lerDaLista} fechar={() => setLendo(false)} />}
+      {editando && <FormProduto key={editando.id || "novo"} inicial={editando} categorias={categorias} fechar={() => setEditando(null)} salvo={salvo}
+        abrir={(p) => setEditando(paraEdicao(p))} />}
     </>
   );
 }

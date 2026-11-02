@@ -15,10 +15,14 @@ public final class PromocaoDtos {
     private PromocaoDtos() {}
 
     public record OfertaDTO(Long id, String titulo, String descricao, String cupom, LocalDate validaAte,
-                            int ordem, boolean ativo) {
+                            int ordem, boolean ativo, Long imagemId, String imagemUrl, Long videoId, String videoUrl) {
         public static OfertaDTO de(Oferta o) {
             return new OfertaDTO(o.getId(), o.getTitulo(), o.getDescricao(), o.getCupom(), o.getValidaAte(),
-                    o.getOrdem(), o.isAtivo());
+                    o.getOrdem(), o.isAtivo(), o.getImagemId(), url(o.getImagemId()), o.getVideoId(), url(o.getVideoId()));
+        }
+
+        private static String url(Long id) {
+            return id == null ? null : "/api/imagens/" + id;
         }
     }
 
@@ -26,7 +30,7 @@ public final class PromocaoDtos {
             @NotBlank(message = "Informe o título da oferta") @Size(max = 120) String titulo,
             @Size(max = 1000) String descricao,
             @Size(max = 40, message = "Cupom muito longo") String cupom,
-            LocalDate validaAte, Integer ordem, Boolean ativo) {}
+            LocalDate validaAte, Integer ordem, Boolean ativo, Long imagemId, Long videoId) {}
 
     public record InteressadoDTO(Long id, String nome, String whatsapp, String email, String origem, Instant criadoEm) {
         public static InteressadoDTO de(Interessado i) {
