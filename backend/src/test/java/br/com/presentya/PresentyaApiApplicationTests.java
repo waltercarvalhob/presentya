@@ -295,6 +295,10 @@ class PresentyaApiApplicationTests {
     void automacoesAgendadaDiariaEPromocaoDeProduto() throws Exception {
         String admin = token("/api/auth/login", "{\"email\":\"admin@presentya.com.br\",\"senha\":\"Admin@2026\"}", 200);
         java.time.LocalDateTime agora = java.time.LocalDateTime.now(java.time.ZoneId.of("America/Fortaleza")).withNano(0);
+        // Horário de envio aberto o dia todo, para o teste não depender da hora em que roda.
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/admin/configuracoes")
+                .header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"envio_diario_hora\":\"00:00\",\"envio_diario_fim\":\"23:59\"}")).andExpect(status().isOk());
 
         // Agendada para amanhã: fica fora da página e sem anúncio até a hora chegar.
         String criada = mvc.perform(post("/api/admin/ofertas").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
@@ -315,9 +319,26 @@ class PresentyaApiApplicationTests {
         // Envio diário: no máximo uma vez por dia.
         mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/admin/configuracoes")
                 .header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
-                .content("{\"envio_diario_ativo\":\"true\",\"envio_diario_hora\":\"00:00\"}")).andExpect(status().isOk());
+                .content("{\"envio_diario_ativo\":\"true\"}")).andExpect(status().isOk());
         promocaoService.envioDiarioSePreciso();
         org.junit.jupiter.api.Assertions.assertFalse(promocaoService.envioDiarioSePreciso());
+
+        // Fora do horário de envio, a oferta nova espera na fila; quando o horário abre, ela sai.
+        java.time.LocalTime agoraHora = agora.toLocalTime();
+        String fechado = "{\"envio_diario_hora\":\"%s\",\"envio_diario_fim\":\"%s\"}"
+                .formatted(agoraHora.plusHours(2).withSecond(0), agoraHora.plusHours(3).withSecond(0));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/admin/configuracoes")
+                .header("Authorization", admin).contentType(MediaType.APPLICATION_JSON).content(fechado)).andExpect(status().isOk());
+        mvc.perform(post("/api/admin/ofertas").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"titulo\":\"Oferta da madrugada\"}"))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.anunciadaEm").doesNotExist());
+        org.junit.jupiter.api.Assertions.assertEquals(0, promocaoService.anunciarAgendadas());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/admin/configuracoes")
+                .header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"envio_diario_hora\":\"00:00\",\"envio_diario_fim\":\"23:59\"}")).andExpect(status().isOk());
+        org.junit.jupiter.api.Assertions.assertEquals(1, promocaoService.anunciarAgendadas());
+        mvc.perform(get("/api/admin/ofertas").header("Authorization", admin))
+                .andExpect(jsonPath("$[?(@.titulo==\"Oferta da madrugada\" && @.anunciadaEm)]", hasSize(1)));
 
         // Produto que entra em promoção é salvo normalmente (o anúncio sai depois do commit).
         String produto = mvc.perform(post("/api/admin/produtos").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)

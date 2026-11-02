@@ -271,7 +271,7 @@ function Notificacoes() {
     setDiario(novo);
     try {
       await api("/api/admin/configuracoes", { method: "PUT", body: { envio_diario_ativo: String(novo.ativo), envio_diario_hora: novo.hora, envio_diario_fim: novo.fim } });
-      toast(novo.ativo ? `Envio diário ligado: todo dia entre ${novo.hora} e ${novo.fim}` : "Envio diário desligado");
+      toast(`Horário de envio: ${novo.hora} às ${novo.fim}${novo.ativo ? " · envio diário ligado" : ""}`);
     } catch (e) { toast(e.message); }
   };
   const [f, setF] = useState({ titulo: "🎁 PresentYá", mensagem: "" });
@@ -301,8 +301,7 @@ function Notificacoes() {
       <button className="btn btn-gold" disabled={enviando || !inscritos}>{enviando ? "Enviando…" : "Enviar agora para todos"}</button>
       {diario && (
         <div className="diario">
-          <label className="aceite"><input type="checkbox" checked={diario.ativo} onChange={(e) => salvarDiario({ ...diario, ativo: e.target.checked })} />
-            <span><b>Envio diário automático</b>: todo dia manda sozinho as ofertas do dia e os produtos em promoção para todos (notificação, WhatsApp e Telegram).</span></label>
+          <b>⏰ Horário de envio automático</b>
           <div style={{ display: "flex", gap: ".8rem", flexWrap: "wrap" }}>
             <label style={{ maxWidth: 170 }}>Envia a partir das
               <input type="time" value={diario.hora} onChange={(e) => setDiario({ ...diario, hora: e.target.value })} onBlur={() => salvarDiario(diario)} />
@@ -311,6 +310,11 @@ function Notificacoes() {
               <input type="time" value={diario.fim} onChange={(e) => setDiario({ ...diario, fim: e.target.value })} onBlur={() => salvarDiario(diario)} />
             </label>
           </div>
+          <small>Vale para tudo que sai sozinho: oferta nova, oferta agendada, produto em promoção e envio diário.
+            O que acontecer fora desse horário fica na fila e sai assim que o horário abrir.
+            A resposta do robô a quem acabou de chamar e o botão “Enviar agora” não esperam.</small>
+          <label className="aceite"><input type="checkbox" checked={diario.ativo} onChange={(e) => salvarDiario({ ...diario, ativo: e.target.checked })} />
+            <span><b>Envio diário automático</b>: todo dia, no início do horário, manda sozinho as ofertas do dia e os produtos em promoção para todos (notificação, WhatsApp e Telegram).</span></label>
           <small>{diario.ultimo ? `Último envio diário: ${dataCurta(diario.ultimo)}.` : "Ainda não houve envio diário."} Dias sem oferta ativa nem produto em promoção não mandam nada.
             No plano gratuito o servidor dorme sem visitas: se estiver dormindo no horário, envia assim que acordar, se ainda estiver dentro desse intervalo.
             Para pontualidade, cadastre em cron-job.org (grátis) uma chamada a cada 10 minutos para https://presentya-api.onrender.com/api/status.</small>
@@ -353,7 +357,7 @@ function FormOferta({ inicial, salvo }) {
       </div>
       {d.ativo && !(inicial.id && inicial.ativo) && <small>{agendada(d)
         ? `Agendada: em ${dataHoraCurta(d.iniciaEm)} ela entra no ar e vai sozinha para todos (notificação, WhatsApp e Telegram).`
-        : "Ao salvar, todos recebem esta oferta na hora (notificação, WhatsApp e Telegram)."}</small>}
+        : "Ao salvar, todos recebem esta oferta (notificação, WhatsApp e Telegram). Fora do horário de envio, ela sai quando o horário abrir."}</small>}
       <button className="btn btn-gold" disabled={enviando}>{enviando ? "Salvando…" : "Salvar oferta"}</button>
     </form>
   );

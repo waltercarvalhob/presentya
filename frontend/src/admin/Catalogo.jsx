@@ -115,7 +115,7 @@ function FormProduto({ inicial, categorias, fechar, salvo, abrir }) {
         <div className="row">
           <label>Preço (R$)<input required inputMode="decimal" value={d.preco} onChange={set("preco")} placeholder="49,90" /></label>
           <label>Preço promocional (R$)<input inputMode="decimal" value={d.precoPromocional ?? ""} onChange={set("precoPromocional")} placeholder="vazio = sem oferta" />
-            <small>Ao entrar em promoção, o produto é anunciado sozinho para todos (notificação, WhatsApp e Telegram).</small></label>
+            <small>Ao entrar em promoção, o produto é anunciado sozinho para todos (notificação, WhatsApp e Telegram), dentro do horário de envio.</small></label>
         </div>
         <label>Estoque<input inputMode="numeric" value={d.estoque ?? ""} onChange={set("estoque")} placeholder="vazio = sob encomenda (sem controle)" /></label>
         <div className="check-grid">

@@ -8,7 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 /**
- * Relógio das automações: a cada minuto solta as ofertas agendadas cuja hora chegou e faz o envio diário.
+ * Relógio das automações: a cada minuto, dentro do horário de envio, solta as ofertas agendadas, a fila do
+ * que aconteceu fora do horário e faz o envio diário.
  * No plano gratuito do Render o servidor dorme sem visitas; ao acordar, tudo que estava pendente sai na hora.
  */
 @Configuration
@@ -28,7 +29,7 @@ public class AgendaPromocoes {
         if (!ativa) return;
         try {
             int agendadas = promocao.anunciarAgendadas();
-            if (agendadas > 0) log.info("{} oferta(s) agendada(s) entraram no ar e foram enviadas", agendadas);
+            if (agendadas > 0) log.info("{} anúncio(s) agendado(s) ou na fila foram enviados", agendadas);
             if (promocao.envioDiarioSePreciso()) log.info("Envio diário das ofertas feito");
         } catch (RuntimeException e) {
             log.warn("Falha na agenda de promoções: {}", e.getMessage());

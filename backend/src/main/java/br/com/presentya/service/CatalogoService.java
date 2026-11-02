@@ -68,7 +68,7 @@ public class CatalogoService {
     }
 
     /** Produto que acabou de entrar em promoção: PromocaoService anuncia depois que salvar. */
-    public record ProdutoEmPromocao(String nome, BigDecimal preco, BigDecimal precoPromocional, Long imagemId) {}
+    public record ProdutoEmPromocao(Long id, String nome, BigDecimal preco, BigDecimal precoPromocional, Long imagemId) {}
 
     private static boolean emPromocao(Produto p) {
         return p.isAtivo() && p.getPrecoPromocional() != null && p.getPrecoPromocional().compareTo(p.getPreco()) < 0;
@@ -102,7 +102,7 @@ public class CatalogoService {
         p.setPublicos(limpar(req.publicos()));
         ProdutoDTO salvo = ProdutoDTO.de(produtos.save(p));
         if (!jaEstavaEmPromocao && emPromocao(p)) {
-            eventos.publishEvent(new ProdutoEmPromocao(p.getNome(), p.getPreco(), p.getPrecoPromocional(), p.getImagemId()));
+            eventos.publishEvent(new ProdutoEmPromocao(p.getId(), p.getNome(), p.getPreco(), p.getPrecoPromocional(), p.getImagemId()));
         }
         return salvo;
     }

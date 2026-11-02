@@ -1,5 +1,7 @@
 package br.com.presentya.service;
 
+import br.com.presentya.domain.AnuncioPendente;
+import br.com.presentya.domain.AnuncioPendente.Tipo;
 import br.com.presentya.domain.InscricaoPush;
 import br.com.presentya.domain.Interessado;
 import br.com.presentya.domain.Oferta;
@@ -8,6 +10,7 @@ import br.com.presentya.dto.PromocaoDtos.InteressadoDTO;
 import br.com.presentya.dto.PromocaoDtos.InteressadoRequest;
 import br.com.presentya.dto.PromocaoDtos.OfertaDTO;
 import br.com.presentya.dto.PromocaoDtos.OfertaRequest;
+import br.com.presentya.repository.AnuncioPendenteRepository;
 import br.com.presentya.repository.InteressadoRepository;
 import br.com.presentya.mensageiro.MensageiroService;
 import br.com.presentya.push.PushService;
@@ -48,11 +51,13 @@ public class PromocaoService {
     private final CatalogoService catalogo;
     private final MensageiroService mensageiro;
     private final ConfiguracaoService config;
+    private final AnuncioPendenteRepository pendentes;
     private final String apiUrl;
 
     public PromocaoService(OfertaRepository ofertas, InteressadoRepository interessados, PushService push,
                            CatalogoService catalogo, MensageiroService mensageiro, ConfiguracaoService config,
-                           @Value("${app.api-url}") String apiUrl) {
+                           AnuncioPendenteRepository pendentes, @Value("${app.api-url}") String apiUrl) {
+        this.pendentes = pendentes;
         this.ofertas = ofertas;
         this.interessados = interessados;
         this.push = push;
@@ -75,7 +80,7 @@ public class PromocaoService {
 
     /**
      * Oferta que passa a valer (nova, reativada ou cuja hora agendada já chegou) vira notificação automática
-     * para todos. Agendada para depois: a AgendaPromocoes anuncia quando chegar a hora.
+     * para todos. Agendada para depois, ou fora do horário de envio: a AgendaPromocoes anuncia quando der.
      */
     @Transactional
     public OfertaDTO salvarOferta(Long id, OfertaRequest req) {
@@ -94,17 +99,50 @@ public class PromocaoService {
         o.setIniciaEm(req.iniciaEm());
         if (!vigente(o)) o.setAnunciadaEm(null);
         ofertas.save(o);
-        if (!jaValia && vigente(o)) anunciar(o);
+        if (!jaValia && vigente(o)) {
+            if (dentroDoHorario()) anunciar(o);
+            else enfileirar(Tipo.OFERTA, o.getId());
+        }
         return OfertaDTO.de(o);
     }
 
-    /** Ofertas agendadas cuja hora chegou: entram no ar e vão para todos (chamado a cada minuto pela agenda). */
+    /** Horário em que anúncios automáticos podem sair (padrão 10:00 às 23:00, fuso de São Luís). */
+    public boolean dentroDoHorario() {
+        LocalTime agora = LocalTime.now(FUSO);
+        return !agora.isBefore(horario("envio_diario_hora", LocalTime.of(10, 0)))
+                && agora.isBefore(horario("envio_diario_fim", LocalTime.of(23, 0)));
+    }
+
+    private void enfileirar(Tipo tipo, Long id) {
+        if (!pendentes.existsByTipoAndRefId(tipo, id)) pendentes.save(new AnuncioPendente(tipo, id));
+    }
+
+    /**
+     * Chamado a cada minuto pela agenda: dentro do horário de envio, solta as ofertas agendadas cuja hora chegou
+     * e a fila do que aconteceu fora do horário (só o que ainda vale). Devolve quantos anúncios saíram.
+     */
     @Transactional
     public int anunciarAgendadas() {
+        if (!dentroDoHorario()) return 0;
         List<Oferta> prontas = ofertas.findByAtivoTrueAndIniciaEmNotNullAndAnunciadaEmIsNull().stream()
                 .filter(PromocaoService::vigente).toList();
         prontas.forEach(this::anunciar);
-        return prontas.size();
+        int total = prontas.size();
+        for (AnuncioPendente a : pendentes.findAllByOrderByCriadoEmAsc()) {
+            pendentes.delete(a);
+            if (a.getTipo() == Tipo.OFERTA) {
+                Oferta o = ofertas.findById(a.getRefId()).orElse(null);
+                if (o != null && vigente(o) && o.getAnunciadaEm() == null) { anunciar(o); total++; }
+            } else {
+                ProdutoDTO p;
+                try { p = catalogo.produto(a.getRefId(), true); } catch (ResponseStatusException e) { continue; }
+                if (p.ativo() && p.precoPromocional() != null && p.precoPromocional().compareTo(p.preco()) < 0) {
+                    anunciarProduto(p.nome(), p.preco(), p.precoPromocional(), p.imagemId());
+                    total++;
+                }
+            }
+        }
+        return total;
     }
 
     private void anunciar(Oferta o) {
@@ -118,11 +156,16 @@ public class PromocaoService {
     /** Produto que entrou em promoção vira anúncio para todos, depois que o cadastro foi salvo de verdade. */
     @TransactionalEventListener
     public void produtoEmPromocao(ProdutoEmPromocao p) {
-        int desconto = p.preco().subtract(p.precoPromocional()).multiply(BigDecimal.valueOf(100))
-                .divide(p.preco(), 0, RoundingMode.HALF_UP).intValue();
-        String texto = "De " + reais(p.preco()) + " por " + reais(p.precoPromocional()) + " (" + desconto + "% off)";
-        push.enviarParaTodos(new Notificacao("🔥 " + p.nome() + " em promoção", texto, "/ofertas", foto(p.imagemId())));
-        mensageiro.divulgar(p.nome(), texto, p.imagemId(), "🔥 Produto em promoção na PresentYá!");
+        if (dentroDoHorario()) anunciarProduto(p.nome(), p.preco(), p.precoPromocional(), p.imagemId());
+        else enfileirar(Tipo.PRODUTO, p.id());
+    }
+
+    private void anunciarProduto(String nome, BigDecimal preco, BigDecimal promocional, Long imagemId) {
+        int desconto = preco.subtract(promocional).multiply(BigDecimal.valueOf(100))
+                .divide(preco, 0, RoundingMode.HALF_UP).intValue();
+        String texto = "De " + reais(preco) + " por " + reais(promocional) + " (" + desconto + "% off)";
+        push.enviarParaTodos(new Notificacao("🔥 " + nome + " em promoção", texto, "/ofertas", foto(imagemId)));
+        mensageiro.divulgar(nome, texto, imagemId, "🔥 Produto em promoção na PresentYá!");
     }
 
     /**
@@ -132,10 +175,8 @@ public class PromocaoService {
     @Transactional
     public boolean envioDiarioSePreciso() {
         if (!"true".equals(config.valor("envio_diario_ativo"))) return false;
-        LocalTime hora = horario("envio_diario_hora", LocalTime.of(10, 0));
-        LocalTime fim = horario("envio_diario_fim", LocalTime.of(23, 0));
+        if (!dentroDoHorario()) return false;
         LocalDateTime agora = LocalDateTime.now(FUSO);
-        if (agora.toLocalTime().isBefore(hora) || !agora.toLocalTime().isBefore(fim)) return false;
         String hoje = agora.toLocalDate().toString();
         if (hoje.equals(config.valor("envio_diario_ultimo"))) return false;
         config.gravarInterno("envio_diario_ultimo", hoje);
