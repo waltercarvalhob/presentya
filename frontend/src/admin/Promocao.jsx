@@ -30,7 +30,7 @@ export function qrsDoCartaz(canais) {
   const lista = [];
   if (canais?.whatsapp?.ativo) lista.push({ id: "whatsapp", nome: "WhatsApp", link: canais.whatsapp.link, chamada: "Receba no WhatsApp" });
   if (canais?.telegram?.ativo) lista.push({ id: "telegram", nome: "Telegram", link: canais.telegram.link, chamada: "Receba no Telegram" });
-  if (!lista.length) lista.push({ id: "site", nome: "Site", link: linkOfertas(), chamada: "Aponte a câmera e ative as notificações" });
+  if (!lista.length) lista.push({ id: "site", nome: "Site", link: linkOfertas(), chamada: "Veja as ofertas de hoje" });
   return lista;
 }
 
@@ -492,7 +492,8 @@ export function Cartaz() {
       <div className={"cartaz" + (nfc ? " com-nfc" : "")}>
         <Logo />
         <h1>Ofertas no seu celular</h1>
-        <p className="cartaz-sub">{mostrar.length > 1 ? "Aponte a câmera e escolha onde receber" : mostrar[0].chamada}</p>
+        <p className="cartaz-sub">{mostrar.length > 1 ? "Escolha onde receber" : mostrar[0].chamada}</p>
+        <p className="cartaz-instrucao">📷 Abra a câmera do celular e aponte {mostrar.length > 1 ? "para um dos códigos" : "aqui"} <span aria-hidden="true">↓</span></p>
         <div className={"cartaz-qrs" + (mostrar.length > 1 ? " dois" : "")}>
           {mostrar.map((q) => (
             <figure key={q.id}>

@@ -665,3 +665,5 @@ a.mini-btn{text-decoration:none;display:inline-block}
 .receber-botoes{display:flex;gap:.6rem;flex-wrap:wrap}
 .receber-botoes .btn svg{width:1.2em;height:1.2em}
 .diario{display:grid;gap:.6rem;border-top:1px solid var(--line);padding-top:.9rem;margin-top:.3rem}
+.cartaz-instrucao{background:var(--ink);color:#fff;border-radius:999px;padding:2mm 6mm;font:700 clamp(1rem,3.2vw,1.45rem) var(--f-display)}
+.cartaz-instrucao span{color:var(--brand)}
