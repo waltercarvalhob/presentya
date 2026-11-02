@@ -113,7 +113,8 @@ public class MensageiroService {
 
     /** Links que abrem a conversa com a loja (públicos: viram botões na página de ofertas). */
     public Map<String, String> links(String whatsappPadrao) {
-        String texto = "Quero receber as ofertas da PresentYá 🎁 (vitrine)";
+        // Sem emoji: o redirecionamento do wa.me estraga caracteres de 4 bytes e a mensagem chegaria com "�".
+        String texto = "Quero receber as ofertas da PresentYá (vitrine)";
         String link = telegram.link("qrcode");
         return Map.of("whatsapp", "https://wa.me/" + whatsapp.numero(whatsappPadrao) + "?text="
                         + java.net.URLEncoder.encode(texto, java.nio.charset.StandardCharsets.UTF_8).replace("+", "%20"),
