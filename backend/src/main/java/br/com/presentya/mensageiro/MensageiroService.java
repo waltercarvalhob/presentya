@@ -81,8 +81,16 @@ public class MensageiroService {
 
     /** Oferta que acabou de passar a valer: vai para todos os contatos dos dois canais. */
     public void divulgar(Oferta o) {
+        divulgar(peca(o), "🎁 Nova oferta na PresentYá!");
+    }
+
+    /** Anúncio que não é uma oferta cadastrada (produto em promoção, resumo do dia). */
+    public void divulgar(String titulo, String descricao, Long fotoId, String cabecalho) {
+        divulgar(new Peca(titulo, descricao, null, null, fotoId == null ? null : apiUrl + "/api/imagens/" + fotoId, null), cabecalho);
+    }
+
+    private void divulgar(Peca p, String cabecalho) {
         if (!telegram.ativo() && !whatsapp.ativo()) return;
-        Peca p = peca(o);
         List<ContatoMensageiro> todos = contatos.findAll();
         Instant limite = Instant.now().minus(JANELA_WHATSAPP);
         for (ContatoMensageiro c : todos) {
@@ -95,7 +103,7 @@ public class MensageiroService {
                     if (!whatsapp.temModelo()) return; // sem modelo aprovado a Meta recusaria
                     erro = whatsapp.enviarModelo(destino, p.titulo());
                 } else {
-                    erro = enviarPeca(canal, destino, p, "🎁 Nova oferta na PresentYá!");
+                    erro = enviarPeca(canal, destino, p, cabecalho);
                 }
                 if (TelegramService.BLOQUEADO.equals(erro)) contatos.deleteByCanalAndDestino(canal, destino);
                 registrar(erro);

@@ -106,7 +106,7 @@ export default function Ofertas() {
           <p className="lead">Aproveite enquanto durarem: mostre esta tela no caixa ou peça pelo WhatsApp.</p>
         </header>
 
-        <ReceberNoCelular />
+        <ReceberNoCelular abrir={busca.get("abrir")} />
 
         <AtivarNotificacoes origem={origem} />
 
@@ -151,12 +151,22 @@ export default function Ofertas() {
 }
 
 /** Receber as próximas ofertas no WhatsApp ou no Telegram: o robô da loja responde sozinho. */
-function ReceberNoCelular() {
+function ReceberNoCelular({ abrir }) {
   const [links, setLinks] = useState(null);
+  const [abrindo, setAbrindo] = useState(false);
   useEffect(() => { api("/api/canais").then(setLinks).catch(() => {}); }, []);
+  // Etiqueta NFC / QR com ?abrir=whatsapp: vai direto para a conversa (uma vez por visita, para o "voltar" funcionar).
+  useEffect(() => {
+    const destino = links?.[abrir];
+    if (!destino) return;
+    try { if (sessionStorage.getItem("py-abriu-" + abrir)) return; sessionStorage.setItem("py-abriu-" + abrir, "1"); } catch { /* sem storage */ }
+    setAbrindo(true);
+    location.href = destino;
+  }, [links, abrir]);
   if (!links?.whatsapp) return null;
   return (
     <div className="receber-card">
+      {abrindo && <p style={{ flexBasis: "100%" }}><b>Abrindo o {abrir === "telegram" ? "Telegram" : "WhatsApp"}…</b> Se não abrir, toque no botão abaixo.</p>}
       <div>
         <b>📲 Quer receber as próximas ofertas?</b>
         <p>Toque no botão e depois em <b>Enviar</b>: a PresentYá responde na hora com as ofertas, e as novas chegam sozinhas.</p>

@@ -3,6 +3,7 @@ package br.com.presentya.domain;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /** Promoção divulgada na página /ofertas (aberta pelo QR Code da vitrine). */
 @Entity
@@ -19,6 +20,10 @@ public class Oferta {
     private String cupom;
     /** Último dia da oferta; vazio = sem prazo. */
     private LocalDate validaAte;
+    /** Oferta agendada: entra no ar (e é enviada) neste dia e hora, no horário de São Luís. Vazio = já. */
+    private LocalDateTime iniciaEm;
+    /** Quando foi enviada para todos; vazio = ainda não (a agenda manda as agendadas quando chegar a hora). */
+    private Instant anunciadaEm;
     /** Foto e vídeo da oferta (tabela imagem, que guarda os dois). */
     private Long imagemId;
     private Long videoId;
@@ -35,6 +40,10 @@ public class Oferta {
     public void setCupom(String cupom) { this.cupom = cupom; }
     public LocalDate getValidaAte() { return validaAte; }
     public void setValidaAte(LocalDate validaAte) { this.validaAte = validaAte; }
+    public LocalDateTime getIniciaEm() { return iniciaEm; }
+    public void setIniciaEm(LocalDateTime iniciaEm) { this.iniciaEm = iniciaEm; }
+    public Instant getAnunciadaEm() { return anunciadaEm; }
+    public void setAnunciadaEm(Instant anunciadaEm) { this.anunciadaEm = anunciadaEm; }
     public Long getImagemId() { return imagemId; }
     public void setImagemId(Long imagemId) { this.imagemId = imagemId; }
     public Long getVideoId() { return videoId; }

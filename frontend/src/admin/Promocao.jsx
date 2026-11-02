@@ -12,7 +12,7 @@ import { dataHora, waLink } from "../lib/util";
 /** Endereço que o QR Code abre: a página de ofertas deste mesmo site. */
 export const linkOfertas = () => `${location.origin}/ofertas?origem=qr`;
 /** Gravado na etiqueta NFC: encostou o celular, a página de ofertas abre na hora. */
-export const linkNfc = () => `${location.origin}/ofertas?origem=nfc`;
+export const linkNfc = () => `${location.origin}/ofertas?origem=nfc&abrir=whatsapp`;
 const local = () => ["localhost", "127.0.0.1"].includes(location.hostname);
 
 export function QrOfertas({ tamanho = 560, className, link, rotulo = "da página de ofertas" }) {
@@ -46,7 +46,7 @@ function Canais() {
   const { toast } = useLoja();
   const [c, setC] = useState(null);
   const copiar = (link) => navigator.clipboard.writeText(link).then(
-    () => toast("Link da página de ofertas copiado: no NFC Tools, Escrever → URL → cole e encoste a etiqueta"),
+    () => toast("Link da etiqueta copiado: no NFC Tools, Escrever → URL → cole e encoste a etiqueta"),
     () => prompt("Copie o link para gravar na etiqueta NFC:", link));
   useEffect(() => { api("/api/admin/canais").then(setC).catch(() => {}); }, []);
   if (!c) return null;
@@ -87,8 +87,8 @@ function Canais() {
           <p>Compre etiquetas <b>NFC NTAG215</b> (uns R$ 2 a 5 cada). Instale o app gratuito <b>NFC Tools</b> no celular,
             toque em <i>Escrever → Adicionar registro → URL</i>, cole o link (botão “Copiar link para NFC” acima: <code>{linkNfc()}</code>),
             toque em <i>Escrever</i> e encoste a etiqueta. Cole-a do lado de dentro do vidro, atrás do círculo do cartaz.
-            Quem encostar o celular <b>vê as ofertas na tela na hora, sem tocar em nada</b> (Android e iPhone XS ou mais novo),
-            e pode tocar em “Receber no WhatsApp” para ganhar as próximas.
+            Quem encostar o celular <b>cai direto no WhatsApp da loja com a mensagem pronta</b> (Android e iPhone XS ou mais novo):
+            só toca em Enviar e o robô responde sozinho com as ofertas. Ao voltar do WhatsApp, a página de ofertas está aberta.
             Vidro muito grosso (mais de ~1 cm) pode impedir a leitura: teste antes.</p>
         </div>
       </details>
@@ -109,7 +109,10 @@ function Canais() {
   );
 }
 
-const OFERTA_VAZIA = { titulo: "", descricao: "", cupom: "", validaAte: "", ordem: 0, ativo: true, imagemId: null, imagemUrl: null, videoId: null, videoUrl: null };
+const OFERTA_VAZIA = { titulo: "", descricao: "", cupom: "", validaAte: "", iniciaEm: "", ordem: 0, ativo: true, imagemId: null, imagemUrl: null, videoId: null, videoUrl: null };
+const dataHoraCurta = (iso) => new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+/** iniciaEm vem no horário da loja (sem fuso); a comparação usa o relógio do aparelho, que na loja é o mesmo. */
+const agendada = (o) => o.iniciaEm && new Date(o.iniciaEm) > new Date();
 const MB = 1024 * 1024;
 
 /** Envio com barra de progresso (vídeo pelo celular pode demorar). */
@@ -236,11 +239,11 @@ export function Divulgacao() {
                 <tr key={o.id} className={o.ativo ? "" : "off"}>
                   <td><b>{o.titulo}</b>{(o.imagemUrl || o.videoUrl) && <> {o.imagemUrl && "📷"}{o.videoUrl && "🎬"}</>}{o.descricao && <><br /><small>{o.descricao}</small></>}</td>
                   <td>{o.cupom || "—"}</td>
-                  <td>{o.validaAte ? dataCurta(o.validaAte) : "Sem prazo"}</td>
+                  <td>{agendada(o) ? <>⏰ Começa {dataHoraCurta(o.iniciaEm)}<br /></> : null}{o.validaAte ? "Até " + dataCurta(o.validaAte) : "Sem prazo"}</td>
                   <td className="num">{o.ordem}</td>
                   <td><button className={"mini-btn" + (o.ativo ? " danger" : "")} onClick={() => alternar(o)}>{o.ativo ? "Desativar" : "Ativar"}</button></td>
                   <td>
-                    <button className="mini-btn" onClick={() => setEditando({ ...OFERTA_VAZIA, ...o, descricao: o.descricao || "", cupom: o.cupom || "", validaAte: o.validaAte || "" })}>Editar</button>
+                    <button className="mini-btn" onClick={() => setEditando({ ...OFERTA_VAZIA, ...o, descricao: o.descricao || "", cupom: o.cupom || "", validaAte: o.validaAte || "", iniciaEm: o.iniciaEm ? o.iniciaEm.slice(0, 16) : "" })}>Editar</button>
                     <button className="mini-btn danger" onClick={() => remover(o)}>Excluir</button>
                   </td>
                 </tr>
@@ -260,6 +263,17 @@ function Notificacoes() {
   const { toast } = useLoja();
   const [inscritos, setInscritos] = useState(null);
   const [ultimo, setUltimo] = useState("");
+  const [diario, setDiario] = useState(null);
+  useEffect(() => {
+    api("/api/admin/configuracoes").then((c) => setDiario({ ativo: c.envio_diario_ativo === "true", hora: c.envio_diario_hora || "10:00", ultimo: c.envio_diario_ultimo || "" })).catch(() => {});
+  }, []);
+  const salvarDiario = async (novo) => {
+    setDiario(novo);
+    try {
+      await api("/api/admin/configuracoes", { method: "PUT", body: { envio_diario_ativo: String(novo.ativo), envio_diario_hora: novo.hora } });
+      toast(novo.ativo ? `Envio diário ligado: todo dia às ${novo.hora}` : "Envio diário desligado");
+    } catch (e) { toast(e.message); }
+  };
   const [f, setF] = useState({ titulo: "🎁 PresentYá", mensagem: "" });
   const [enviando, setEnviando] = useState(false);
   useEffect(() => { api("/api/admin/push").then((r) => { setInscritos(r.inscritos); setUltimo(r.ultimoEnvio); }).catch(() => {}); }, []);
@@ -285,6 +299,18 @@ function Notificacoes() {
         <label>Mensagem<input required maxLength={300} value={f.mensagem} onChange={(e) => setF({ ...f, mensagem: e.target.value })} placeholder="Ex.: Hoje tudo com 10% na loja!" /></label>
       </div>
       <button className="btn btn-gold" disabled={enviando || !inscritos}>{enviando ? "Enviando…" : "Enviar agora para todos"}</button>
+      {diario && (
+        <div className="diario">
+          <label className="aceite"><input type="checkbox" checked={diario.ativo} onChange={(e) => salvarDiario({ ...diario, ativo: e.target.checked })} />
+            <span><b>Envio diário automático</b>: todo dia manda sozinho as ofertas do dia e os produtos em promoção para todos (notificação, WhatsApp e Telegram).</span></label>
+          <label style={{ maxWidth: 200 }}>Horário
+            <input type="time" value={diario.hora} onChange={(e) => setDiario({ ...diario, hora: e.target.value })} onBlur={() => salvarDiario(diario)} />
+          </label>
+          <small>{diario.ultimo ? `Último envio diário: ${dataCurta(diario.ultimo)}.` : "Ainda não houve envio diário."} Dias sem oferta ativa nem produto em promoção não mandam nada.
+            No plano gratuito o servidor dorme sem visitas: se estiver dormindo no horário, envia assim que acordar (até as 21 h).
+            Para pontualidade, cadastre em cron-job.org (grátis) uma chamada a cada 10 minutos para https://presentya-api.onrender.com/api/status.</small>
+        </div>
+      )}
     </form>
   );
 }
@@ -298,7 +324,7 @@ function FormOferta({ inicial, salvo }) {
   const salvar = async (e) => {
     e.preventDefault();
     setErro(null); setEnviando(true);
-    const body = { ...d, validaAte: d.validaAte || null, ordem: d.ordem === "" ? 0 : parseInt(d.ordem, 10) };
+    const body = { ...d, validaAte: d.validaAte || null, iniciaEm: d.iniciaEm || null, ordem: d.ordem === "" ? 0 : parseInt(d.ordem, 10) };
     try { salvo(await api(d.id ? `/api/admin/ofertas/${d.id}` : "/api/admin/ofertas", { method: d.id ? "PUT" : "POST", body })); }
     catch (err) { setErro(err.message); }
     finally { setEnviando(false); }
@@ -315,11 +341,14 @@ function FormOferta({ inicial, salvo }) {
       </div>
       <div className="row">
         <label>Cupom (opcional)<input maxLength={40} placeholder="Ex.: VITRINE10" {...campo("cupom")} /></label>
-        <label>Válida até (opcional)<input type="date" {...campo("validaAte")} /></label>
+        <label>Começa em (opcional)<input type="datetime-local" {...campo("iniciaEm")} /><small>Vazio = já. Agendada: entra no ar e é enviada sozinha nessa hora.</small></label>
+        <label>Válida até (opcional)<input type="date" {...campo("validaAte")} /><small>Sai do ar sozinha depois desse dia.</small></label>
         <label>Ordem na página<input type="number" min={0} {...campo("ordem")} /><small>Menor aparece primeiro.</small></label>
         <label className="aceite"><input type="checkbox" checked={d.ativo} onChange={(e) => setD({ ...d, ativo: e.target.checked })} /><span>Mostrar na página de ofertas</span></label>
       </div>
-      {d.ativo && !(inicial.id && inicial.ativo) && <small>Ao salvar, todos os celulares inscritos recebem esta oferta como notificação.</small>}
+      {d.ativo && !(inicial.id && inicial.ativo) && <small>{agendada(d)
+        ? `Agendada: em ${dataHoraCurta(d.iniciaEm)} ela entra no ar e vai sozinha para todos (notificação, WhatsApp e Telegram).`
+        : "Ao salvar, todos recebem esta oferta na hora (notificação, WhatsApp e Telegram)."}</small>}
       <button className="btn btn-gold" disabled={enviando}>{enviando ? "Salvando…" : "Salvar oferta"}</button>
     </form>
   );

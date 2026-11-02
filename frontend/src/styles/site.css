@@ -664,3 +664,4 @@ a.mini-btn{text-decoration:none;display:inline-block}
 .receber-card b{font-family:var(--f-display);font-size:1.08rem}
 .receber-botoes{display:flex;gap:.6rem;flex-wrap:wrap}
 .receber-botoes .btn svg{width:1.2em;height:1.2em}
+.diario{display:grid;gap:.6rem;border-top:1px solid var(--line);padding-top:.9rem;margin-top:.3rem}

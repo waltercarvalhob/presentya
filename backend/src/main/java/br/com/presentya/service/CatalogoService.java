@@ -12,12 +12,14 @@ import br.com.presentya.repository.CategoriaRepository;
 import br.com.presentya.repository.ImagemRepository;
 import br.com.presentya.repository.ProdutoRepository;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +36,14 @@ public class CatalogoService {
     private final ProdutoRepository produtos;
     private final CategoriaRepository categorias;
     private final ImagemRepository imagens;
+    private final ApplicationEventPublisher eventos;
 
-    public CatalogoService(ProdutoRepository produtos, CategoriaRepository categorias, ImagemRepository imagens) {
+    public CatalogoService(ProdutoRepository produtos, CategoriaRepository categorias, ImagemRepository imagens,
+                           ApplicationEventPublisher eventos) {
         this.produtos = produtos;
         this.categorias = categorias;
         this.imagens = imagens;
+        this.eventos = eventos;
     }
 
     // ---------- produtos ----------
@@ -62,9 +67,17 @@ public class CatalogoService {
         return ProdutoDTO.de(p);
     }
 
+    /** Produto que acabou de entrar em promoção: PromocaoService anuncia depois que salvar. */
+    public record ProdutoEmPromocao(String nome, BigDecimal preco, BigDecimal precoPromocional, Long imagemId) {}
+
+    private static boolean emPromocao(Produto p) {
+        return p.isAtivo() && p.getPrecoPromocional() != null && p.getPrecoPromocional().compareTo(p.getPreco()) < 0;
+    }
+
     @Transactional
     public ProdutoDTO salvarProduto(Long id, ProdutoRequest req) {
         Produto p = id == null ? new Produto() : buscarProduto(id);
+        boolean jaEstavaEmPromocao = id != null && emPromocao(p);
         p.setNome(req.nome().trim());
         p.setDescricao(req.descricao());
         p.setPreco(req.preco());
@@ -87,7 +100,11 @@ public class CatalogoService {
         p.setCategoria(req.categoriaId() == null ? null : buscarCategoria(req.categoriaId()));
         p.setOcasioes(limpar(req.ocasioes()));
         p.setPublicos(limpar(req.publicos()));
-        return ProdutoDTO.de(produtos.save(p));
+        ProdutoDTO salvo = ProdutoDTO.de(produtos.save(p));
+        if (!jaEstavaEmPromocao && emPromocao(p)) {
+            eventos.publishEvent(new ProdutoEmPromocao(p.getNome(), p.getPreco(), p.getPrecoPromocional(), p.getImagemId()));
+        }
+        return salvo;
     }
 
     /** Produtos que já foram vendidos não são apagados, só desativados, para manter o histórico. */

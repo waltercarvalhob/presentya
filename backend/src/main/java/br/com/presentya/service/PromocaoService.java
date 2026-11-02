@@ -13,15 +13,27 @@ import br.com.presentya.mensageiro.MensageiroService;
 import br.com.presentya.push.PushService;
 import br.com.presentya.push.PushService.Notificacao;
 import br.com.presentya.repository.OfertaRepository;
+import br.com.presentya.dto.ProdutoDtos.ProdutoDTO;
+import br.com.presentya.service.CatalogoService.ProdutoEmPromocao;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.server.ResponseStatusException;
 
 /** Ofertas da página /ofertas (QR Code da vitrine), quem quer recebê-las e as notificações automáticas. */
@@ -35,15 +47,18 @@ public class PromocaoService {
     private final PushService push;
     private final CatalogoService catalogo;
     private final MensageiroService mensageiro;
+    private final ConfiguracaoService config;
     private final String apiUrl;
 
     public PromocaoService(OfertaRepository ofertas, InteressadoRepository interessados, PushService push,
-                           CatalogoService catalogo, MensageiroService mensageiro, @Value("${app.api-url}") String apiUrl) {
+                           CatalogoService catalogo, MensageiroService mensageiro, ConfiguracaoService config,
+                           @Value("${app.api-url}") String apiUrl) {
         this.ofertas = ofertas;
         this.interessados = interessados;
         this.push = push;
         this.catalogo = catalogo;
         this.mensageiro = mensageiro;
+        this.config = config;
         this.apiUrl = apiUrl.replaceAll("/+$", "");
     }
 
@@ -58,7 +73,10 @@ public class PromocaoService {
         return ofertas.findAllByOrderByOrdemAscCriadoEmDesc().stream().map(OfertaDTO::de).toList();
     }
 
-    /** Oferta que passa a valer (nova ou reativada) vira notificação automática para todos os inscritos. */
+    /**
+     * Oferta que passa a valer (nova, reativada ou cuja hora agendada já chegou) vira notificação automática
+     * para todos. Agendada para depois: a AgendaPromocoes anuncia quando chegar a hora.
+     */
     @Transactional
     public OfertaDTO salvarOferta(Long id, OfertaRequest req) {
         Oferta o = id == null ? new Oferta() : ofertas.findById(id)
@@ -73,15 +91,84 @@ public class PromocaoService {
         if (req.ativo() != null) o.setAtivo(req.ativo());
         o.setImagemId(midia(req.imagemId(), "image/", "Foto da oferta não encontrada"));
         o.setVideoId(midia(req.videoId(), "video/", "Vídeo da oferta não encontrado"));
+        o.setIniciaEm(req.iniciaEm());
+        if (!vigente(o)) o.setAnunciadaEm(null);
         ofertas.save(o);
-        if (!jaValia && vigente(o)) {
-            String texto = o.getTitulo() + (o.getDescricao() == null ? "" : " – " + o.getDescricao())
-                    + (o.getCupom() == null ? "" : " · Cupom " + o.getCupom());
-            String foto = o.getImagemId() == null ? null : apiUrl + "/api/imagens/" + o.getImagemId();
-            push.enviarParaTodos(new Notificacao("🎁 Nova oferta na PresentYá", texto, "/ofertas", foto));
-            mensageiro.divulgar(o);
-        }
+        if (!jaValia && vigente(o)) anunciar(o);
         return OfertaDTO.de(o);
+    }
+
+    /** Ofertas agendadas cuja hora chegou: entram no ar e vão para todos (chamado a cada minuto pela agenda). */
+    @Transactional
+    public int anunciarAgendadas() {
+        List<Oferta> prontas = ofertas.findByAtivoTrueAndIniciaEmNotNullAndAnunciadaEmIsNull().stream()
+                .filter(PromocaoService::vigente).toList();
+        prontas.forEach(this::anunciar);
+        return prontas.size();
+    }
+
+    private void anunciar(Oferta o) {
+        String texto = o.getTitulo() + (o.getDescricao() == null ? "" : " – " + o.getDescricao())
+                + (o.getCupom() == null ? "" : " · Cupom " + o.getCupom());
+        push.enviarParaTodos(new Notificacao("🎁 Nova oferta na PresentYá", texto, "/ofertas", foto(o.getImagemId())));
+        mensageiro.divulgar(o);
+        o.setAnunciadaEm(Instant.now());
+    }
+
+    /** Produto que entrou em promoção vira anúncio para todos, depois que o cadastro foi salvo de verdade. */
+    @TransactionalEventListener
+    public void produtoEmPromocao(ProdutoEmPromocao p) {
+        int desconto = p.preco().subtract(p.precoPromocional()).multiply(BigDecimal.valueOf(100))
+                .divide(p.preco(), 0, RoundingMode.HALF_UP).intValue();
+        String texto = "De " + reais(p.preco()) + " por " + reais(p.precoPromocional()) + " (" + desconto + "% off)";
+        push.enviarParaTodos(new Notificacao("🔥 " + p.nome() + " em promoção", texto, "/ofertas", foto(p.imagemId())));
+        mensageiro.divulgar(p.nome(), texto, p.imagemId(), "🔥 Produto em promoção na PresentYá!");
+    }
+
+    /**
+     * Envio diário: a partir da hora escolhida (e até as 21 h), uma vez por dia. Se o servidor estava
+     * dormindo (plano gratuito do Render), manda assim que acordar, ainda no mesmo dia.
+     */
+    @Transactional
+    public boolean envioDiarioSePreciso() {
+        if (!"true".equals(config.valor("envio_diario_ativo"))) return false;
+        LocalTime hora;
+        try {
+            hora = LocalTime.parse(config.valor("envio_diario_hora").trim());
+        } catch (DateTimeParseException e) {
+            hora = LocalTime.of(10, 0);
+        }
+        LocalDateTime agora = LocalDateTime.now(FUSO);
+        if (agora.toLocalTime().isBefore(hora) || agora.getHour() >= 21) return false;
+        String hoje = agora.toLocalDate().toString();
+        if (hoje.equals(config.valor("envio_diario_ultimo"))) return false;
+        config.gravarInterno("envio_diario_ultimo", hoje);
+        return enviarResumoDoDia();
+    }
+
+    private boolean enviarResumoDoDia() {
+        List<Oferta> vigentes = ofertas.findAllByOrderByOrdemAscCriadoEmDesc().stream().filter(PromocaoService::vigente).toList();
+        List<ProdutoDTO> promocao = catalogo.produtosAtivos().stream()
+                .filter(p -> p.precoPromocional() != null && p.precoPromocional().compareTo(p.preco()) < 0).toList();
+        List<String> itens = new ArrayList<>();
+        vigentes.forEach(o -> itens.add(o.getTitulo() + (o.getCupom() == null ? "" : " (cupom " + o.getCupom() + ")")));
+        promocao.forEach(p -> itens.add(p.nome() + " por " + reais(p.precoPromocional())));
+        if (itens.isEmpty()) return false;
+        String texto = String.join(" · ", itens.subList(0, Math.min(4, itens.size())))
+                + (itens.size() > 4 ? " e mais " + (itens.size() - 4) : "");
+        Long fotoId = vigentes.stream().map(Oferta::getImagemId).filter(java.util.Objects::nonNull).findFirst()
+                .orElse(promocao.stream().map(ProdutoDTO::imagemId).filter(java.util.Objects::nonNull).findFirst().orElse(null));
+        push.enviarParaTodos(new Notificacao("🎁 Ofertas de hoje na PresentYá", texto, "/ofertas", foto(fotoId)));
+        mensageiro.divulgar("Ofertas de hoje", texto, fotoId, "☀️ Bom dia! Ofertas de hoje na PresentYá:");
+        return true;
+    }
+
+    private String foto(Long id) {
+        return id == null ? null : apiUrl + "/api/imagens/" + id;
+    }
+
+    private static String reais(BigDecimal v) {
+        return NumberFormat.getCurrencyInstance(Locale.of("pt", "BR")).format(v).replace('\u00a0', ' ');
     }
 
     /**
@@ -116,8 +203,11 @@ public class PromocaoService {
         return id;
     }
 
+    /** No ar agora: ativa, já começou (se agendada) e ainda não venceu. */
     public static boolean vigente(Oferta o) {
-        return o.isAtivo() && (o.getValidaAte() == null || !o.getValidaAte().isBefore(LocalDate.now(FUSO)));
+        return o.isAtivo()
+                && (o.getIniciaEm() == null || !o.getIniciaEm().isAfter(LocalDateTime.now(FUSO)))
+                && (o.getValidaAte() == null || !o.getValidaAte().isBefore(LocalDate.now(FUSO)));
     }
 
     @Transactional
