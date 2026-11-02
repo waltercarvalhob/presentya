@@ -59,8 +59,9 @@ public class AdminPromocaoController {
     }
 
     @GetMapping("/push")
-    public Map<String, Long> resumoPush() {
-        return Map.of("inscritos", push.inscritos());
+    public Map<String, Object> resumoPush() {
+        String ultimo = push.ultimoEnvio();
+        return Map.of("inscritos", push.inscritos(), "ultimoEnvio", ultimo == null ? "" : ultimo);
     }
 
     /** Notificação avulsa para todos os celulares inscritos. */

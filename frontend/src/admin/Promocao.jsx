@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import QRCode from "qrcode";
 import { Topo } from "./Admin";
 import Logo from "../components/Logo";
@@ -28,7 +28,8 @@ const PROX = ["loja_latitude", "loja_longitude", "raio_proximidade", "mensagem_p
 export function Divulgacao() {
   const { toast } = useLoja();
   const [ofertas, setOfertas] = useState(null);
-  const [editando, setEditando] = useState(null);
+  const [busca] = useSearchParams();
+  const [editando, setEditando] = useState(busca.get("nova") ? OFERTA_VAZIA : null);
   useEffect(() => { api("/api/admin/ofertas").then(setOfertas).catch((e) => toast(e.message)); }, [toast]);
 
   const salvo = (o) => {
@@ -54,11 +55,14 @@ export function Divulgacao() {
 
   return (
     <>
-      <Topo titulo="Ofertas e QR Code">
-        <button className="btn btn-gold btn-sm" onClick={() => setEditando(editando ? null : OFERTA_VAZIA)}>{editando ? "Fechar" : "+ Nova oferta"}</button>
+      <Topo titulo="Ofertas e promoções">
+        <button className="btn btn-gold btn-sm" onClick={() => setEditando(editando ? null : OFERTA_VAZIA)}>{editando ? "Fechar" : "+ Nova oferta / promoção"}</button>
+        <Link className="btn btn-dark btn-sm" to="/cartaz" target="_blank">Imprimir cartaz</Link>
       </Topo>
 
-      <div className="qr-painel">
+      {editando && <FormOferta inicial={editando} salvo={salvo} />}
+
+      <div className="qr-painel" style={{ marginTop: editando ? "1.4rem" : 0 }}>
         <QrOfertas tamanho={220} className="qr-img" />
         <div style={{ display: "grid", gap: ".7rem", alignContent: "start" }}>
           <h3>QR Code da vitrine</h3>
@@ -74,8 +78,6 @@ export function Divulgacao() {
       </div>
 
       <Notificacoes />
-
-      {editando && <FormOferta inicial={editando} salvo={salvo} />}
 
       <h3 style={{ margin: "1.6rem 0 .8rem" }}>Ofertas</h3>
       {ofertas === null ? <p className="hand">Carregando…</p> : !ofertas.length ? (
@@ -112,9 +114,10 @@ export function Divulgacao() {
 function Notificacoes() {
   const { toast } = useLoja();
   const [inscritos, setInscritos] = useState(null);
+  const [ultimo, setUltimo] = useState("");
   const [f, setF] = useState({ titulo: "🎁 PresentYá", mensagem: "" });
   const [enviando, setEnviando] = useState(false);
-  useEffect(() => { api("/api/admin/push").then((r) => setInscritos(r.inscritos)).catch(() => {}); }, []);
+  useEffect(() => { api("/api/admin/push").then((r) => { setInscritos(r.inscritos); setUltimo(r.ultimoEnvio); }).catch(() => {}); }, []);
   const enviar = async (e) => {
     e.preventDefault();
     if (!confirm(`Enviar esta notificação para ${inscritos} celular(es)?`)) return;
@@ -131,6 +134,7 @@ function Notificacoes() {
         Envio automático: <b>quem ativa recebe na hora as ofertas do dia</b>, e <b>toda oferta nova ou reativada vai para todos</b> assim que você salva.
         Use o campo abaixo só para um aviso extra (ex.: “Chegaram os kits de Natal!”).
       </p>
+      {ultimo && <small>Último envio: {ultimo.endsWith(" OK") ? "✅ entregue" : "⚠️ " + ultimo.replace(/^\S+ /, "")} <span style={{ opacity: .7 }}>({dataHora(ultimo.split(" ")[0])})</span></small>}
       <div className="row">
         <label>Título<input required maxLength={80} value={f.titulo} onChange={(e) => setF({ ...f, titulo: e.target.value })} /></label>
         <label>Mensagem<input required maxLength={300} value={f.mensagem} onChange={(e) => setF({ ...f, mensagem: e.target.value })} placeholder="Ex.: Hoje tudo com 10% na loja!" /></label>
@@ -247,7 +251,7 @@ export function Interessados() {
       </Topo>
       <p style={{ color: "var(--muted)", marginBottom: "1rem", maxWidth: "75ch" }}>
         Pessoas que escanearam o QR Code e aceitaram receber promoções. O botão <b>WhatsApp</b> abre a conversa já com as ofertas ativas escritas.
-        {!ofertas.length && " Cadastre ofertas em “Ofertas e QR Code” para a mensagem vir preenchida."}
+        {!ofertas.length && " Cadastre ofertas em “Ofertas e promoções” para a mensagem vir preenchida."}
       </p>
       {lista === null ? <p className="hand">Carregando…</p> : !lista.length ? <p style={{ color: "var(--muted)" }}>Ninguém cadastrado ainda.</p> : (
         <div className="tbl-wrap">

@@ -101,7 +101,27 @@ public class PushService {
         fila.submit(() -> entregar(endpoint, p256dh, auth, n));
     }
 
-    private void entregar(String endpoint, String p256dh, String auth, Notificacao n) {
+    /** Envia já, esperando a resposta: usado na ativação, para a pessoa saber na hora se funcionou. */
+    public String enviarAgora(InscricaoPush i, Notificacao n) {
+        return envioAtivo ? entregar(i.getEndpoint(), i.getP256dh(), i.getAuth(), n) : null;
+    }
+
+    /** Resultado do último envio, para o painel do administrador. */
+    public String ultimoEnvio() {
+        return ultimoEnvio;
+    }
+
+    private volatile String ultimoEnvio;
+
+    /** Devolve null quando o serviço de push aceitou; senão, o motivo da falha. */
+    private String entregar(String endpoint, String p256dh, String auth, Notificacao n) {
+        String erro = tentarEntregar(endpoint, p256dh, auth, n);
+        ultimoEnvio = Instant.now() + " " + (erro == null ? "OK" : erro);
+        if (erro != null) log.warn("Falha ao enviar push para {}: {}", URI.create(endpoint).getHost(), erro);
+        return erro;
+    }
+
+    private String tentarEntregar(String endpoint, String p256dh, String auth, Notificacao n) {
         try {
             ChavesPush c = chaves();
             byte[] corpo = WebPush.cifrar(n.json().getBytes(StandardCharsets.UTF_8), WebPush.b64(p256dh), WebPush.b64(auth));
@@ -117,11 +137,17 @@ public class PushService {
             HttpResponse<String> r = http.send(req, HttpResponse.BodyHandlers.ofString());
             // 404/410: a pessoa desativou as notificações ou desinstalou o navegador; tira da lista.
             if (r.statusCode() == 404 || r.statusCode() == 410) inscricoes.deleteByEndpoint(endpoint);
-            else if (r.statusCode() >= 400) log.warn("Push recusado ({}): {}", r.statusCode(), r.body());
+            if (r.statusCode() >= 400) {
+                String corpoResposta = r.body() == null ? "" : r.body().strip();
+                return "recusado pelo serviço de push (" + r.statusCode() + ")"
+                        + (corpoResposta.isEmpty() ? "" : ": " + corpoResposta.substring(0, Math.min(200, corpoResposta.length())));
+            }
+            return null;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            return "envio interrompido";
         } catch (Exception e) {
-            log.warn("Falha ao enviar push: {}", e.getMessage());
+            return e.getClass().getSimpleName() + ": " + e.getMessage();
         }
     }
 

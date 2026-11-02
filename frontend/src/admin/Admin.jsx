@@ -20,7 +20,7 @@ export function AdminLayout() {
           <NavLink to="/admin/produtos">Produtos</NavLink>
           {admin && <NavLink to="/admin/categorias">Categorias</NavLink>}
           {admin && <NavLink to="/admin/usuarios">Usuários</NavLink>}
-          {admin && <NavLink to="/admin/ofertas">Ofertas e QR Code</NavLink>}
+          {admin && <NavLink to="/admin/ofertas">Ofertas e promoções</NavLink>}
           {admin && <NavLink to="/admin/interessados">Interessados</NavLink>}
           {admin && <NavLink to="/admin/loja">Dados da loja</NavLink>}
         </nav>
@@ -41,6 +41,7 @@ export function Topo({ titulo, children }) {
 }
 
 export function Painel() {
+  const { usuario } = useLoja();
   const [d, setD] = useState(null);
   const [erro, setErro] = useState(null);
   useEffect(() => { api("/api/admin/painel").then(setD).catch((e) => setErro(e.message)); }, []);
@@ -50,7 +51,13 @@ export function Painel() {
     ["Em produção", d.emProducao], ["Saíram para entrega", d.enviados], ["Produtos ativos", d.produtosAtivos], ["Contas cadastradas", d.clientes]];
   return (
     <>
-      <Topo titulo="Visão geral"><Link className="btn btn-gold btn-sm" to="/admin/produtos?novo=1">+ Novo produto</Link></Topo>
+      <Topo titulo="Visão geral">
+        {usuario.perfil === "ADMIN" && <>
+          <Link className="btn btn-dark btn-sm" to="/admin/ofertas?nova=1">+ Nova oferta / promoção</Link>
+          <Link className="btn btn-line btn-sm" to="/cartaz" target="_blank">Imprimir cartaz do QR Code</Link>
+        </>}
+        <Link className="btn btn-gold btn-sm" to="/admin/produtos?novo=1">+ Novo produto</Link>
+      </Topo>
       <div className="cards">{k.map(([t, v]) => <div className="kpi" key={t}><span>{t}</span><b>{v}</b></div>)}</div>
       <h3 style={{ marginBottom: ".8rem" }}>Últimos pedidos</h3>
       <TabelaPedidos pedidos={d.ultimosPedidos} />

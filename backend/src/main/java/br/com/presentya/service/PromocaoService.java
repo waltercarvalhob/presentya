@@ -71,21 +71,29 @@ public class PromocaoService {
         return OfertaDTO.de(o);
     }
 
-    /** Inscreve o celular e já manda as ofertas do dia, para a pessoa ver na hora que funcionou. */
-    @Transactional
+    /**
+     * Inscreve o celular e já manda as ofertas do dia, esperando a resposta: se a entrega falhar,
+     * a inscrição é desfeita e a pessoa vê o erro em vez de um falso "ativado".
+     */
     public void inscreverPush(InscricaoPushRequest req) {
         InscricaoPush i = push.inscrever(req.endpoint(), req.keys().p256dh(), req.keys().auth(),
                 ORIGENS.contains(req.origem()) ? req.origem() : "site");
         List<OfertaDTO> vigentes = ofertasVigentes();
+        Notificacao boasVindas;
         if (vigentes.isEmpty()) {
-            push.enviar(i, new Notificacao("Notificações ativadas 🎁", "Você vai receber aqui as próximas ofertas da PresentYá.", "/ofertas"));
-            return;
+            boasVindas = new Notificacao("Notificações ativadas 🎁", "Você vai receber aqui as próximas ofertas da PresentYá.", "/ofertas");
+        } else {
+            String texto = vigentes.stream().limit(3)
+                    .map(o -> o.titulo() + (o.cupom() == null ? "" : " (cupom " + o.cupom() + ")"))
+                    .collect(Collectors.joining(" · "))
+                    + (vigentes.size() > 3 ? " e mais " + (vigentes.size() - 3) : "");
+            boasVindas = new Notificacao("🎁 Ofertas de hoje na PresentYá", texto, "/ofertas");
         }
-        String texto = vigentes.stream().limit(3)
-                .map(o -> o.titulo() + (o.cupom() == null ? "" : " (cupom " + o.cupom() + ")"))
-                .collect(Collectors.joining(" · "))
-                + (vigentes.size() > 3 ? " e mais " + (vigentes.size() - 3) : "");
-        push.enviar(i, new Notificacao("🎁 Ofertas de hoje na PresentYá", texto, "/ofertas"));
+        String erro = push.enviarAgora(i, boasVindas);
+        if (erro != null) {
+            push.cancelar(i.getEndpoint());
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Não conseguimos enviar a notificação: " + erro);
+        }
     }
 
     private static boolean vigente(Oferta o) {
