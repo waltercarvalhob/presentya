@@ -103,13 +103,19 @@ public class MensageiroService {
         }
     }
 
+    /** Links que abrem a conversa com a loja (públicos: viram botões na página de ofertas). */
+    public Map<String, String> links(String whatsappPadrao) {
+        String texto = "Quero receber as ofertas da PresentYá 🎁 (vitrine)";
+        String link = telegram.link("qrcode");
+        return Map.of("whatsapp", "https://wa.me/" + whatsapp.numero(whatsappPadrao) + "?text="
+                        + java.net.URLEncoder.encode(texto, java.nio.charset.StandardCharsets.UTF_8).replace("+", "%20"),
+                "telegram", link == null ? "" : link);
+    }
+
     public Map<String, Object> resumo(String whatsappPadrao) {
         Map<String, Object> r = new LinkedHashMap<>();
-        String textoQr = "Quero receber as ofertas da PresentYá 🎁 (QR da vitrine)";
-        String numero = whatsapp.numero(whatsappPadrao);
         r.put("whatsapp", Map.of("ativo", whatsapp.ativo(), "modelo", whatsapp.temModelo(),
-                "contatos", contatos.countByCanal(Canal.WHATSAPP),
-                "link", "https://wa.me/" + numero + "?text=" + java.net.URLEncoder.encode(textoQr, java.nio.charset.StandardCharsets.UTF_8).replace("+", "%20")));
+                "contatos", contatos.countByCanal(Canal.WHATSAPP), "link", links(whatsappPadrao).get("whatsapp")));
         Map<String, Object> tg = new LinkedHashMap<>();
         tg.put("ativo", telegram.ativo() && telegram.usuarioBot() != null);
         tg.put("bot", telegram.usuarioBot() == null ? "" : telegram.usuarioBot());

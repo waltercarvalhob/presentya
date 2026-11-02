@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
+import { Icon } from "../components/nav";
 import { api, imagemUrl } from "../lib/api";
 import { lojaNoMapa, metros, useProximidade } from "../lib/proximidade";
 import { ativarPush, desativarPush, notificarAqui, situacaoPush } from "../lib/push";
@@ -93,17 +94,19 @@ export default function Ofertas() {
   const { produtos, wa } = useLoja();
   const [busca] = useSearchParams();
   const { ofertas, novas } = useOfertasAoVivo();
-  const origem = busca.get("origem") === "qr" ? "qrcode" : "site";
+  const origem = { qr: "qrcode", nfc: "nfc" }[busca.get("origem")] || "site";
   const emPromocao = produtos.filter((p) => p.old).sort((a, b) => b.old / b.price - a.old / a.price);
 
   return (
     <section className="sec ofertas-pg">
       <div className="wrap" style={{ display: "grid", gap: "2rem" }}>
         <header style={{ display: "grid", gap: ".8rem" }}>
-          <span className="eyebrow">{origem === "qrcode" ? "Que bom que você escaneou!" : "Ofertas da loja"}</span>
+          <span className="eyebrow">{{ qrcode: "Que bom que você escaneou!", nfc: "Que bom que você encostou!" }[origem] || "Ofertas da loja"}</span>
           <h2>Ofertas e promoções da PresentYá</h2>
           <p className="lead">Aproveite enquanto durarem: mostre esta tela no caixa ou peça pelo WhatsApp.</p>
         </header>
+
+        <ReceberNoCelular />
 
         <AtivarNotificacoes origem={origem} />
 
@@ -144,6 +147,25 @@ export default function Ofertas() {
         <ReceberOfertas origem={origem} />
       </div>
     </section>
+  );
+}
+
+/** Receber as próximas ofertas no WhatsApp ou no Telegram: o robô da loja responde sozinho. */
+function ReceberNoCelular() {
+  const [links, setLinks] = useState(null);
+  useEffect(() => { api("/api/canais").then(setLinks).catch(() => {}); }, []);
+  if (!links?.whatsapp) return null;
+  return (
+    <div className="receber-card">
+      <div>
+        <b>📲 Quer receber as próximas ofertas?</b>
+        <p>Toque no botão e depois em <b>Enviar</b>: a PresentYá responde na hora com as ofertas, e as novas chegam sozinhas.</p>
+      </div>
+      <div className="receber-botoes">
+        <a className="btn btn-wa" href={links.whatsapp} target="_blank" rel="noopener">{Icon.wa} Receber no WhatsApp</a>
+        {links.telegram && <a className="btn btn-dark" href={links.telegram} target="_blank" rel="noopener">✈️ Receber no Telegram</a>}
+      </div>
+    </div>
   );
 }
 

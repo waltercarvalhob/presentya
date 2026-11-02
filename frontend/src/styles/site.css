@@ -659,3 +659,8 @@ a.mini-btn{text-decoration:none;display:inline-block}
 .cartaz.com-nfc .cartaz-qr{width:min(88mm,62%)}
 .cartaz.com-nfc .cartaz-qrs.dois .cartaz-qr{width:min(66mm,34vw)}
 .cartaz.com-nfc .brand-svg{height:24mm}
+.receber-card{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;background:#E7F6EC;border:1px solid #BFE6CC;border-radius:var(--r);padding:1.2rem 1.4rem}
+.receber-card>div:first-child{display:grid;gap:.3rem;max-width:62ch;flex:1 1 280px}
+.receber-card b{font-family:var(--f-display);font-size:1.08rem}
+.receber-botoes{display:flex;gap:.6rem;flex-wrap:wrap}
+.receber-botoes .btn svg{width:1.2em;height:1.2em}

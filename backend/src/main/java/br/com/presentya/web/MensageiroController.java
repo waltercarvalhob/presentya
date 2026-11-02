@@ -4,6 +4,7 @@ import br.com.presentya.domain.ContatoMensageiro.Canal;
 import br.com.presentya.mensageiro.MensageiroService;
 import br.com.presentya.mensageiro.TelegramService;
 import br.com.presentya.mensageiro.WhatsappService;
+import br.com.presentya.service.ConfiguracaoService;
 import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -20,11 +21,20 @@ public class MensageiroController {
     private final MensageiroService mensageiro;
     private final TelegramService telegram;
     private final WhatsappService whatsapp;
+    private final ConfiguracaoService config;
 
-    public MensageiroController(MensageiroService mensageiro, TelegramService telegram, WhatsappService whatsapp) {
+    public MensageiroController(MensageiroService mensageiro, TelegramService telegram, WhatsappService whatsapp,
+                                ConfiguracaoService config) {
         this.mensageiro = mensageiro;
         this.telegram = telegram;
         this.whatsapp = whatsapp;
+        this.config = config;
+    }
+
+    /** Botões "Receber no WhatsApp/Telegram" da página de ofertas. */
+    @GetMapping("/canais")
+    public Map<String, String> canais() {
+        return mensageiro.links(config.valor("whatsapp"));
     }
 
     @PostMapping("/telegram/webhook")

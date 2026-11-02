@@ -76,7 +76,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**", "/api/pagamentos/webhook/**", "/api/status").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/produtos/**", "/api/categorias/**",
-                        "/api/configuracoes", "/api/imagens/**", "/api/ofertas", "/api/push/chave").permitAll()
+                        "/api/configuracoes", "/api/imagens/**", "/api/ofertas", "/api/push/chave", "/api/canais").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/interessados", "/api/push/inscricoes", "/api/push/cancelar").permitAll()
                 // Webhooks do robô: a autenticidade é conferida no controller (segredo do Telegram, assinatura da Meta).
                 .requestMatchers("/api/telegram/webhook", "/api/whatsapp/webhook").permitAll()

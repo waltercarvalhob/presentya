@@ -11,6 +11,8 @@ import { dataHora, waLink } from "../lib/util";
 
 /** Endereço que o QR Code abre: a página de ofertas deste mesmo site. */
 export const linkOfertas = () => `${location.origin}/ofertas?origem=qr`;
+/** Gravado na etiqueta NFC: encostou o celular, a página de ofertas abre na hora. */
+export const linkNfc = () => `${location.origin}/ofertas?origem=nfc`;
 const local = () => ["localhost", "127.0.0.1"].includes(location.hostname);
 
 export function QrOfertas({ tamanho = 560, className, link, rotulo = "da página de ofertas" }) {
@@ -44,7 +46,7 @@ function Canais() {
   const { toast } = useLoja();
   const [c, setC] = useState(null);
   const copiar = (link) => navigator.clipboard.writeText(link).then(
-    () => toast("Link copiado: no app NFC Tools, Escrever → URL → cole e encoste a etiqueta"),
+    () => toast("Link da página de ofertas copiado: no NFC Tools, Escrever → URL → cole e encoste a etiqueta"),
     () => prompt("Copie o link para gravar na etiqueta NFC:", link));
   useEffect(() => { api("/api/admin/canais").then(setC).catch(() => {}); }, []);
   if (!c) return null;
@@ -66,7 +68,7 @@ function Canais() {
           {!c.whatsapp.ativo && <small>Sem a API configurada, este QR abre a conversa, mas quem responde é você, manualmente.</small>}
           <div style={{ display: "flex", gap: ".4rem", flexWrap: "wrap" }}>
             <button type="button" className="btn btn-line btn-sm" onClick={() => baixar(c.whatsapp.link, "presentya-qr-whatsapp.png")}>Baixar QR</button>
-            <button type="button" className="btn btn-line btn-sm" onClick={() => copiar(c.whatsapp.link)}>Copiar link para NFC</button>
+            <button type="button" className="btn btn-line btn-sm" onClick={() => copiar(linkNfc())}>Copiar link para NFC</button>
           </div>
         </div>
         <div className="canal">
@@ -83,9 +85,10 @@ function Canais() {
         <summary><b>Etiqueta NFC na vitrine (“encoste o celular”)</b></summary>
         <div className="como-ligar">
           <p>Compre etiquetas <b>NFC NTAG215</b> (uns R$ 2 a 5 cada). Instale o app gratuito <b>NFC Tools</b> no celular,
-            toque em <i>Escrever → Adicionar registro → URL</i>, cole o link do WhatsApp (botão “Copiar link para NFC” acima),
+            toque em <i>Escrever → Adicionar registro → URL</i>, cole o link (botão “Copiar link para NFC” acima: <code>{linkNfc()}</code>),
             toque em <i>Escrever</i> e encoste a etiqueta. Cole-a do lado de dentro do vidro, atrás do círculo do cartaz.
-            Quem encostar o celular abre o WhatsApp da loja na hora, sem câmera, no Android e no iPhone (XS ou mais novo).
+            Quem encostar o celular <b>vê as ofertas na tela na hora, sem tocar em nada</b> (Android e iPhone XS ou mais novo),
+            e pode tocar em “Receber no WhatsApp” para ganhar as próximas.
             Vidro muito grosso (mais de ~1 cm) pode impedir a leitura: teste antes.</p>
         </div>
       </details>

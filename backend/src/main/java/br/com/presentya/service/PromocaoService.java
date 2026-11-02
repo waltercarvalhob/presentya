@@ -28,7 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class PromocaoService {
     private static final ZoneId FUSO = ZoneId.of("America/Fortaleza");
-    private static final Set<String> ORIGENS = Set.of("qrcode", "proximidade", "site");
+    private static final Set<String> ORIGENS = Set.of("qrcode", "nfc", "proximidade", "site");
 
     private final OfertaRepository ofertas;
     private final InteressadoRepository interessados;
