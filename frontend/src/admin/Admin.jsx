@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
 import { Entrega, Itens } from "../pages/Pedido";
@@ -32,7 +32,7 @@ export function AdminLayout() {
           <button onClick={() => { sair(); nav("/"); }}>Sair</button>
         </div>
       </aside>
-      <main className="adm-main"><Outlet /></main>
+      <main className="adm-main"><Suspense fallback={<p className="hand">Carregando…</p>}><Outlet /></Suspense></main>
     </div>
   );
 }

@@ -118,7 +118,7 @@ public class PromocaoService {
     }
 
     /**
-     * Chamado a cada minuto pela agenda: dentro do horário de envio, solta as ofertas agendadas cuja hora chegou
+     * Chamado a cada 15 minutos pela agenda: dentro do horário de envio, solta as ofertas agendadas cuja hora chegou
      * e a fila do que aconteceu fora do horário (só o que ainda vale). Devolve quantos anúncios saíram.
      */
     @Transactional

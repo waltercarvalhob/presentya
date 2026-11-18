@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 /**
- * Relógio das automações: a cada minuto, dentro do horário de envio, solta as ofertas agendadas, a fila do
+ * Relógio das automações: a cada 15 minutos, dentro do horário de envio, solta as ofertas agendadas, a fila do
  * que aconteceu fora do horário e faz o envio diário.
  * No plano gratuito do Render o servidor dorme sem visitas; ao acordar, tudo que estava pendente sai na hora.
  */
@@ -24,7 +24,9 @@ public class AgendaPromocoes {
         this.ativa = ativa;
     }
 
-    @Scheduled(initialDelay = 30_000, fixedDelay = 60_000)
+    // A cada 15 min (e não a cada minuto): entre uma conferência e outra o banco do Neon pode dormir,
+    // o que mantém o uso dentro das 100 horas/mês do plano gratuito.
+    @Scheduled(initialDelay = 30_000, fixedDelayString = "${app.agenda.intervalo-ms:900000}")
     public void executar() {
         if (!ativa) return;
         try {

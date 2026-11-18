@@ -25,19 +25,28 @@ export function LojaProvider({ children }) {
   const [filtro, setFiltro] = useState(FILTRO_VAZIO);
   const toastTimer = useRef();
 
+  const aplicar = useCallback(({ p, c, cfg }) => {
+    setProdutos(p.map(produtoUI));
+    setCategorias(c);
+    setConfig(cfg);
+  }, []);
+
+  // Mostra na hora o catálogo da última visita e atualiza por trás (a API pode estar acordando).
+  // Preço e estoque desatualizados não passam: o servidor recalcula tudo ao fechar o pedido.
   const carregar = useCallback(async () => {
+    const salvo = ler("py-catalogo", null);
+    if (salvo?.p) { aplicar(salvo); setCarregando(false); }
     try {
       const [p, c, cfg] = await Promise.all([api("/api/produtos"), api("/api/categorias"), api("/api/configuracoes")]);
-      setProdutos(p.map(produtoUI));
-      setCategorias(c);
-      setConfig(cfg);
+      aplicar({ p, c, cfg });
+      gravar("py-catalogo", { p, c, cfg });
       setErro(null);
     } catch (e) {
-      setErro(e.message);
+      if (!salvo?.p) setErro(e.message);
     } finally {
       setCarregando(false);
     }
-  }, []);
+  }, [aplicar]);
 
   const sair = useCallback(() => { setToken(null); setUsuario(null); }, []);
 
