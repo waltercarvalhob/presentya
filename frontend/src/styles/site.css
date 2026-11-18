@@ -667,3 +667,16 @@ a.mini-btn{text-decoration:none;display:inline-block}
 .diario{display:grid;gap:.6rem;border-top:1px solid var(--line);padding-top:.9rem;margin-top:.3rem}
 .cartaz-instrucao{background:var(--ink);color:#fff;border-radius:999px;padding:2mm 6mm;font:700 clamp(1rem,3.2vw,1.45rem) var(--f-display)}
 .cartaz-instrucao span{color:var(--brand)}
+/* Placas NFC */
+.nfc{display:grid;gap:1.2rem;max-width:760px}
+.nfc h3{margin:0}
+.nfc-url{display:flex;gap:.6rem;align-items:center;justify-content:space-between;word-break:break-all}
+.nfc-check{display:flex!important;gap:.6rem;align-items:flex-start;font-weight:500!important}
+.nfc-check input{width:auto!important;margin-top:.2rem}
+.nfc-qr{border-radius:12px;border:1px solid var(--line);background:#fff;justify-self:start}
+.nfc-status{padding:.9rem 1rem;border-radius:10px;font-weight:600}
+.nfc-status.aguardando{background:color-mix(in srgb,var(--brand) 30%,transparent);animation:nfcPulso 1.4s ease-in-out infinite}
+.nfc-status.ok{background:var(--sage-soft)}
+.nfc-status.erro{background:#FDECEE;color:#8A1626}
+@keyframes nfcPulso{50%{opacity:.6}}
+@media (prefers-reduced-motion:reduce){.nfc-status.aguardando{animation:none}}

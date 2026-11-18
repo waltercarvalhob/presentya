@@ -69,6 +69,7 @@ function Canais() {
           <div style={{ display: "flex", gap: ".4rem", flexWrap: "wrap" }}>
             <button type="button" className="btn btn-line btn-sm" onClick={() => baixar(c.whatsapp.link, "presentya-qr-whatsapp.png")}>Baixar QR</button>
             <button type="button" className="btn btn-line btn-sm" onClick={() => copiar(linkNfc())}>Copiar link para NFC</button>
+            <Link className="btn btn-gold btn-sm" to="/admin/nfc?destino=ofertas">Gravar etiqueta NFC</Link>
           </div>
         </div>
         <div className="canal">
@@ -84,6 +85,8 @@ function Canais() {
       <details>
         <summary><b>Etiqueta NFC na vitrine (“encoste o celular”)</b></summary>
         <div className="como-ligar">
+          <p><b>Pelo próprio site:</b> no Chrome de um celular Android, abra <Link to="/admin/nfc?destino=ofertas">Placas NFC</Link>,
+            toque em <i>Gravar na placa</i> e encoste a etiqueta. No iPhone, use o NFC Tools como abaixo.</p>
           <p>Compre etiquetas <b>NFC NTAG215</b> (uns R$ 2 a 5 cada). Instale o app gratuito <b>NFC Tools</b> no celular,
             toque em <i>Escrever → Adicionar registro → URL</i>, cole o link (botão “Copiar link para NFC” acima: <code>{linkNfc()}</code>),
             toque em <i>Escrever</i> e encoste a etiqueta. Cole-a do lado de dentro do vidro, atrás do círculo do cartaz.

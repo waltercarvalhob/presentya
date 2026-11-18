@@ -9,6 +9,7 @@ import { AdminLayout, DadosLoja, Painel, Pedidos, Usuarios } from "./admin/Admin
 import { Categorias, Produtos } from "./admin/Catalogo";
 import { Cartaz, Divulgacao, Interessados } from "./admin/Promocao";
 import Ofertas from "./pages/Ofertas";
+import { PlacasNfc } from "./admin/Nfc";
 
 const EQUIPE = ["ADMIN", "TECNICO"];
 const ADMIN = ["ADMIN"];
@@ -31,6 +32,7 @@ export default function App() {
         <Route index element={<Painel />} />
         <Route path="pedidos" element={<Pedidos />} />
         <Route path="produtos" element={<Produtos />} />
+        <Route path="nfc" element={<PlacasNfc />} />
         <Route path="categorias" element={<Protegido perfis={ADMIN}><Categorias /></Protegido>} />
         <Route path="usuarios" element={<Protegido perfis={ADMIN}><Usuarios /></Protegido>} />
         <Route path="loja" element={<Protegido perfis={ADMIN}><DadosLoja /></Protegido>} />

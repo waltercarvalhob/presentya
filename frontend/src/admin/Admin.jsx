@@ -18,6 +18,7 @@ export function AdminLayout() {
           <NavLink to="/admin" end>Visão geral</NavLink>
           <NavLink to="/admin/pedidos">Pedidos</NavLink>
           <NavLink to="/admin/produtos">Produtos</NavLink>
+          <NavLink to="/admin/nfc">Placas NFC</NavLink>
           {admin && <NavLink to="/admin/categorias">Categorias</NavLink>}
           {admin && <NavLink to="/admin/usuarios">Usuários</NavLink>}
           {admin && <NavLink to="/admin/ofertas">Ofertas e promoções</NavLink>}
