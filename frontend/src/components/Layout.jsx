@@ -4,6 +4,7 @@ import Header from "./Header";
 import Drawers from "./Drawers";
 import Logo from "./Logo";
 import PertoDaLoja from "./PertoDaLoja";
+import InstalarApp from "./InstalarApp";
 import { Icon, SecLink } from "./nav";
 import { useLoja } from "../lib/store";
 import { RM } from "../lib/util";
@@ -73,6 +74,7 @@ export default function Layout() {
       <Footer />
       <Floating />
       <PertoDaLoja />
+      <InstalarApp />
       <Drawers />
     </>
   );

@@ -1,8 +1,10 @@
 {
+  "id": "/",
   "name": "PresentYá",
   "short_name": "PresentYá",
   "description": "Presentes e personalizados em São Luís – MA.",
   "start_url": "/ofertas",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
   "theme_color": "#F1C200",
@@ -10,5 +12,10 @@
   "icons": [
     { "src": "/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Ofertas de hoje", "url": "/ofertas", "icons": [{ "src": "/icone-192.png", "sizes": "192x192" }] },
+    { "name": "Loja", "url": "/", "icons": [{ "src": "/icone-192.png", "sizes": "192x192" }] },
+    { "name": "Gravar placa NFC (equipe)", "short_name": "Placas NFC", "url": "/admin/nfc", "icons": [{ "src": "/icone-192.png", "sizes": "192x192" }] }
   ]
 }

@@ -680,3 +680,7 @@ a.mini-btn{text-decoration:none;display:inline-block}
 .nfc-status.erro{background:#FDECEE;color:#8A1626}
 @keyframes nfcPulso{50%{opacity:.6}}
 @media (prefers-reduced-motion:reduce){.nfc-status.aguardando{animation:none}}
+
+/* Convite para instalar o app */
+.app-faixa{background:var(--card);border:1px solid var(--line);bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.app-faixa img{border-radius:10px;flex:none}
