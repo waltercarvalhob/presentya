@@ -25,11 +25,16 @@ export function QrOfertas({ tamanho = 560, className, link, rotulo = "da página
   return src ? <img className={className} src={src} width={tamanho} height={tamanho} alt={"QR Code " + rotulo + " da PresentYá"} /> : null;
 }
 
-/** QR Codes que o cartaz usa: os canais do robô que estão ligados; sem robô, a página de ofertas. */
+/**
+ * QR Codes que o cartaz usa: os canais do robô que estão ligados; sem robô, a página de ofertas.
+ * Como a etiqueta NFC, o QR passa pela página de ofertas antes de abrir a conversa: ao voltar, a pessoa
+ * encontra o convite das notificações e o aviso de proximidade.
+ */
 export function qrsDoCartaz(canais) {
   const lista = [];
-  if (canais?.whatsapp?.ativo) lista.push({ id: "whatsapp", nome: "WhatsApp", link: canais.whatsapp.link, chamada: "Receba no WhatsApp" });
-  if (canais?.telegram?.ativo) lista.push({ id: "telegram", nome: "Telegram", link: canais.telegram.link, chamada: "Receba no Telegram" });
+  const viaSite = (canal) => `${location.origin}/ofertas?origem=qr&abrir=${canal}`;
+  if (canais?.whatsapp?.ativo) lista.push({ id: "whatsapp", nome: "WhatsApp", link: viaSite("whatsapp"), chamada: "Receba no WhatsApp" });
+  if (canais?.telegram?.ativo) lista.push({ id: "telegram", nome: "Telegram", link: viaSite("telegram"), chamada: "Receba no Telegram" });
   if (!lista.length) lista.push({ id: "site", nome: "Site", link: linkOfertas(), chamada: "Veja as ofertas de hoje" });
   return lista;
 }
@@ -399,7 +404,7 @@ function LocalLoja() {
       <div className="row">
         <label>Latitude<input inputMode="decimal" placeholder="-2.5307" {...campo("loja_latitude")} /></label>
         <label>Longitude<input inputMode="decimal" placeholder="-44.3068" {...campo("loja_longitude")} /></label>
-        <label>Raio (metros)<input type="number" min={10} max={2000} {...campo("raio_proximidade")} /><small>O GPS do celular erra de 5 a 20 m.</small></label>
+        <label>Raio (metros)<input type="number" min={5} max={2000} {...campo("raio_proximidade")} /><small>O GPS do celular erra de 5 a 20 m (mais dentro de shopping): com 5 m, o aviso só aparece bem na porta.</small></label>
         <label>Mensagem do aviso<input maxLength={200} {...campo("mensagem_proximidade")} /></label>
       </div>
       <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap" }}>

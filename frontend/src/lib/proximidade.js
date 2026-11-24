@@ -14,7 +14,7 @@ const num = (v) => { const n = parseFloat(String(v ?? "").replace(",", ".")); re
 export function lojaNoMapa(config) {
   const lat = num(config.loja_latitude), lng = num(config.loja_longitude);
   if (lat == null || lng == null) return null;
-  return { lat, lng, raio: num(config.raio_proximidade) || 20 };
+  return { lat, lng, raio: num(config.raio_proximidade) || 5 };
 }
 
 /** O navegador já deixou usar a localização? (aí dá para acompanhar sem perguntar de novo) */

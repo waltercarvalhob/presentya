@@ -30,7 +30,7 @@ public class ConfiguracaoService {
         // Aviso "você está perto da loja" na página /ofertas (coordenadas vazias = desligado)
         PADRAO.put("loja_latitude", "");
         PADRAO.put("loja_longitude", "");
-        PADRAO.put("raio_proximidade", "20");
+        PADRAO.put("raio_proximidade", "5");
         PADRAO.put("mensagem_proximidade", "Você está pertinho da PresentYá! Passe na loja e aproveite as ofertas de hoje.");
         // Envio diário automático das ofertas (hora no fuso de São Luís)
         PADRAO.put("envio_diario_ativo", "false");
