@@ -26,16 +26,14 @@ export function QrOfertas({ tamanho = 560, className, link, rotulo = "da página
 }
 
 /**
- * QR Codes que o cartaz usa: os canais do robô que estão ligados; sem robô, a página de ofertas.
- * Como a etiqueta NFC, o QR passa pela página de ofertas antes de abrir a conversa: ao voltar, a pessoa
- * encontra o convite das notificações e o aviso de proximidade.
+ * QR Codes que o cartaz usa. O do WhatsApp faz o mesmo que a etiqueta NFC (sempre existe: sem o robô,
+ * quem responde é a loja); o do Telegram entra quando o robô está ligado. Os dois passam pela página de
+ * ofertas antes de abrir a conversa: ao voltar, a pessoa encontra o convite das notificações e o aviso de proximidade.
  */
 export function qrsDoCartaz(canais) {
-  const lista = [];
   const viaSite = (canal) => `${location.origin}/ofertas?origem=qr&abrir=${canal}`;
-  if (canais?.whatsapp?.ativo) lista.push({ id: "whatsapp", nome: "WhatsApp", link: viaSite("whatsapp"), chamada: "Receba no WhatsApp" });
+  const lista = [{ id: "whatsapp", nome: "WhatsApp", link: viaSite("whatsapp"), chamada: "Receba as ofertas no WhatsApp" }];
   if (canais?.telegram?.ativo) lista.push({ id: "telegram", nome: "Telegram", link: viaSite("telegram"), chamada: "Receba no Telegram" });
-  if (!lista.length) lista.push({ id: "site", nome: "Site", link: linkOfertas(), chamada: "Veja as ofertas de hoje" });
   return lista;
 }
 
@@ -371,6 +369,25 @@ function FormOferta({ inicial, salvo }) {
   );
 }
 
+/**
+ * Lê as coordenadas do que o Google Maps copia: "-2.53071, -44.30682" (botão direito no mapa)
+ * ou um link (…/@-2.53,-44.30,17z, …?q=-2.53,-44.30, …!3d-2.53!4d-44.30).
+ */
+export function lerCoordenadas(texto) {
+  const t = decodeURIComponent(String(texto || "")).replace(/\s+/g, " ");
+  const n = "(-?\\d{1,2}(?:\\.\\d+)?)";
+  const padroes = [new RegExp(`!3d${n}!4d(-?\\d{1,3}(?:\\.\\d+)?)`), new RegExp(`@${n},(-?\\d{1,3}(?:\\.\\d+)?)`),
+    new RegExp(`${n}\\s*,\\s*(-?\\d{1,3}(?:\\.\\d+)?)`)];
+  for (const p of padroes) {
+    const m = t.match(p);
+    if (m) {
+      const lat = parseFloat(m[1]), lng = parseFloat(m[2]);
+      if (Math.abs(lat) <= 90 && Math.abs(lng) <= 180) return { lat: lat.toFixed(6), lng: lng.toFixed(6) };
+    }
+  }
+  return null;
+}
+
 /** Coordenadas usadas pelo aviso "você está perto da loja". */
 function LocalLoja() {
   const { recarregar, toast } = useLoja();
@@ -398,9 +415,16 @@ function LocalLoja() {
       <h3>Aviso de proximidade</h3>
       <p style={{ color: "var(--muted)" }}>
         Quem abre a página de ofertas e libera a localização vê um aviso quando está a até o raio abaixo da loja.
-        Para pegar as coordenadas: abra esta tela no celular <b>dentro da loja</b> e toque em “Usar minha localização atual”,
-        ou no Google Maps clique com o botão direito no ponto da loja e copie os números. Deixe vazio para desligar.
+        <b>Sem sair do computador:</b> no Google Maps, aproxime bem e clique com o <b>botão direito</b> exatamente na porta da loja;
+        clique nos números que aparecem no topo do menu (eles são copiados) e cole abaixo. Também aceita o link do Maps.
+        Ou, se estiver na loja, use “Usar minha localização atual”. Deixe vazio para desligar.
       </p>
+      <label>Colar do Google Maps
+        <input placeholder="-2.530710, -44.306820   ou   https://maps.google.com/…" onChange={(e) => {
+          const c = lerCoordenadas(e.target.value);
+          if (c) { setD({ ...d, loja_latitude: c.lat, loja_longitude: c.lng }); toast("Coordenadas preenchidas: confira e salve"); }
+        }} />
+      </label>
       <div className="row">
         <label>Latitude<input inputMode="decimal" placeholder="-2.5307" {...campo("loja_latitude")} /></label>
         <label>Longitude<input inputMode="decimal" placeholder="-44.3068" {...campo("loja_longitude")} /></label>
@@ -410,6 +434,10 @@ function LocalLoja() {
       <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap" }}>
         <button className="btn btn-gold">Salvar</button>
         <button type="button" className="btn btn-line" onClick={aqui} disabled={buscando}>{buscando ? "Buscando…" : "Usar minha localização atual"}</button>
+        {d.loja_latitude && d.loja_longitude && (
+          <a className="btn btn-line" target="_blank" rel="noopener"
+            href={`https://www.google.com/maps?q=${d.loja_latitude},${d.loja_longitude}`}>Conferir no mapa</a>
+        )}
       </div>
     </form>
   );
