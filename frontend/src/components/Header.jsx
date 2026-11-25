@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "./Logo";
+import { BotaoInstalar } from "./InstalarApp";
 import { Icon, SecLink, useIrCatalogo } from "./nav";
 import { useLoja } from "../lib/store";
 
@@ -132,6 +133,7 @@ export default function Header() {
           <ul>
             {SECS.map(([id]) => <li key={id}><SecLink id={id} className={home && cur === id ? "on" : ""} onClick={() => setMenu(false)}>{MOB[id]}</SecLink></li>)}
             {equipe && <li><Link to="/admin">Painel administrativo</Link></li>}
+            <li><BotaoInstalar className="link-btn" /></li>
           </ul>
         </nav>
       </header>

@@ -4,7 +4,7 @@ import Header from "./Header";
 import Drawers from "./Drawers";
 import Logo from "./Logo";
 import PertoDaLoja from "./PertoDaLoja";
-import InstalarApp from "./InstalarApp";
+import InstalarApp, { BotaoInstalar } from "./InstalarApp";
 import { Icon, SecLink } from "./nav";
 import { useLoja } from "../lib/store";
 import { RM } from "../lib/util";
@@ -26,6 +26,7 @@ function Footer() {
             <li><SecLink id="produtos">Nossos Produtos</SecLink></li><li><SecLink id="ideias">Ideias de Presente</SecLink></li>
             <li><SecLink id="novidades">Novidades</SecLink></li><li><SecLink id="clube">Clube Fidelidade</SecLink></li>
             <li><Link to="/ofertas">Ofertas da loja</Link></li>
+            <li><BotaoInstalar className="link-btn" /></li>
           </ul></div>
           <div><h4>Ajuda</h4><ul>
             <li><SecLink id="como-comprar">Como Comprar</SecLink></li><li><SecLink id="entrega">Entrega e Devolução</SecLink></li>

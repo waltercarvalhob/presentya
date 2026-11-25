@@ -567,10 +567,16 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.92rem}
 @media (max-width:440px){
   .diffs,.howto,.foot{grid-template-columns:1fr}
   .grid{grid-template-columns:1fr}
-  .brand-svg{height:46px}
-  .hdr-actions{gap:.35rem}
+  .brand-svg{height:40px}
+  .hdr-actions{gap:.3rem}
   .hdr-actions .btn{display:none}
-  .icon-btn{padding:.5rem .65rem}
+  .icon-btn{padding:.45rem .55rem;gap:.25rem}
+}
+@media (max-width:400px){
+  .brand-svg{height:32px}
+  .hdr-actions{gap:.25rem}
+  .icon-btn{padding:.5rem}
+  .icon-btn .badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;font-size:.66rem;padding:0 4px}
 }
 /* Nada pode empurrar a tela para o lado no celular (clip não quebra o topo fixo, ao contrário de hidden). */
 html,body{overflow-x:clip}
@@ -696,3 +702,13 @@ a.mini-btn{text-decoration:none;display:inline-block}
 /* Convite para instalar o app */
 .app-faixa{background:var(--card);border:1px solid var(--line);bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 .app-faixa img{border-radius:10px;flex:none}
+
+/* Botão fixo "Instalar app" (menu e rodapé) e passo a passo */
+.link-btn{background:none;border:none;padding:0;font:inherit;color:inherit;cursor:pointer;text-align:left;text-decoration:none}
+.link-btn:hover{text-decoration:underline}
+.mobnav .link-btn{display:block;width:100%;padding:.7rem .9rem;border-radius:12px;font-weight:600}
+.app-ajuda{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px}
+.app-ajuda-box{background:var(--bg);color:var(--ink);border-radius:20px;padding:1.6rem;max-width:420px;width:100%;display:grid;gap:.8rem;justify-items:start;text-align:left;box-shadow:0 20px 50px var(--shadow)}
+.app-ajuda-box img{border-radius:14px}
+.app-ajuda-box ol{margin:0;padding-left:1.2rem;display:grid;gap:.4rem}
+.app-ajuda-box small{color:var(--muted)}
