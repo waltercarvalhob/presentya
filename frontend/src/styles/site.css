@@ -72,7 +72,7 @@ header.scrolled .brand-svg{height:50px}
 .navpill{position:absolute;top:.3rem;height:calc(100% - .6rem);background:var(--ink);border-radius:999px;transition:left .45s var(--ease),width .45s var(--ease);z-index:0}
 .hdr-actions{display:flex;gap:.5rem;align-items:center}
 .icon-btn{position:relative;display:inline-flex;align-items:center;gap:.4rem;background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:.55rem .85rem;font:600 .86rem var(--f-body);cursor:pointer;text-decoration:none}
-.icon-btn svg{width:18px;height:18px}
+.icon-btn svg{width:18px;height:18px;flex:none}
 .badge{min-width:20px;height:20px;border-radius:10px;background:var(--ink);color:var(--brand);font-size:.72rem;display:inline-grid;place-items:center;padding:0 5px;font-variant-numeric:tabular-nums}
 .badge.bump{animation:bump .5s var(--ease)}
 @keyframes bump{40%{transform:scale(1.5)}}
@@ -531,10 +531,19 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.92rem}
   .catbar .sub{display:none !important}
 }
 @media (max-width:860px){
-  .adm{grid-template-columns:1fr}
+  .adm{grid-template-columns:minmax(0,1fr)}
+  .adm-side,.adm-main{min-width:0}
   .adm-side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center}
-  .adm-side nav{display:flex;flex-wrap:wrap;width:100%}
-  .adm-side .who{margin:0;width:100%}
+  .adm-side{padding:.7rem 16px;gap:.6rem}
+  .adm-side .foot-logo{padding:.3rem .5rem}
+  .adm-side .foot-logo .brand-svg{height:32px}
+  /* Menu do painel no celular: uma faixa só, que rola para o lado */
+  .adm-side nav{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;width:calc(100% + 32px);margin:0 -16px;padding:0 16px;gap:.3rem}
+  .adm-side nav::-webkit-scrollbar{display:none}
+  .adm-side nav a{white-space:nowrap;padding:.5rem .8rem;font-size:.88rem}
+  .adm-side .who{margin:0;width:100%;display:flex;flex-wrap:wrap;align-items:center;gap:.3rem 1rem}
+  .adm-side .who br{display:none}
+  .adm-side .who b{margin-left:.35rem}
   .page-grid{grid-template-columns:1fr}
   .sticky{position:static}
 }
@@ -560,8 +569,11 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.92rem}
   .grid{grid-template-columns:1fr}
   .brand-svg{height:46px}
   .hdr-actions{gap:.35rem}
+  .hdr-actions .btn{display:none}
   .icon-btn{padding:.5rem .65rem}
 }
+/* Nada pode empurrar a tela para o lado no celular (clip não quebra o topo fixo, ao contrário de hidden). */
+html,body{overflow-x:clip}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   .js .rv.pre{opacity:1;transform:none}

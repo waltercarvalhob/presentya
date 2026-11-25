@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from "react";
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
 import { Entrega, Itens } from "../pages/Pedido";
 import { api } from "../lib/api";
@@ -10,6 +10,9 @@ export function AdminLayout() {
   const { usuario, sair } = useLoja();
   const nav = useNavigate();
   const admin = usuario.perfil === "ADMIN";
+  const { pathname } = useLocation();
+  // No celular o menu é uma faixa que rola para o lado: mantém a tela aberta à vista.
+  useEffect(() => { document.querySelector(".adm-side nav a.active")?.scrollIntoView({ block: "nearest", inline: "center" }); }, [pathname]);
   return (
     <div className="adm">
       <aside className="adm-side">
