@@ -7,6 +7,7 @@ import Conta from "./pages/Conta";
 import Pedido, { PagamentoSimulado } from "./pages/Pedido";
 import { Cadastro, Entrar, Protegido } from "./pages/Auth";
 import Ofertas from "./pages/Ofertas";
+import Privacidade from "./pages/Privacidade";
 
 // O painel só é baixado por quem entra nele: a loja do cliente abre mais leve.
 const tela = (carregar, nome) => lazy(() => carregar().then((m) => ({ default: m[nome] })));
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="cadastro" element={<Cadastro />} />
         <Route path="checkout" element={<Checkout />} />
         <Route path="ofertas" element={<Ofertas />} />
+        <Route path="privacidade" element={<Privacidade />} />
         <Route path="minha-conta" element={<Protegido><Conta /></Protegido>} />
         <Route path="pedido/:codigo" element={<Pedido />} />
         <Route path="pagamento-simulado/:codigo" element={<PagamentoSimulado />} />

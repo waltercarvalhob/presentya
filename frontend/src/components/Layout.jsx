@@ -38,7 +38,7 @@ function Footer() {
             <li>São Luís – MA</li>
           </ul></div>
         </div>
-        <div className="wrap legal"><span>© {new Date().getFullYear()} PresentYá · {config.site}</span><span>Compra segura · Embalagem especial · Cartão grátis</span></div>
+        <div className="wrap legal"><span>© {new Date().getFullYear()} PresentYá · {config.site}</span><span>Compra segura · Embalagem especial · Cartão grátis · <Link to="/privacidade">Política de Privacidade</Link></span></div>
       </footer>
     </>
   );

@@ -712,3 +712,9 @@ a.mini-btn{text-decoration:none;display:inline-block}
 .app-ajuda-box img{border-radius:14px}
 .app-ajuda-box ol{margin:0;padding-left:1.2rem;display:grid;gap:.4rem}
 .app-ajuda-box small{color:var(--muted)}
+/* Política de Privacidade */
+.legal-pg{max-width:760px;display:grid;gap:.9rem;line-height:1.65}
+.legal-pg h1{font-size:clamp(1.9rem,5vw,2.6rem)}
+.legal-pg h2{font-size:1.25rem;margin-top:1rem}
+.legal-pg ul{margin:0;padding-left:1.2rem;display:grid;gap:.45rem}
+.legal-pg a{color:inherit;font-weight:600}
