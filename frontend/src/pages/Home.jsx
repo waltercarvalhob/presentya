@@ -491,6 +491,8 @@ export default function Home() {
         </div>
       </div>
 
+      <Carousel produtos={produtos} />
+
       <section className="sec">
         <div className="wrap">
           <div className="trio">
@@ -500,8 +502,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <Carousel produtos={produtos} />
 
       <section className="sec">
         <div className="wrap">
