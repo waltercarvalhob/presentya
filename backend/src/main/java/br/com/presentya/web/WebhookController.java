@@ -29,4 +29,13 @@ public class WebhookController {
         }
         return ResponseEntity.ok().build();
     }
+
+    /** Aviso da Cora: chega sem corpo, só com o id da cobrança no cabeçalho; a cobrança é conferida na própria Cora. */
+    @PostMapping("/cora")
+    public ResponseEntity<Void> cora(@RequestHeader(value = "webhook-resource-id", required = false) String id) {
+        if (id != null && id.matches("inv_[A-Za-z0-9_-]{1,80}")) {
+            pedidos.processarNotificacao(id);
+        }
+        return ResponseEntity.ok().build();
+    }
 }

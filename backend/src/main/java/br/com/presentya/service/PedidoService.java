@@ -63,6 +63,8 @@ public class PedidoService {
         p.setTelefone(req.telefone().trim());
         p.setMensagemCartao(req.mensagemCartao());
         p.setObservacoes(req.observacoes());
+        String doc = req.cpf() == null ? "" : req.cpf().replaceAll("\\D", "");
+        p.setDocumentoPagador(doc.isEmpty() ? null : doc);
 
         BigDecimal subtotal = BigDecimal.ZERO;
         for (ItemRequest ir : req.itens()) {
@@ -112,7 +114,7 @@ public class PedidoService {
 
         pedidos.save(p);
         gateway.iniciar(p);
-        return PedidoDTO.de(p, gateway.simulado());
+        return PedidoDTO.de(p, gateway.simulado(p));
     }
 
     /** Frete da cidade da loja (São Luís) ou frete para o restante do Brasil. */
@@ -124,12 +126,13 @@ public class PedidoService {
     @Transactional(readOnly = true)
     public List<PedidoDTO> doCliente(Long usuarioId) {
         return pedidos.findByUsuarioIdOrderByCriadoEmDesc(usuarioId).stream()
-                .map(p -> PedidoDTO.de(p, gateway.simulado())).toList();
+                .map(p -> PedidoDTO.de(p, gateway.simulado(p))).toList();
     }
 
     @Transactional(readOnly = true)
     public PedidoDTO detalhe(String codigo, Usuario quem) {
-        return PedidoDTO.de(doDono(codigo, quem), gateway.simulado());
+        Pedido p = doDono(codigo, quem);
+        return PedidoDTO.de(p, gateway.simulado(p));
     }
 
     /** Depois que um convidado cria conta, seus pedidos antigos (mesmo e-mail) passam a aparecer em "Meus pedidos". */
@@ -145,15 +148,15 @@ public class PedidoService {
         if (p.getStatus() == StatusPedido.AGUARDANDO_PAGAMENTO) {
             gateway.consultar(p).ifPresent(s -> aplicarPagamento(p, s));
         }
-        return PedidoDTO.de(p, gateway.simulado());
+        return PedidoDTO.de(p, gateway.simulado(p));
     }
 
     @Transactional
     public PedidoDTO simularPagamento(String codigo, Usuario quem) {
-        if (!gateway.simulado()) {
+        Pedido p = doDono(codigo, quem);
+        if (!gateway.simulado(p)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recurso indisponível");
         }
-        Pedido p = doDono(codigo, quem);
         aplicarPagamento(p, StatusPedido.PAGO);
         return PedidoDTO.de(p, true);
     }
@@ -195,7 +198,7 @@ public class PedidoService {
     public List<PedidoDTO> listar(StatusPedido status) {
         List<Pedido> lista = status == null ? pedidos.findTop200ByOrderByCriadoEmDesc()
                 : pedidos.findTop200ByStatusOrderByCriadoEmDesc(status);
-        return lista.stream().map(p -> PedidoDTO.de(p, gateway.simulado())).toList();
+        return lista.stream().map(p -> PedidoDTO.de(p, gateway.simulado(p))).toList();
     }
 
     @Transactional
@@ -212,7 +215,7 @@ public class PedidoService {
         } else {
             p.setStatus(novo);
         }
-        return PedidoDTO.de(p, gateway.simulado());
+        return PedidoDTO.de(p, gateway.simulado(p));
     }
 
     /** Remove o pedido e seus dados por completo (ex.: pedido de teste) — diferente de cancelar, que mantém o histórico. */
@@ -239,7 +242,7 @@ public class PedidoService {
                 usuarios.count(),
                 pedidos.somarTotal(FATURADOS),
                 pedidos.findTop200ByOrderByCriadoEmDesc().stream().limit(6)
-                        .map(p -> PedidoDTO.de(p, gateway.simulado())).toList());
+                        .map(p -> PedidoDTO.de(p, gateway.simulado(p))).toList());
     }
 
     // ---------- apoio ----------

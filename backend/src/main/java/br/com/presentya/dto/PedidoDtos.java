@@ -41,7 +41,8 @@ public final class PedidoDtos {
             @Size(max = 120) String cidade,
             @Size(max = 2) String uf,
             @Size(max = 500) String mensagemCartao,
-            @Size(max = 1000) String observacoes) {}
+            @Size(max = 1000) String observacoes,
+            @Size(max = 20) String cpf) {}
 
     public record ItemDTO(Long produtoId, String nomeProduto, BigDecimal precoUnitario, int quantidade,
                           String personalizacao, BigDecimal total) {

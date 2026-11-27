@@ -72,6 +72,20 @@ Abra http://localhost:5173 — painel em http://localhost:5173/admin
 
 Para ativar: crie a conta em https://www.mercadopago.com.br/developers, copie o **Access Token** (teste ou produção) para `MP_ACCESS_TOKEN` e, em produção, cadastre o webhook `https://SUA-API/api/pagamentos/webhook/mercadopago` (evento *Pagamentos*).
 
+### Pix pela Cora (opcional)
+
+Com a Cora configurada, o **Pix cai direto na conta PJ da Cora**; crédito e débito continuam no Mercado Pago (a API da Cora não cobra cartão).
+O checkout passa a pedir o CPF de quem paga no Pix (a Cora exige) e o Pix vale a partir de R$ 5,00.
+
+| Variável | Valor |
+|---|---|
+| `CORA_CLIENT_ID` | Client ID da Integração Direta (app Cora ou Cora Web → Integrações → API) |
+| `CORA_CERTIFICADO` | padrão `/etc/secrets/cora-certificado.pem` (Secret File do Render) ou o conteúdo PEM |
+| `CORA_CHAVE_PRIVADA` | padrão `/etc/secrets/cora-chave.key` (Secret File do Render) ou o conteúdo PEM |
+| `CORA_URL` | padrão produção `https://matls-clients.api.cora.com.br` (teste: `https://matls-clients.api.stage.cora.com.br`) |
+
+Ao subir, a API cadastra sozinha na Cora o aviso de cobrança paga em `API_URL/api/pagamentos/webhook/cora`.
+
 ## Hospedagem gratuita (sugestão)
 
 | O quê | Onde | Observação |

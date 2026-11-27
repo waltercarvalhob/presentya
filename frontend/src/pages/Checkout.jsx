@@ -7,6 +7,19 @@ import { brl } from "../lib/util";
 
 const norm = (s) => (s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().trim();
 
+/** CPF (11) ou CNPJ (14) com dígitos verificadores corretos — a mesma conta que o servidor faz. */
+function documentoValido(valor) {
+  const d = (valor || "").replace(/\D/g, "");
+  if (!/^(\d{11}|\d{14})$/.test(d) || /^(\d)\1+$/.test(d)) return false;
+  const confere = (pos, pesos) => {
+    const resto = pesos.reduce((s, p, i) => s + Number(d[i]) * p, 0) % 11;
+    return Number(d[pos]) === (resto < 2 ? 0 : 11 - resto);
+  };
+  return d.length === 11
+    ? confere(9, [10, 9, 8, 7, 6, 5, 4, 3, 2]) && confere(10, [11, 10, 9, 8, 7, 6, 5, 4, 3, 2])
+    : confere(12, [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]) && confere(13, [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+}
+
 export default function Checkout() {
   const { cart, subtotal, config, usuario, limparCart, toast } = useLoja();
   const nav = useNavigate();
@@ -15,7 +28,7 @@ export default function Checkout() {
     tipoEntrega: "ENTREGA", lojaRetirada: lojas[0] || "", formaPagamento: "PIX",
     nomeDestinatario: "", telefone: "", email: "",
     cep: "", endereco: "", numero: "", complemento: "", bairro: "", cidade: "", uf: "",
-    mensagemCartao: "", observacoes: "",
+    mensagemCartao: "", observacoes: "", cpf: "",
   });
   const [erro, setErro] = useState(null);
   const [enviando, setEnviando] = useState(false);
@@ -44,13 +57,16 @@ export default function Checkout() {
     return <section className="sec"><div className="wrap empty"><h2>Sua sacola está vazia</h2><Link className="btn btn-gold" to="/#produtos">Escolher presentes</Link></div></section>;
   }
 
+  const pedeCpf = d.formaPagamento === "PIX" && config.pix_cpf === "true";
+
   const finalizar = async (e) => {
     e.preventDefault();
+    if (pedeCpf && !documentoValido(d.cpf)) { setErro("Confira o CPF: ele é necessário para gerar o Pix."); return; }
     setErro(null); setEnviando(true);
     try {
       const pedido = await api("/api/pedidos", {
         method: "POST",
-        body: { ...d, itens: cart.map((i) => ({ produtoId: i.id, quantidade: i.qtd, personalizacao: i.perso })) },
+        body: { ...d, cpf: pedeCpf ? d.cpf : null, itens: cart.map((i) => ({ produtoId: i.id, quantidade: i.qtd, personalizacao: i.perso })) },
       });
       limparCart();
       if (pedido.linkPagamento) { toast("Levando você ao pagamento seguro…"); window.location.assign(pedido.linkPagamento); }
@@ -113,6 +129,10 @@ export default function Checkout() {
               <label className="opt"><input type="radio" name="fp" checked={d.formaPagamento === "CREDITO"} onChange={() => setD({ ...d, formaPagamento: "CREDITO" })} />Crédito<small>Em até 12x</small></label>
               <label className="opt"><input type="radio" name="fp" checked={d.formaPagamento === "DEBITO"} onChange={() => setD({ ...d, formaPagamento: "DEBITO" })} />Débito<small>À vista</small></label>
             </div>
+            {pedeCpf && (
+              <label>CPF de quem paga<input required inputMode="numeric" autoComplete="off" maxLength={18} placeholder="000.000.000-00" {...campo("cpf")} />
+                <small>O banco exige o CPF para emitir o Pix.</small></label>
+            )}
             <small>🔒 Cartões são pagos no ambiente seguro do Mercado Pago. A PresentYá não vê nem guarda os dados do seu cartão.</small>
           </div>
         </div>

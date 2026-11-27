@@ -25,6 +25,8 @@ services:
         sync: false
       - key: MP_ACCESS_TOKEN # Mercado Pago > Suas integrações > Credenciais de produção
         sync: false
+      - key: CORA_CLIENT_ID  # Pix direto na conta Cora (Integração Direta). Certificado e chave vão como
+        sync: false          # Secret Files: cora-certificado.pem e cora-chave.key
       - key: TELEGRAM_BOT_TOKEN  # robô de ofertas no Telegram: token do @BotFather
         sync: false
       - key: WHATSAPP_TOKEN      # robô de ofertas no WhatsApp (Cloud API da Meta)

@@ -30,6 +30,17 @@ export function Entrega({ p }) {
     : <p>{p.nomeDestinatario} · {p.telefone}<br />{p.endereco}, {p.numero}{p.complemento ? ` – ${p.complemento}` : ""} · {p.bairro}<br />{p.cidade}/{p.uf} · CEP {p.cep}</p>;
 }
 
+/** Desenha o QR do Pix a partir do "copia e cola" (a Cora devolve só o código, sem imagem). */
+function QrPix({ codigo }) {
+  const [src, setSrc] = useState(null);
+  useEffect(() => {
+    let vivo = true;
+    import("qrcode").then((m) => m.default.toDataURL(codigo, { width: 260, margin: 1 })).then((u) => vivo && setSrc(u)).catch(() => {});
+    return () => { vivo = false; };
+  }, [codigo]);
+  return src ? <img src={src} alt="QR Code Pix" width="260" height="260" /> : null;
+}
+
 export default function Pedido() {
   const { codigo } = useParams();
   const { toast, atualizarUsuario } = useLoja();
@@ -72,7 +83,9 @@ export default function Pedido() {
           {aguardando && p.formaPagamento === "PIX" && (
             <div className="pix-box">
               <h3>Pague com Pix</h3>
-              {p.pixQrBase64 ? <img src={`data:image/png;base64,${p.pixQrBase64}`} alt="QR Code Pix" /> : <p className="note">Modo de teste: nenhum QR Code real foi gerado.</p>}
+              {p.pixQrBase64 ? <img src={`data:image/png;base64,${p.pixQrBase64}`} alt="QR Code Pix" />
+                : p.pagamentoSimulado ? <p className="note">Modo de teste: nenhum QR Code real foi gerado.</p>
+                : <QrPix codigo={p.pixCopiaCola} />}
               <p style={{ color: "var(--muted)" }}>Abra o app do seu banco, escolha Pix e leia o QR Code ou use o “copia e cola”:</p>
               <div className="pix-code">{p.pixCopiaCola}</div>
               <button className="btn btn-dark btn-sm" onClick={copiar}>Copiar código Pix</button>

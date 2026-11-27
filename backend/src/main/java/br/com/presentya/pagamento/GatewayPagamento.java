@@ -13,6 +13,11 @@ public interface GatewayPagamento {
     /** true quando não há credenciais configuradas e os pagamentos são apenas de teste. */
     boolean simulado();
 
+    /** Se o pagamento deste pedido é de teste (Pix e cartão podem ir para gateways diferentes). */
+    default boolean simulado(Pedido pedido) {
+        return simulado();
+    }
+
     /** Prepara a cobrança e preenche no pedido o link de pagamento ou os dados do Pix. */
     void iniciar(Pedido pedido);
 

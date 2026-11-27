@@ -44,7 +44,9 @@ public class Pedido {
     @Column(length = 2) private String uf;
     @Column(length = 500) private String mensagemCartao;
     @Column(length = 1000) private String observacoes;
-    /** Id do pagamento ou da preferência no gateway (Mercado Pago). */
+    /** CPF ou CNPJ (só números) de quem paga: a Cora exige para emitir o Pix. */
+    @Column(length = 14) private String documentoPagador;
+    /** Id do pagamento ou da preferência no gateway (Mercado Pago) ou da cobrança na Cora (inv_...). */
     @Column(length = 80) private String gatewayPagamentoId;
     /** Página de pagamento (cartão de crédito/débito). */
     @Column(length = 600) private String linkPagamento;
@@ -108,6 +110,8 @@ public class Pedido {
     public void setGatewayPagamentoId(String gatewayPagamentoId) { this.gatewayPagamentoId = gatewayPagamentoId; }
     public String getLinkPagamento() { return linkPagamento; }
     public void setLinkPagamento(String linkPagamento) { this.linkPagamento = linkPagamento; }
+    public String getDocumentoPagador() { return documentoPagador; }
+    public void setDocumentoPagador(String documentoPagador) { this.documentoPagador = documentoPagador; }
     public String getPixCopiaCola() { return pixCopiaCola; }
     public void setPixCopiaCola(String pixCopiaCola) { this.pixCopiaCola = pixCopiaCola; }
     public String getPixQrBase64() { return pixQrBase64; }
