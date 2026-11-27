@@ -123,7 +123,7 @@ function Carousel({ produtos }) {
     if (d > 0 && c.scrollLeft >= max - 4) c.scrollTo({ left: 0 }); else c.scrollBy({ left: d * w });
   };
   return (
-    <section className="sec tint">
+    <section className="sec tint" id="produtos">
       <div className="wrap">
         <div className="head split rv">
           <div><span className="eyebrow">Mais amados</span><h2>Mais vendidos e novidades</h2></div>
@@ -134,6 +134,8 @@ function Carousel({ produtos }) {
         </div>
         <div className="carousel" ref={ref}>{lista.map((p, i) => <ProductCard key={p.id} p={p} i={i} />)}</div>
         <div className="progress"><i ref={prog} /></div>
+        {/* O catálogo completo fica logo abaixo do carrossel: "Produtos" no menu cai aqui. */}
+        <div className="catalogo-bloco"><Catalogo /></div>
       </div>
     </section>
   );
@@ -493,7 +495,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="sec tint" id="produtos">
+      <section className="sec tint">
         <div className="wrap">
           <div className="perso rv z" id="personalizados">
             <div style={{ display: "grid", gap: "1rem" }}>
@@ -506,7 +508,6 @@ export default function Home() {
               {perso.map((p) => <div className="pc" key={p.id} style={{ background: p.bg }}><Art p={p} /></div>)}
             </div>
           </div>
-          <Catalogo />
         </div>
       </section>
 

@@ -718,3 +718,6 @@ a.mini-btn{text-decoration:none;display:inline-block}
 .legal-pg h2{font-size:1.25rem;margin-top:1rem}
 .legal-pg ul{margin:0;padding-left:1.2rem;display:grid;gap:.45rem}
 .legal-pg a{color:inherit;font-weight:600}
+/* Catálogo logo abaixo do carrossel "Mais vendidos" */
+.catalogo-bloco{margin-top:clamp(2.5rem,6vw,4rem)}
+.perso:last-child{margin-bottom:0}
