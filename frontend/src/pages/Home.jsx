@@ -41,6 +41,23 @@ function CountUp({ n }) {
 
 const svg = (paths, w = "1.7") => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={w} dangerouslySetInnerHTML={{ __html: paths }} />;
 
+/** Leva até o cartão do produto no catálogo (com "Comprar Agora") e dá um destaque nele. */
+function useIrProduto() {
+  const { setFiltro } = useLoja();
+  return (id) => {
+    setFiltro(FILTRO_VAZIO); // sem filtros, o produto com certeza aparece na lista
+    setTimeout(() => {
+      const el = document.getElementById("prod-" + id);
+      if (!el) return;
+      el.scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "center" });
+      el.classList.remove("destaque");
+      void el.offsetWidth; // reinicia a animação se clicar de novo
+      el.classList.add("destaque");
+      setTimeout(() => el.classList.remove("destaque"), 2600);
+    }, 120);
+  };
+}
+
 /* ---------- seções ---------- */
 
 function Hero({ produtos }) {
@@ -50,6 +67,7 @@ function Hero({ produtos }) {
   const [si, setSi] = useState(0);
   const [prev, setPrev] = useState(-1);
   const ir = useIrCatalogo();
+  const verProduto = useIrProduto();
   const ir2 = (n) => { setPrev(si); setSi((n + show.length) % show.length); };
   useEffect(() => {
     if (RM || show.length < 2) return;
@@ -82,12 +100,12 @@ function Hero({ produtos }) {
         </div>
         <div className="stage" aria-label="Vitrine de produtos">
           <div className="ring" /><div className="ring r2" /><div className="disc" />
-          <div className="showcase">
+          <button type="button" className="showcase" onClick={() => atual && verProduto(atual.id)} aria-label={atual ? `Comprar ${atual.name}` : "Ver produtos"}>
             {show.map((p, i) => <div key={p.id} className={"show-item" + (i === si ? " on" : "") + (i === prev && i !== si ? " out" : "")}><Art p={p} /></div>)}
-          </div>
-          {orbits.map((p, i) => <div key={p.id} className={"orbit o" + (i + 1)} style={{ background: p.bg }}><Art p={p} /></div>)}
+          </button>
+          {orbits.map((p, i) => <button type="button" key={p.id} className={"orbit o" + (i + 1)} style={{ background: p.bg }} onClick={() => verProduto(p.id)} aria-label={`Comprar ${p.name}`}><Art p={p} /></button>)}
           <div className="tag t1"><span className="hand">com amor ♡</span></div>
-          {atual && <div className="show-label"><b>{atual.name}</b><span>{brl(atual.price)}</span></div>}
+          {atual && <button type="button" className="show-label" onClick={() => verProduto(atual.id)}><b>{atual.name}</b><span>{brl(atual.price)}</span><i className="show-cta">Comprar</i></button>}
           <div className="dots">
             {show.map((p, i) => <button key={p.id} aria-label={"Ver " + p.name} className={i === si ? "on" : ""} onClick={() => ir2(i)} />)}
           </div>
@@ -216,7 +234,7 @@ function Catalogo() {
         </div>
       </div>
       <div className="grid" key={JSON.stringify(f)}>
-        {lista.length ? lista.map((p, i) => <ProductCard key={p.id} p={p} i={i} className="entra" />) : (
+        {lista.length ? lista.map((p, i) => <ProductCard key={p.id} p={p} i={i} className="entra" ancora />) : (
           <div className="empty"><p>Nenhum presente com esses filtros.</p><p>Fale com a gente no WhatsApp que encontramos a opção ideal.</p><button className="btn btn-line btn-sm" onClick={() => setFiltro(FILTRO_VAZIO)}>Limpar filtros</button></div>
         )}
       </div>
@@ -448,6 +466,7 @@ export default function Home() {
   const { produtos, carregando, erro, recarregar } = useLoja();
   const ir = useIrCatalogo();
   const { hash } = useLocation();
+  const verProduto = useIrProduto();
   useReveal(!carregando);
 
   useEffect(() => {
@@ -467,7 +486,7 @@ export default function Home() {
       <div className="marquee" aria-hidden="true">
         <div className="track">
           {[0, 1].map((k) => produtos.slice(0, 14).map((p) => (
-            <span className="mq" key={k + "-" + p.id}><span className="ic" style={{ background: p.bg }}><Art p={p} /></span>{p.name}<i>✦</i></span>
+            <span className="mq" key={k + "-" + p.id} onClick={() => verProduto(p.id)}><span className="ic" style={{ background: p.bg }}><Art p={p} /></span>{p.name}<i>✦</i></span>
           )))}
         </div>
       </div>

@@ -721,3 +721,14 @@ a.mini-btn{text-decoration:none;display:inline-block}
 /* Catálogo logo abaixo do carrossel "Mais vendidos" */
 .catalogo-bloco{margin-top:clamp(2.5rem,6vw,4rem)}
 .perso:last-child{margin-bottom:0}
+/* Produtos do topo e da faixa preta levam ao "Comprar Agora" no catálogo */
+button.showcase,button.orbit,button.show-label{font:inherit;color:inherit;cursor:pointer;padding:0}
+button.showcase{background:none;border:0;border-radius:50%}
+button.show-label{padding:.55rem .6rem .55rem 1.1rem}
+.show-cta{font-style:normal;background:var(--brand);color:var(--ink);font-weight:700;font-size:.8rem;border-radius:999px;padding:.3rem .75rem}
+button.orbit:hover,button.show-label:hover{filter:brightness(1.05);box-shadow:0 16px 34px var(--shadow)}
+button.showcase:focus-visible,button.orbit:focus-visible,button.show-label:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
+.mq{cursor:pointer}
+.prod.destaque{animation:destaque 2.4s var(--ease)}
+@keyframes destaque{0%,100%{box-shadow:0 0 0 0 transparent}15%,70%{box-shadow:0 0 0 4px var(--brand),0 18px 40px var(--shadow)}}
+@media (max-width:440px){.show-label{font-size:.8rem;gap:.5rem}.show-cta{display:none}}

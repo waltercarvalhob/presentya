@@ -7,7 +7,7 @@ import { Icon } from "./nav";
 const FL = { new: ["new", "Novidade"], hot: ["hot", "Mais vendido"], off: ["off", "Oferta"] };
 const semHover = typeof matchMedia !== "undefined" && matchMedia("(hover:none)").matches;
 
-export default function ProductCard({ p, i = 0, className = "" }) {
+export default function ProductCard({ p, i = 0, className = "", ancora = false }) {
   const { wish, toggleWish, addCart, wa } = useLoja();
   const [pop, setPop] = useState(0);
   const ref = useRef();
@@ -26,7 +26,7 @@ export default function ProductCard({ p, i = 0, className = "" }) {
   };
 
   return (
-    <article className={"prod " + className} ref={ref} onMouseMove={tilt} onMouseLeave={() => (ref.current.style.transform = "")}>
+    <article className={"prod " + className} ref={ref} id={ancora ? "prod-" + p.id : undefined} onMouseMove={tilt} onMouseLeave={() => (ref.current.style.transform = "")}>
       <div className="art" style={{ background: p.bg, "--d": -(i % 4) * 1.1 + "s" }}>
         <Art p={p} />
         <div className="flags">
